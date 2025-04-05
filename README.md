@@ -11,9 +11,9 @@ A powerful Kubernetes certification practice environment that provides a realist
 - **Timed exam mode** with real exam-like conditions and countdown timer
 
 
-## Demo Video
+## 
 
-Watch our live demo video showcasing the CK-X Simulator in action:
+Watch live demo video showcasing the CK-X Simulator in action:
 
 [![CK-X Simulator Demo](https://img.youtube.com/vi/EQVGhF8x7R4/0.jpg)](https://www.youtube.com/watch?v=EQVGhF8x7R4&ab_channel=NishanB)
 
