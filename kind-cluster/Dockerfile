@@ -1,4 +1,4 @@
-FROM earthly/dind
+FROM docker:dind
 
 # Accept build-time architecture argument
 ARG TARGETARCH
