@@ -28,7 +28,7 @@ done
 echo "$(date '+%Y-%m-%d %H:%M:%S') | [SUCCESS] Docker service is ready and operational"
 
 #pull kindest/node image
-docker pull kindest/node:$KIND_DEFAULT_VERSION
+# docker pull kindest/node:$KIND_DEFAULT_VERSION
 
 #add user for ssh access
 adduser -S -D -H -s /sbin/nologin -G sshd sshd

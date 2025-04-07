@@ -9,23 +9,11 @@ NUM_WORKERS=${1:-0}  # Default to 1 worker if not provided
 CLUSTER_NAME=${2:-cluster}
 NODE_IMAGE=${3:-kindest/node:v1.32.3}
 
-#cleanup env 
-echo "Cleaning up environment..."
-env-cleanup
-sleep 10
-
 #delete  kind-config.yaml if present
 if [ -f "kind-config.yaml" ]; then  
     echo "kind-config.yaml already exists, deleting it"
     rm -f kind-config.yaml
 fi
-
-# Wait until kindest/node:$KIND_DEFAULT_VERSION is present
-while ! docker images kindest/node | grep -q kindest/node; do
-    echo "Waiting for kindest/node to be available..."
-    sleep 5
-done
-echo "kindest/node is now available"
 
 cat <<EOF > /tmp/kind-config.yaml
 kind: Cluster

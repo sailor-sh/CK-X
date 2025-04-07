@@ -49,6 +49,21 @@ document.addEventListener('DOMContentLoaded', function() {
                             viewPastResultsBtn.closest('li').style.display = 'block';
                         }
                     }
+                    
+                    // If exam is in PREPARING state, show loading overlay and start polling
+                    if (data.status === 'PREPARING') {
+                        console.log('Exam is in PREPARING state, showing loading overlay');
+                        showLoadingOverlay();
+                        updateLoadingMessage('Preparing lab environment...');
+                        updateExamInfo(data.info?.name || 'Unknown Exam');
+                        // Start polling for status
+                        pollExamStatus(data.id).then(statusData => {
+                            if (statusData.status === 'READY') {
+                                // Redirect to exam page when ready
+                                window.location.href = `/exam.html?id=${data.id}`;
+                            }
+                        });
+                    }
                 }
             })
             .catch(error => {
@@ -428,7 +443,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     async function pollExamStatus(examId) {
         const startTime = Date.now();
-        const pollInterval = 1000; // Poll every 5 seconds
+        const pollInterval = 1000; // Poll every 1 second
         
         return new Promise((resolve, reject) => {
             const poll = async () => {
@@ -459,7 +474,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 } catch (error) {
                     console.error('Error polling exam status:', error);
                     // Show error in the loading overlay
-                    updateLoadingMessage(`Error: ${error.message}. Retrying...`);
+                    updateLoadingMessage(`Error checking exam status: ${error.message}. Retrying in ${pollInterval/1000}s...`);
                     // Continue polling despite errors
                     setTimeout(poll, pollInterval);
                 }
