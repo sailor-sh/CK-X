@@ -60,7 +60,7 @@ The `index.html` file serves as the main landing page for the CK-X Simulator. He
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="https://github.com/nishanb/CKAD-X" target="_blank">
+                    <a class="nav-link" href="https://github.com/nishanb/CK-X" target="_blank">
                         <!-- GitHub Icon -->
                         GitHub
                     </a>

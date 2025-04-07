@@ -36,6 +36,7 @@ adduser -S -D -H -s /sbin/nologin -G sshd sshd
 #start ssh service
 /usr/sbin/sshd -D &
 
+sleep 10
 touch /ready
 
 # Keep container running

@@ -177,8 +177,6 @@ services:
     command: ["redis-server", "--appendonly", "yes"]
     expose:
       - "6379"
-    volumes:
-      - redis-data:/data
     restart: unless-stopped
     networks:
       - ckx-network
@@ -242,4 +240,3 @@ networks:
 
 volumes:
   kube-config:  # Shared volume for Kubernetes configuration
-  redis-data:  # Persistent volume for Redis data
