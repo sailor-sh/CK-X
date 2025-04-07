@@ -15,6 +15,13 @@ if [ -f "kind-config.yaml" ]; then
     rm -f kind-config.yaml
 fi
 
+# Wait until kindest/node:$KIND_DEFAULT_VERSION is present
+while ! docker images kindest/node | grep -q kindest/node; do
+    echo "Waiting for kindest/node to be available..."
+    sleep 5
+done
+echo "kindest/node is now available"
+
 cat <<EOF > /tmp/kind-config.yaml
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4

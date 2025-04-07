@@ -1,8 +1,25 @@
 FROM earthly/dind
 
-RUN wget https://kind.sigs.k8s.io/dl/latest/kind-linux-amd64
-RUN chmod +x kind-linux-amd64
-RUN mv kind-linux-amd64 /usr/local/bin/kind
+# Accept build-time architecture argument
+ARG TARGETARCH
+
+# install kind for x86_64 architecture
+RUN if [ "$TARGETARCH" = "amd64" ]; then \
+    wget https://kind.sigs.k8s.io/dl/v0.27.0/kind-linux-amd64 && \
+    chmod +x kind-linux-amd64 && \
+    mv kind-linux-amd64 /usr/local/bin/kind && \
+    echo "Building for x86_64 platform"; \
+    touch /amd64-ready; \
+    fi
+
+# install kind for ARM64 architecture
+RUN if [ "$TARGETARCH" = "arm64" ]; then \
+    wget https://kind.sigs.k8s.io/dl/v0.27.0/kind-linux-arm64 && \
+    chmod +x kind-linux-arm64 && \
+    mv kind-linux-arm64 /usr/local/bin/kind && \
+    echo "Building for ARM64 platform"; \
+    touch /arm64-ready; \
+    fi
 
 # use our own to start kind cluster
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
