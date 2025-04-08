@@ -66,6 +66,9 @@ async function createExam(examData) {
       category: examData.category,
       labId: examData.config.lab,
       examName: examData.name,
+      event: {
+        userAgent: examData.userAgent
+      }
     });
 
     return {

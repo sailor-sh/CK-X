@@ -381,6 +381,13 @@ document.addEventListener('DOMContentLoaded', function() {
             showLoadingOverlay(); // Show the loading overlay instead of pageLoader
             updateLoadingMessage('Starting lab environment...');
             updateExamInfo(`Lab: ${selectedLab.name} | Difficulty: ${selectedLab.difficulty || 'Medium'}`);
+            let userAgent = '';
+            try {
+                userAgent = navigator.userAgent;
+            } catch (error) {
+                console.error('Error getting user agent:', error);
+            }
+            selectedLab.userAgent = userAgent;
             
             // Make a POST request to the facilitator API - using exams endpoint for POST
             fetch('/facilitator/api/v1/exams/', {
@@ -474,7 +481,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 } catch (error) {
                     console.error('Error polling exam status:', error);
                     // Show error in the loading overlay
-                    updateLoadingMessage(`Error checking exam status: ${error.message}. Retrying in ${pollInterval/1000}s...`);
+                    updateLoadingMessage(`Error: ${error.message}. Retrying...`);
                     // Continue polling despite errors
                     setTimeout(poll, pollInterval);
                 }
