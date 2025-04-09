@@ -17,7 +17,13 @@ This guide provides instructions for deploying the CK-X Simulator on different o
 Open Terminal and run:
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/nishanb/CK-X/master/scripts/install.sh)
+curl -fsSL https://raw.githubusercontent.com/nishanb/CK-X/master/scripts/install.sh | bash
+```
+
+or, if the current user does not have the permission to run docker commands:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/nishanb/CK-X/master/scripts/install.sh | sudo bash
 ```
 
 ### Windows

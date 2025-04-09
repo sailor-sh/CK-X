@@ -21,7 +21,7 @@ Watch live demo video showcasing the CK-X Simulator in action:
 
 #### Linux & macOS
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/nishanb/ck-x/master/scripts/install.sh)
+curl -fsSL https://raw.githubusercontent.com/nishanb/ck-x/master/scripts/install.sh | bash
 ```
 
 #### Windows ( Windows installation is unstable and not supported yet, may break during setup )
