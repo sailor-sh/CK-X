@@ -5,7 +5,7 @@ Thank you for your interest in contributing! Here's how you can help:
 ## Quick Start
 
 1. Fork and clone the [repository](https://github.com/@nishanb/CK-X)
-2. Follow our [Development Setup Guide](docs/development-setup.md)
+2. Follow our [Development Setup Guide](development-setup.md)
 3. Create a new branch for your changes
 4. Submit a Pull Request
 
@@ -22,7 +22,7 @@ Thank you for your interest in contributing! Here's how you can help:
 - Focus on teaching concepts
 
 ### Lab Guidelines
-- Follow [Lab Creation Guide](docs/how-to-add-new-labs.md)
+- Follow [Lab Creation Guide](how-to-add-new-labs.md)
 - Include verification scripts
 - Test thoroughly
 - Provide clear instructions
