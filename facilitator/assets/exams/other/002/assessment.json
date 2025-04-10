@@ -3,7 +3,7 @@
     {
       "id": "1",
       "namespace": "default",
-      "machineHostname": "node01",
+      "machineHostname": "ckad9999",
       "question": "Verify the existing Helm installation in the cluster by checking the Helm version.\n\nRun the version command and save the output to a file at `/tmp/exam/q1/helm-version.txt`.\n\nThe output should show both client and server version information.",
       "concepts": ["helm", "verification"],
       "verification": [
@@ -19,7 +19,7 @@
     {
       "id": "2",
       "namespace": "default",
-      "machineHostname": "node01",
+      "machineHostname": "ckad9999",
       "question": "Add the Bitnami chart repository to your Helm configuration with the name `bitnami` and URL `https://charts.bitnami.com/bitnami`.\n\nUpdate the repository to fetch the latest chart information. Verify success by listing all repositories.",
       "concepts": ["helm", "repositories"],
       "verification": [
@@ -35,7 +35,7 @@
     {
       "id": "3",
       "namespace": "default",
-      "machineHostname": "node01",
+      "machineHostname": "ckad9999",
       "question": "Search for the nginx chart in the Bitnami repository.\n\nStore the search results in a file at `/tmp/exam/q3/nginx-charts.txt`.",
       "concepts": ["helm", "chart search"],
       "verification": [
@@ -51,7 +51,7 @@
     {
       "id": "4",
       "namespace": "default",
-      "machineHostname": "node01",
+      "machineHostname": "ckad9999",
       "question": "Install the Bitnami nginx chart with the release name `web-server` in the `default` namespace.\n\nEnsure the service type is set to `NodePort` and the port is set to `30080`. Only modify the necessary values without changing other default settings.",
       "concepts": ["helm", "chart installation", "value overrides"],
       "verification": [
@@ -74,7 +74,7 @@
     {
       "id": "5",
       "namespace": "default",
-      "machineHostname": "node01",
+      "machineHostname": "ckad9999",
       "question": "List all Helm releases across all namespaces.\n\nSave the output to a file at `/tmp/exam/q5/releases.txt`.",
       "concepts": ["helm", "release management"],
       "verification": [
@@ -90,7 +90,7 @@
     {
       "id": "6",
       "namespace": "default",
-      "machineHostname": "node01",
+      "machineHostname": "ckad9999",
       "question": "Get the status of the `web-server` release and save the output to a file at `/tmp/exam/q6/web-server-status.txt`.\n\nAlso, get a summary of the manifests rendered by the chart and save them to `/tmp/exam/q6/web-server-manifests.txt`.",
       "concepts": ["helm", "release inspection"],
       "verification": [
@@ -113,7 +113,7 @@
     {
       "id": "7",
       "namespace": "default",
-      "machineHostname": "node01",
+      "machineHostname": "ckad9999",
       "question": "Upgrade the `web-server` release to set replica count to 3.\n\nVerify the update was successful by checking the number of pods.",
       "concepts": ["helm", "release upgrade"],
       "verification": [
@@ -136,7 +136,7 @@
     {
       "id": "8",
       "namespace": "default",
-      "machineHostname": "node01",
+      "machineHostname": "ckad9999",
       "question": "Create a new values file at `/tmp/exam/q8/redis-values.yaml` for a Redis installation with the following configurations:\n\n- Password: \"password123\"\n- Persistence enabled\n- Resource limits: 256Mi memory and 100m CPU\n\nThen install the Bitnami Redis chart using this values file, with the release name `cache-db` in the `default` namespace.",
       "concepts": ["helm", "values files", "advanced installation"],
       "verification": [
@@ -159,7 +159,7 @@
     {
       "id": "9",
       "namespace": "default",
-      "machineHostname": "node01",
+      "machineHostname": "ckad9999",
       "question": "Create a new Helm chart named `webapp` using the Helm create command.\n\nModify the Chart.yaml to include a description: \"A simple web application\" and set the appVersion to \"1.2.3\".",
       "concepts": ["helm", "chart creation"],
       "verification": [
@@ -182,7 +182,7 @@
     {
       "id": "10",
       "namespace": "default",
-      "machineHostname": "node01",
+      "machineHostname": "ckad9999",
       "question": "Package the `webapp` chart you created into a `.tgz` file.\n\nThen create a local chart repository by:\n1. Creating a directory at `/tmp/exam/q10/charts`\n2. Moving the packaged chart to this directory\n3. Creating an index file for this repository\n4. Adding this local repository to Helm with the name `localrepo`",
       "concepts": ["helm", "chart packaging", "repository management"],
       "verification": [
@@ -205,7 +205,7 @@
     {
       "id": "11",
       "namespace": "default",
-      "machineHostname": "node01",
+      "machineHostname": "ckad9999",
       "question": "Roll back the `web-server` release to its first revision (the original installation).\n\nVerify the rollback was successful by checking the revision number and that the replica count is back to the original value.",
       "concepts": ["helm", "rollback"],
       "verification": [
@@ -228,7 +228,7 @@
     {
       "id": "12",
       "namespace": "default",
-      "machineHostname": "node01",
+      "machineHostname": "ckad9999",
       "question": "Debug an existing problematic release named `buggy-app` in the `default` namespace.\n\n1. Use Helm's debug capabilities to identify the issue\n2. Create a file at `/tmp/exam/q12/diagnosis.txt` explaining the problem\n3. Fix the release by performing the necessary upgrade or reinstallation",
       "concepts": ["helm", "debugging", "troubleshooting"],
       "verification": [

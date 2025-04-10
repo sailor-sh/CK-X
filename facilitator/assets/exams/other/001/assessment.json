@@ -3,7 +3,7 @@
     {
       "id": "1",
       "namespace": "default",
-      "machineHostname": "node01",
+      "machineHostname": "ckad9999",
       "question": "Create a Docker image named `docker-speedrun:v1` using the provided Dockerfile in the `/tmp/exam/q1` directory.\n\nTag the image also as `docker-speedrun:latest`.",
       "concepts": ["docker", "images", "tags"],
       "verification": [
@@ -26,7 +26,7 @@
     {
       "id": "2",
       "namespace": "default",
-      "machineHostname": "node01",
+      "machineHostname": "ckad9999",
       "question": "Run a container named `web-server` using the `nginx:alpine` image. The container should:\n\n- Run in detached mode\n- Map host port `8080` to container port `80`\n- Set an environment variable `NGINX_HOST=localhost`",
       "concepts": ["docker", "containers", "port mapping", "environment variables"],
       "verification": [
@@ -63,7 +63,7 @@
     {
       "id": "3",
       "namespace": "default",
-      "machineHostname": "node01",
+      "machineHostname": "ckad9999",
       "question": "Create a Docker volume named `data-volume` and then run a container named `volume-test` using the `alpine:latest` image that:\n\n- Mounts the `data-volume` to `/app/data` in the container\n- Creates a file called `/app/data/test.txt` with the content 'Docker volumes test'\n- Exits after completing these actions",
       "concepts": ["docker", "volumes", "data persistence"],
       "verification": [
@@ -93,7 +93,7 @@
     {
       "id": "4",
       "namespace": "default",
-      "machineHostname": "node01",
+      "machineHostname": "ckad9999",
       "question": "Create a multi-stage Dockerfile in `/tmp/exam/q4/Dockerfile` that:\n\n- Uses `golang:1.17-alpine` as the build stage\n- Builds a simple Go application from `/tmp/exam/q4/main.go`\n- Uses `alpine:latest` as the final stage\n- Copies only the compiled binary to the final stage\n- Sets the entrypoint to run the binary\n\nThen build this image with the tag `multi-stage:latest`.",
       "concepts": ["docker", "multi-stage builds", "optimization"],
       "verification": [
@@ -123,7 +123,7 @@
     {
       "id": "5",
       "namespace": "default",
-      "machineHostname": "node01",
+      "machineHostname": "ckad9999",
       "question": "Configure the Docker daemon to use the systemd cgroup driver and restart the Docker service. Then verify the configuration.\n\nEdit the Docker daemon configuration file at `/etc/docker/daemon.json`.",
       "concepts": ["docker", "configuration", "cgroups", "systemd"],
       "verification": [
@@ -146,7 +146,7 @@
     {
       "id": "6",
       "namespace": "default",
-      "machineHostname": "node01",
+      "machineHostname": "ckad9999",
       "question": "Run a container named `logging-test` using the `nginx:alpine` image that:\n\n- Runs in detached mode\n- Configures logging driver to use the 'json-file' driver\n- Sets log rotation to keep maximum 3 files of 10m size each",
       "concepts": ["docker", "logging", "configuration"],
       "verification": [
@@ -176,7 +176,7 @@
     {
       "id": "7",
       "namespace": "default",
-      "machineHostname": "node01",
+      "machineHostname": "ckad9999",
       "question": "Create a custom bridge network named `app-network` with subnet `172.18.0.0/16`. Then run two containers:\n\n- Container `app1` using `alpine` image with network `app-network` and command to keep it running\n- Container `app2` using `alpine` image with network `app-network` and command to ping `app1` 3 times",
       "concepts": ["docker", "networking", "dns"],
       "verification": [
@@ -206,7 +206,7 @@
     {
       "id": "8",
       "namespace": "default",
-      "machineHostname": "node01",
+      "machineHostname": "ckad9999",
       "question": "Create a Dockerfile in `/tmp/exam/q8/Dockerfile` that implements healthchecks for a web application:\n\n- Base image: `nginx:alpine`\n- Healthcheck should test if the server responds on port 80 using curl\n- Interval: 30 seconds\n- Timeout: 10 seconds\n- Start period: 5 seconds\n- Retries: 3\n\nThen build and run this container with name `healthy-app`.",
       "concepts": ["docker", "healthchecks", "monitoring"],
       "verification": [
@@ -236,7 +236,7 @@
     {
       "id": "9",
       "namespace": "default",
-      "machineHostname": "node01",
+      "machineHostname": "ckad9999",
       "question": "Pull the image manifest for `nginx:1.21.0` and save it to `/tmp/exam/q9/manifest.json`. Then extract and save the list of supported platforms from this manifest to `/tmp/exam/q9/platforms.txt`.",
       "concepts": ["docker", "oci", "image manifests"],
       "verification": [
@@ -259,7 +259,7 @@
     {
       "id": "10",
       "namespace": "default",
-      "machineHostname": "node01",
+      "machineHostname": "ckad9999",
       "question": "Run a container named `limited-resources` using the `stress` image that:\n\n- Is limited to use at maximum 0.5 CPU cores\n- Is limited to use at maximum 256MB of memory\n- Runs a CPU stress test on 1 CPU\n- Runs in detached mode",
       "concepts": ["docker", "resource limits", "container constraints"],
       "verification": [
@@ -289,7 +289,7 @@
     {
       "id": "11",
       "namespace": "default",
-      "machineHostname": "node01",
+      "machineHostname": "ckad9999",
       "question": "Create a Docker Compose file at `/tmp/exam/q11/docker-compose.yml` that defines a simple web application with two services:\n\n- Service `web`: Using nginx:alpine, exposed on port 8080\n- Service `db`: Using postgres:13, with environment variables for database credentials\n- Define a volume for the database data\n- Define a custom network for the services\n\nThen use Docker Compose to start the services in detached mode.",
       "concepts": ["docker", "docker-compose", "multi-container", "networking"],
       "verification": [
@@ -319,7 +319,7 @@
     {
       "id": "12",
       "namespace": "default",
-      "machineHostname": "node01",
+      "machineHostname": "ckad9999",
       "question": "Analyze the existing image `webapp:latest` and create a report in `/tmp/exam/q12/image-report.txt` that includes:\n\n- The base image used\n- Number of layers\n- The exposed ports\n- Environment variables\n- The entrypoint command",
       "concepts": ["docker", "image inspection", "layers"],
       "verification": [
@@ -349,7 +349,7 @@
     {
       "id": "13",
       "namespace": "default",
-      "machineHostname": "node01",
+      "machineHostname": "ckad9999",
       "question": "A container named `broken-container` is running but not working correctly. Use Docker troubleshooting techniques to:\n\n- Check the container logs\n- Exec into the container to inspect files\n- Fix the issue (it's a missing file at `/app/config.json`)\n- Save your findings in `/tmp/exam/q13/diagnosis.txt`",
       "concepts": ["docker", "troubleshooting", "logs", "exec"],
       "verification": [
@@ -372,7 +372,7 @@
     {
       "id": "14",
       "namespace": "default",
-      "machineHostname": "node01",
+      "machineHostname": "ckad9999",
       "question": "Create a Dockerfile in `/tmp/exam/q14/Dockerfile` that implements a non-root user:\n\n- Base image: `python:3.9-slim`\n- Create a user `appuser` with UID 1001\n- Set the working directory to `/app`\n- Copy a sample app.py from `/tmp/exam/q14/app.py`\n- Set the user to `appuser` before the entrypoint\n- Define the entrypoint to run the Python script\n\nBuild and run this container with the name `secure-app`.",
       "concepts": ["docker", "security", "non-root user"],
       "verification": [
@@ -395,7 +395,7 @@
     {
       "id": "15",
       "namespace": "default",
-      "machineHostname": "node01",
+      "machineHostname": "ckad9999",
       "question": "Optimize an existing Docker image at `/tmp/exam/q15/Dockerfile` to improve build efficiency and reduce size:\n\n- Improve the ordering of layers for better caching\n- Add appropriate `.dockerignore` file\n- Minimize the number of layers\n- Reduce the final image size\n\nBuild the optimized image with tag `optimized-app:latest`.",
       "concepts": ["docker", "optimization", "caching", "layers"],
       "verification": [
@@ -425,7 +425,7 @@
     {
       "id": "16",
       "namespace": "default",
-      "machineHostname": "node01",
+      "machineHostname": "ckad9999",
       "question": "Configure and use Docker Content Trust (DCT) to sign and verify images:\n\n- Enable Docker Content Trust\n- Pull a signed image (docker.io/library/alpine:latest)\n- Configure a passphrase for signing\n- Build, sign and push a custom image to a local registry\n\nDocument your commands in `/tmp/exam/q16/dct-commands.sh`.",
       "concepts": ["docker", "security", "content trust", "signing"],
       "verification": [
