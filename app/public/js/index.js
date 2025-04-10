@@ -382,11 +382,15 @@ document.addEventListener('DOMContentLoaded', function() {
             updateLoadingMessage('Starting lab environment...');
             updateExamInfo(`Lab: ${selectedLab.name} | Difficulty: ${selectedLab.difficulty || 'Medium'}`);
             let userAgent = '';
-            try {
-                userAgent = navigator.userAgent;
-            } catch (error) {
-                console.error('Error getting user agent:', error);
+
+            // Checking if navigator exists, has a value different from undefined and null
+            // and also if it's prop (userAgent) is evaluated
+            if (typeof navigator !== 'undefined' && navigator?.userAgent) {
+                userAgent=navigator.userAgent;
+            } else {
+                console.error('Error getting user agent');
             }
+            
             selectedLab.userAgent = userAgent;
             
             // Make a POST request to the facilitator API - using exams endpoint for POST
