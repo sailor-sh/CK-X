@@ -24,7 +24,7 @@ Watch live demo video showcasing the CK-X Simulator in action:
 curl -fsSL https://raw.githubusercontent.com/nishanb/ck-x/master/scripts/install.sh | bash
 ```
 
-#### Windows ( Windows installation is unstable and not supported yet, may break during setup )
+#### Windows
 ```powershell
 irm https://raw.githubusercontent.com/nishanb/ck-x/master/scripts/install.ps1 | iex
 ```
