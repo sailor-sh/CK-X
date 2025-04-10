@@ -333,7 +333,7 @@ try {
         Write-ColorOutput "CK-X Simulator has been installed in: " -NoNewline
         Write-ColorOutput "$(Get-Location), run all below commands from this directory" "Green"
         Write-ColorOutput "To stop CK-X: " -NoNewline
-        Write-ColorOutput "docker compose down" "Green"
+        Write-ColorOutput "docker compose down --volumes --remove-orphans --rmi all" "Green"
         Write-ColorOutput "To Restart CK-X: " -NoNewline
         Write-ColorOutput "docker compose restart" "Green"
         Write-ColorOutput "To clean up all containers and images: " -NoNewline
