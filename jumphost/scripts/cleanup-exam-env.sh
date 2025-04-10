@@ -1,4 +1,5 @@
 #!/bin/bash
+exec >> /proc/1/fd/1 2>&1
 
 # cleanup-exam-env.sh
 # 
@@ -20,14 +21,9 @@ ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null candidate@k8s-ap
 
 #cleanup docker env
 log "Cleaning up docker environment"
-docker system prune -a --volumes -f
-docker rm -f $(docker ps -a -q)
-docker rmi -f $(docker images -q)
-docker volume rm $(docker volume ls -q)
-docker network rm $(docker network ls -q)
-docker container rm $(docker container ls -q)
-docker image rm $(docker image ls -q)
-docker volume rm $(docker volume ls -q)
+docker system prune -a --volumes -fa
+docker network prune -fa
+docker image prune -fa
 
 # Remove the exam environment directory
 log "Removing exam environment directory"

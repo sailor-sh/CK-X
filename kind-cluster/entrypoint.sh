@@ -8,8 +8,12 @@
 echo "$(date '+%Y-%m-%d %H:%M:%S') | ===== INITIALIZATION STARTED ====="
 echo "$(date '+%Y-%m-%d %H:%M:%S') | Executing container startup script..."
 
-# Execute current entrypoint 
-sh /usr/local/bin/startup.sh &
+# Execute current entrypoint script
+if [ -f /usr/local/bin/startup.sh ]; then
+    sh /usr/local/bin/startup.sh &
+else
+    echo "$(date '+%Y-%m-%d %H:%M:%S') | [INFO] Default startup script not found at /usr/local/bin/startup.sh"
+fi
 
 # ===============================================================================
 #   Docker Readiness Check
@@ -35,6 +39,9 @@ adduser -S -D -H -s /sbin/nologin -G sshd sshd
 
 #start ssh service
 /usr/sbin/sshd -D &
+
+#install k3d
+wget -q -O - https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | TAG=v5.8.3 bash
 
 sleep 10
 touch /ready

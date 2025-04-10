@@ -1,54 +1,58 @@
 #!/bin/sh
+exec >> /proc/1/fd/1 2>&1
 # ===============================================================================
-#   KIND Cluster Creation
+#   K3D Cluster Creation
 #   this script access the parametter i.e num of nodes i.e NUM_WORKERS
 #   example command to run this script  ./setup.sh 3 cluster1
 # ===============================================================================
 
 NUM_WORKERS=${1:-0}  # Default to 1 worker if not provided
 CLUSTER_NAME=${2:-cluster}
-NODE_IMAGE=${3:-kindest/node:v1.32.3}
 
-#delete  kind-config.yaml if present
-if [ -f "kind-config.yaml" ]; then  
-    echo "kind-config.yaml already exists, deleting it"
-    rm -f kind-config.yaml
+# Delete cluster config if exists
+if [ -f "k3d-config.yaml" ]; then  
+    echo "k3d-config.yaml already exists, deleting it"
+    rm -f k3d-config.yaml
 fi
 
-cat <<EOF > /tmp/kind-config.yaml
-kind: Cluster
-apiVersion: kind.x-k8s.io/v1alpha4
-nodes:
-  - role: control-plane
-    extraPortMappings:
-      - containerPort: 6443
-        hostPort: 6443
-    kubeadmConfigPatches:
-      - |
-        apiVersion: kubeadm.k8s.io/v1beta3
-        kind: ClusterConfiguration
-        apiServer:
-          certSANs:
-            - "k8s-api-server"
-            - "127.0.0.1"
-            - "localhost"
+# Generate K3d config
+cat <<EOF > /tmp/k3d-config.yaml
+apiVersion: k3d.io/v1alpha5
+kind: Simple
+metadata:
+  name: $CLUSTER_NAME
+servers: 1
+agents: $NUM_WORKERS
+ports:
+  - port: "$API_PORT:6443"
+    nodeFilters:
+      - loadbalancer
+kubeAPI:
+  host: "127.0.0.1"
+  hostPort: "$API_PORT"
+options:
+  k3s:
+    extraArgs:
+      - arg: "--tls-san=k8s-api-server"
+        nodeFilters:
+          - server:*
+      - arg: "--tls-san=127.0.0.1"
+        nodeFilters:
+          - server:*
+      - arg: "--tls-san=localhost"
+        nodeFilters:
+          - server:*
 EOF
 
-for i in $(seq 1 "$NUM_WORKERS"); do
-    echo "  - role: worker" >> /tmp/kind-config.yaml
-done
+echo "Cluster config with $NUM_WORKERS worker nodes generated: /tmp/k3d-config.yaml"
 
-echo "Cluster config with $NUM_WORKERS worker nodes generated: /tmp/kind-config.yaml"
-
-
-echo "$(date '+%Y-%m-%d %H:%M:%S') | Creating KIND cluster with configuration..."
+echo "$(date '+%Y-%m-%d %H:%M:%S') | Creating K3d cluster with configuration..."
 echo "$(date '+%Y-%m-%d %H:%M:%S') | ├── Name:  $CLUSTER_NAME"
-echo "$(date '+%Y-%m-%d %H:%M:%S') | ├── Image: $NODE_IMAGE"
-echo "$(date '+%Y-%m-%d %H:%M:%S') | ├── Config: /tmp/kind-config.yaml"
-echo "$(date '+%Y-%m-%d %H:%M:%S') | └── Number of nodes: $NUM_WORKERS"
+echo "$(date '+%Y-%m-%d %H:%M:%S') | ├── Config: /tmp/k3d-config.yaml"
+echo "$(date '+%Y-%m-%d %H:%M:%S') | └── Number of nodes: $((NUM_WORKERS + 1)) (1 server + $NUM_WORKERS agents)"
 
-# Create kind cluster
-kind create cluster --name $CLUSTER_NAME --image $NODE_IMAGE --config /tmp/kind-config.yaml
+# Create k3d cluster
+k3d cluster create --config /tmp/k3d-config.yaml
 
 # ===============================================================================
 #   Cluster Readiness Check
@@ -57,14 +61,14 @@ kind create cluster --name $CLUSTER_NAME --image $NODE_IMAGE --config /tmp/kind-
 echo "$(date '+%Y-%m-%d %H:%M:%S') | Verifying cluster status..."
 CLUSTER_CHECK_COUNT=0
 
-# Wait for kind cluster to be ready
-while ! kind get clusters | grep "$CLUSTER_NAME"; do
+# Wait for k3d cluster to be ready
+while ! k3d cluster list | grep -q "$CLUSTER_NAME"; do
     CLUSTER_CHECK_COUNT=$((CLUSTER_CHECK_COUNT+1))
-    echo "$(date '+%Y-%m-%d %H:%M:%S') | [WAITING] KIND cluster not ready yet... (attempt $CLUSTER_CHECK_COUNT)"
-    sleep 10
+    echo "$(date '+%Y-%m-%d %H:%M:%S') | [WAITING] K3d cluster '$CLUSTER_NAME' not ready yet... (attempt $CLUSTER_CHECK_COUNT)"
+    sleep 5
 done
 
-echo "$(date '+%Y-%m-%d %H:%M:%S') | [SUCCESS] KIND cluster $CLUSTER_NAME is ready and operational"
+echo "$(date '+%Y-%m-%d %H:%M:%S') | ✅ K3d cluster '$CLUSTER_NAME' is up and running!"
 
 # ===============================================================================
 #   Setup Complete
@@ -74,9 +78,10 @@ echo "$(date '+%Y-%m-%d %H:%M:%S') | Docker and KIND environment is ready for us
 
 # Save kubeconfig and set API server address
 cp /home/candidate/.kube/config /home/candidate/.kube/kubeconfig
-sed -i 's|server: https://.*|server: https://k8s-api-server:6443|' /home/candidate/.kube/kubeconfig
-echo "127.0.0.1 k8s-api-server" >> /etc/hosts
+sed -i 's|server: https://127\.0\.0\.1:\([0-9]*\)|server: https://k8s-api-server:\1|' /home/candidate/.kube/kubeconfig
+
 export KUBECONFIG=/home/candidate/.kube/kubeconfig
+
 #info on config file setup done 
 echo "$(date '+%Y-%m-%d %H:%M:%S') | Config file setup done"
 
