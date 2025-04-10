@@ -19,17 +19,15 @@ function showConnectionStatus(element, message, type) {
     
     if (type === 'success') {
         element.style.backgroundColor = 'rgba(25, 135, 84, 0.7)';
+
+        // Hide the status after a few seconds for success messages
+        setTimeout(() => {
+            element.className = 'connection-status';
+        }, 3000);
     } else if (type === 'error') {
         element.style.backgroundColor = 'rgba(220, 53, 69, 0.7)';
     } else {
         element.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-    }
-    
-    // Hide the status after a few seconds for success messages
-    if (type === 'success') {
-        setTimeout(() => {
-            element.className = 'connection-status';
-        }, 3000);
     }
 }
 
