@@ -77,6 +77,20 @@ try {
         }
     }
 
+    # Function to check if Docker is using WSL 2
+    function Test-DockerWSL {
+        try {
+            $dockerInfo = docker info 2>&1
+            if ($dockerInfo -match "WSL") {
+                return $true
+            } else {
+                return $false
+            }
+        } catch {
+            return $false
+        }
+    }
+
     # Function to check system requirements
     function Check-Requirements {
         Write-ColorOutput "Checking System Requirements" "Blue"
@@ -114,6 +128,17 @@ try {
             $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
             return $false
         }
+        Write-ColorOutput "✓ Docker is running" "Green"
+        
+        # Check if Docker is using WSL 2
+        if (-not (Test-DockerWSL)) {
+            Write-ColorOutput "✗ Docker is not using WSL 2" "Red"
+            Write-ColorOutput "CKX is not supported without WSL enablement. Please enable WSL 2 in Docker Desktop." "Yellow"
+            Write-Host "Press any key to continue..."
+            $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+            return $false
+        }
+        Write-ColorOutput "✓ Docker WSL 2 integration is enabled" "Green"
         Write-ColorOutput "" ""
         
         # Check Docker Compose (built into Docker Desktop for Windows)
