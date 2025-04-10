@@ -224,19 +224,17 @@ document.addEventListener('DOMContentLoaded', function() {
                         examInfo = data;
                         
                         // Set timer based on examDurationInMinutes and examStartTime if available
-                        if (data.info) {
-                            if (data.info.events?.examStartTime && data.info.examDurationInMinutes) {
-                                // Calculate remaining time for in-progress exams
-                                const remainingMinutes = TimerService.calculateRemainingTime(data);
-                                console.log(`Setting timer to ${remainingMinutes} minutes (based on start time)`);
-                                TimerService.setTimerDuration(remainingMinutes);
-                            } else if (data.info.examDurationInMinutes) {
-                                // For new exams, use the full duration
-                                console.log(`Setting timer to ${data.info.examDurationInMinutes} minutes`);
-                                TimerService.setTimerDuration(data.info.examDurationInMinutes);
-                            } else {
-                                console.warn('examDurationInMinutes not found in API response, using default duration');
-                            }
+                        if (data.info?.events?.examStartTime && data.info.examDurationInMinutes) {
+                            // Calculate remaining time for in-progress exams
+                            const remainingMinutes = TimerService.calculateRemainingTime(data);
+                            console.log(`Setting timer to ${remainingMinutes} minutes (based on start time)`);
+                            TimerService.setTimerDuration(remainingMinutes);
+                        } else if (data.info?.examDurationInMinutes) {
+                            // For new exams, use the full duration
+                            console.log(`Setting timer to ${data.info.examDurationInMinutes} minutes`);
+                            TimerService.setTimerDuration(data.info.examDurationInMinutes);
+                        } else if (data.info) {
+                            console.warn('examDurationInMinutes not found in API response, using default duration');
                         }
                         
                         return ExamApi.fetchExamData(examId);
