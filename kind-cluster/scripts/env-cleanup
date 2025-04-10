@@ -1,43 +1,48 @@
-# Cleanup script to remove the Kind cluster
+#!/bin/bash
+exec >> /proc/1/fd/1 2>&1
+
+# Cleanup script to remove the K3d cluster
 
 CLUSTER_NAME=${1:-cluster}
 
-#check if CLUSTER_NAME is set
+# Check if CLUSTER_NAME is set
 if [ -z "$CLUSTER_NAME" ]; then
     echo "CLUSTER_NAME is not set"
     exit 1
 fi
 
-# Check if the Kind cluster is running
-if kind get clusters | grep -q "$CLUSTER_NAME"; then
-    # Delete the Kind cluster
-    kind delete cluster --name "$CLUSTER_NAME"
+# Check if the K3d cluster is running
+if k3d cluster list | grep -q "$CLUSTER_NAME"; then
+    # Delete the K3d cluster
+    k3d cluster delete "$CLUSTER_NAME"
 
     # Wait until the cluster is fully deleted
-    while kind get clusters -q | grep -q "$CLUSTER_NAME"; do
+    while k3d cluster list | grep -q "$CLUSTER_NAME"; do
         sleep 1
     done
 
-    echo "Kind cluster $CLUSTER_NAME has been deleted."
+    echo "K3d cluster '$CLUSTER_NAME' has been deleted."
 else
-    echo "Kind cluster $CLUSTER_NAME is not running."
+    echo "K3d cluster '$CLUSTER_NAME' is not running."
     exit 0
 fi
 
-# Perform a full Docker system prune (removes all unused data) but do not remove kindest/node images
-docker system prune -a -f --filter "label=org.opencontainers.image.name=kindest/node"
+# Perform a full Docker system prune (removes all unused containers, networks, images, and build cache)
+# This does NOT remove K3d images, unless you manually want to
 docker volume prune -f 
+docker network prune -f
+docker image prune -f --filter "label!=ghcr.io/k3d-io"
 echo "Docker system cleaned up."
 
-#delete kind-config.yaml if present
-if [ -f "/tmp/kind-config.yaml" ]; then
-    rm -f /tmp/kind-config.yaml
-    echo "Kind-config.yaml file deleted."
+# Delete K3d config file if present
+if [ -f "/tmp/k3d-config.yaml" ]; then
+    rm -f /tmp/k3d-config.yaml
+    echo "K3d config file deleted."
 fi
 
-#delete kubeconfig file if present in the /root/.kube/kubeconfig
-if [ -f "/root/.kube/kubeconfig" ]; then
-    rm -f /root/.kube/kubeconfig
+# Delete kubeconfig file if present in /home/candidate/.kube/kubeconfig (adjust path if needed)
+if [ -f "/home/candidate/.kube/kubeconfig" ]; then
+    rm -f /home/candidate/.kube/kubeconfig
     echo "Kubeconfig file deleted."
 fi
 

@@ -6,7 +6,7 @@
         "name": "CKAD Comprehensive Lab - 1",
         "category": "CKAD",
         "description": "Hands-on exercises covering core Kubernetes concepts, pod configuration, deployments, and services with practical tasks for application deployment in a cluster.",
-        "warmUpTimeInSeconds": 180,
+        "warmUpTimeInSeconds": 260,
          "difficulty": "Medium",
          "examDurationInMinutes": 120
       },
@@ -26,7 +26,7 @@
         "name": "CKS Practice Lab - Kubernetes Security Essentials",
         "category": "CKS",
         "description": "Practice essential Kubernetes security concepts including network policies, RBAC, supply chain security, and runtime protection",
-        "warmUpTimeInSeconds": 180,
+        "warmUpTimeInSeconds": 260,
         "difficulty": "Hard",
         "examDurationInMinutes": 120
       },
@@ -36,7 +36,7 @@
         "name": "CKA Practice Lab - Core Concepts",
         "category": "CKA",
         "description": "Practice essential Kubernetes administrator tasks covering cluster management, networking, storage, and security",
-        "warmUpTimeInSeconds": 160,
+        "warmUpTimeInSeconds": 260,
         "difficulty": "Easy",
         "examDurationInMinutes": 60
       },
@@ -56,7 +56,7 @@
         "name": "Helm Fundamentals Lab",
         "category": "Other",
         "description": "Comprehensive lab covering Helm basics including chart installation, repositories, customization, packaging, debugging, and advanced Helm operations for Kubernetes applications.",
-        "warmUpTimeInSeconds": 120,
+        "warmUpTimeInSeconds": 260,
         "difficulty": "Medium",
         "examDurationInMinutes": 90
       }

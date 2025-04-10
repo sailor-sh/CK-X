@@ -1,4 +1,5 @@
 #!/bin/bash
+exec >> /proc/1/fd/1 2>&1
 
 
 # Log function with timestamp
