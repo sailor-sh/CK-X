@@ -342,15 +342,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Decrease counter on each click
                 countDown--;
 
-                if (countDown > 0) {
-                    // Update button text with new counter
-                    freshStartExamBtn.innerHTML = `Start Exam (${countDown})`;
-                } else {
+                if (countDown == 0) {
                     // Start exam when counter reaches 0
                     freshStartExamBtn.removeEventListener('click', handleStartClick);
                     startExamModal.hide();
                     startExam();
+                    return;
                 }
+
+                // Update button text with new counter
+                freshStartExamBtn.innerHTML = `Start Exam (${countDown})`;
             });
         }
     }
