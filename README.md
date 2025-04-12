@@ -59,8 +59,8 @@ CK-X is an independent tool, not affiliated with CNCF, Linux Foundation, or PSI.
 
 ## Acknowledgments
 
-- [DIND](https://github.com/earthly/dind)
-- [KIND](https://github.com/kubernetes-sigs/kind)
+- [DIND](https://www.docker.com/)
+- [K3D](https://k3d.io/stable/)
 - [Node](https://nodejs.org/en)
 - [Nginx](https://nginx.org/)
 - [ConSol-Vnc](https://github.com/ConSol/docker-headless-vnc-container/)
