@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // DOM elements
     const pageLoader = document.getElementById('pageLoader');
     const errorMessage = document.getElementById('errorMessage');
@@ -8,37 +8,37 @@ document.addEventListener('DOMContentLoaded', function() {
     const examIdElement = document.getElementById('examId');
     const markdownContent = document.getElementById('markdownContent');
     const backToResultsBtn = document.getElementById('backToResultsBtn');
-    
+
     // Variables
     let currentExamId = null;
-    
+
     // Initialize
     function init() {
         // Get exam ID from URL
         currentExamId = getExamIdFromUrl();
-        
+
         if (!currentExamId) {
             showError('No exam ID provided. Please return to the results page.');
             return;
         }
-        
+
         // Update exam ID display
         examIdElement.textContent = `Exam ID: ${currentExamId}`;
-        
+
         // Fetch answers
         fetchAnswers(currentExamId);
-        
+
         // Setup event listeners
         backToResultsBtn.addEventListener('click', goBackToResults);
         retryButton.addEventListener('click', () => fetchAnswers(currentExamId));
     }
-    
+
     // Get exam ID from URL
     function getExamIdFromUrl() {
         const urlParams = new URLSearchParams(window.location.search);
         return urlParams.get('id');
     }
-    
+
     // Go back to results page
     function goBackToResults() {
         if (currentExamId) {
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
             window.location.href = '/';
         }
     }
-    
+
     // Show error message
     function showError(message) {
         pageLoader.style.display = 'none';
@@ -55,14 +55,14 @@ document.addEventListener('DOMContentLoaded', function() {
         errorMessage.style.display = 'block';
         answersContent.style.display = 'none';
     }
-    
+
     // Fetch answers from API
     function fetchAnswers(examId) {
         // Show loader
         pageLoader.style.display = 'flex';
         errorMessage.style.display = 'none';
         answersContent.style.display = 'none';
-        
+
         // Fetch answers file
         fetch(`/facilitator/api/v1/exams/${examId}/answers`)
             .then(response => {
@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(markdownText => {
                 // Render markdown
                 renderMarkdown(markdownText);
-                
+
                 // Hide loader and show content
                 pageLoader.style.display = 'none';
                 answersContent.style.display = 'block';
@@ -84,12 +84,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 showError(`Failed to load answers: ${error.message}`);
             });
     }
-    
+
     // Render markdown content
     function renderMarkdown(markdownText) {
         // Configure marked options
         marked.setOptions({
-            highlight: function(code, lang) {
+            highlight: function (code, lang) {
                 if (hljs.getLanguage(lang)) {
                     return hljs.highlight(code, { language: lang }).value;
                 } else {
@@ -99,19 +99,19 @@ document.addEventListener('DOMContentLoaded', function() {
             breaks: true,
             gfm: true
         });
-        
+
         // Convert markdown to HTML
         const htmlContent = marked.parse(markdownText);
-        
+
         // Set content
         markdownContent.innerHTML = htmlContent;
-        
+
         // Apply syntax highlighting to code blocks
         document.querySelectorAll('pre code').forEach((block) => {
             hljs.highlightElement(block);
         });
     }
-    
+
     // Start the application
     init();
 }); 

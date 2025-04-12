@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // DOM elements
     const pageLoader = document.getElementById('pageLoader');
     const errorMessage = document.getElementById('errorMessage');
@@ -17,25 +17,25 @@ document.addEventListener('DOMContentLoaded', function() {
     const currentExamBtn = document.getElementById('currentExamBtn');
     const terminateBtn = document.getElementById('terminateBtn');
     const viewAnswersBtn = document.getElementById('viewAnswersBtn');
-    
+
     // Configuration for polling
     const POLLING_INTERVAL = 2000; // 5 seconds
     const MAX_POLLING_TIME = 100000; // 10 minutes (600 seconds)
     let pollingStartTime = 0;
     let pollingTimer = null;
     let currentExamId = null; // Store the current exam ID
-    
+
     // Add DOM elements for modal
     const terminateModal = document.getElementById('terminateModal');
     const closeModalBtn = document.getElementById('closeModalBtn');
     const cancelTerminateBtn = document.getElementById('cancelTerminateBtn');
     const confirmTerminateBtn = document.getElementById('confirmTerminateBtn');
-    
+
     // Add event listeners for action buttons
-    dashboardBtn.addEventListener('click', function() {
+    dashboardBtn.addEventListener('click', function () {
         window.location.href = '/';
     });
-    
+
     currentExamBtn.addEventListener('click', () => {
         if (currentExamId) {
             window.open(`/exam.html?id=${currentExamId}`, '_blank');
@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
             showError('No exam ID available for redirection.');
         }
     });
-    
+
     viewAnswersBtn.addEventListener('click', () => {
         if (currentExamId) {
             window.open(`/answers.html?id=${currentExamId}`, '_blank');
@@ -51,46 +51,46 @@ document.addEventListener('DOMContentLoaded', function() {
             showError('No exam ID available for viewing answers.');
         }
     });
-    
-    reEvaluateBtn.addEventListener('click', function() {
+
+    reEvaluateBtn.addEventListener('click', function () {
         if (currentExamId) {
             // Disable the button while re-evaluating
             reEvaluateBtn.disabled = true;
             reEvaluateBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Evaluating...';
-            
+
             // Call the API to re-evaluate the exam
             initiateReEvaluation(currentExamId);
         } else {
             showError('No exam ID available for re-evaluation.');
         }
     });
-    
-    terminateBtn.addEventListener('click', function() {
+
+    terminateBtn.addEventListener('click', function () {
         if (!currentExamId) {
             showError('No exam ID available for termination.');
             return;
         }
-        
+
         // Show modal instead of confirm dialog
         terminateModal.style.display = 'flex';
     });
-    
+
     // Close modal when clicking the close button
-    closeModalBtn.addEventListener('click', function() {
+    closeModalBtn.addEventListener('click', function () {
         terminateModal.style.display = 'none';
     });
-    
+
     // Close modal when clicking the cancel button
-    cancelTerminateBtn.addEventListener('click', function() {
+    cancelTerminateBtn.addEventListener('click', function () {
         terminateModal.style.display = 'none';
     });
-    
+
     // Handle confirm termination
-    confirmTerminateBtn.addEventListener('click', function() {
+    confirmTerminateBtn.addEventListener('click', function () {
         // Disable the button while terminating
         confirmTerminateBtn.disabled = true;
         confirmTerminateBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Terminating...';
-        
+
         // Call the API to terminate the session
         fetch(`/facilitator/api/v1/exams/${currentExamId}/terminate`, {
             method: 'POST',
@@ -98,94 +98,94 @@ document.addEventListener('DOMContentLoaded', function() {
                 'Content-Type': 'application/json'
             }
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Session terminated:', data);
-            // Redirect to dashboard after successful termination
-            window.location.href = '/';
-        })
-        .catch(error => {
-            console.error('Error terminating session:', error);
-            confirmTerminateBtn.disabled = false;
-            confirmTerminateBtn.innerHTML = '<i class="fas fa-power-off me-2"></i>Terminate Session';
-            terminateModal.style.display = 'none';
-            showError('Failed to terminate session: ' + error.message);
-        });
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Session terminated:', data);
+                // Redirect to dashboard after successful termination
+                window.location.href = '/';
+            })
+            .catch(error => {
+                console.error('Error terminating session:', error);
+                confirmTerminateBtn.disabled = false;
+                confirmTerminateBtn.innerHTML = '<i class="fas fa-power-off me-2"></i>Terminate Session';
+                terminateModal.style.display = 'none';
+                showError('Failed to terminate session: ' + error.message);
+            });
     });
-    
+
     // Close modal when clicking outside of it
-    window.addEventListener('click', function(event) {
+    window.addEventListener('click', function (event) {
         if (event.target === terminateModal) {
             terminateModal.style.display = 'none';
         }
     });
-    
+
     // Function to initiate re-evaluation
     function initiateReEvaluation(examId) {
         // Hide results and show loading
         resultsContent.style.display = 'none';
         pageLoader.style.display = 'flex';
-        
+
         // Update loader message
         updateLoaderMessage('Re-evaluation in progress...');
-        
+
         fetch(`/facilitator/api/v1/exams/${examId}/evaluate`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             }
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Re-evaluation started:', data);
-            
-            // Start polling for results
-            startPolling(examId);
-        })
-        .catch(error => {
-            console.error('Error starting re-evaluation:', error);
-            reEvaluateBtn.disabled = false;
-            reEvaluateBtn.innerHTML = '<i class="fas fa-sync-alt me-2"></i>Re-evaluate Exam';
-            showError('Failed to start re-evaluation: ' + error.message);
-        });
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Re-evaluation started:', data);
+
+                // Start polling for results
+                startPolling(examId);
+            })
+            .catch(error => {
+                console.error('Error starting re-evaluation:', error);
+                reEvaluateBtn.disabled = false;
+                reEvaluateBtn.innerHTML = '<i class="fas fa-sync-alt me-2"></i>Re-evaluate Exam';
+                showError('Failed to start re-evaluation: ' + error.message);
+            });
     }
-    
+
     // Get exam ID from URL
     function getExamId() {
         const urlParams = new URLSearchParams(window.location.search);
         const examId = urlParams.get('id');
-        
+
         if (!examId) {
             showError('No exam ID provided. Please return to the dashboard.');
             return null;
         }
-        
+
         currentExamId = examId; // Store the exam ID for later use
         return examId;
     }
-    
+
     // Format date for display
     function formatDate(dateString) {
-        const options = { 
-            year: 'numeric', 
-            month: 'short', 
-            day: 'numeric', 
-            hour: '2-digit', 
-            minute: '2-digit' 
+        const options = {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
         };
         return new Date(dateString).toLocaleDateString(undefined, options);
     }
-    
+
     // Show error message
     function showError(message) {
         pageLoader.style.display = 'none';
@@ -193,7 +193,7 @@ document.addEventListener('DOMContentLoaded', function() {
         errorMessage.style.display = 'block';
         resultsContent.style.display = 'none';
     }
-    
+
     // Update loader message
     function updateLoaderMessage(message) {
         const loaderMessage = document.getElementById('loaderMessage');
@@ -201,21 +201,21 @@ document.addEventListener('DOMContentLoaded', function() {
             loaderMessage.textContent = message;
         }
     }
-    
+
     // Start polling for exam results
     function startPolling(examId) {
         // Save the start time for tracking elapsed time
         pollingStartTime = Date.now();
-        
+
         // Update UI to show evaluation in progress
         updateLoaderMessage('Evaluation in progress... (typically takes 2-3 minutes)');
-        
+
         // Start polling for status changes
         pollingTimer = setInterval(() => {
             checkExamStatus(examId);
         }, POLLING_INTERVAL);
     }
-    
+
     // Stop polling
     function stopPolling() {
         if (pollingTimer) {
@@ -223,13 +223,13 @@ document.addEventListener('DOMContentLoaded', function() {
             pollingTimer = null;
         }
     }
-    
+
     // Update progress indicator
     function updateProgressIndicator(elapsedSeconds) {
         // Simplified - just show static message
         updateLoaderMessage('Evaluation in progress... (typically takes 2-3 minutes)');
     }
-    
+
     // Check exam status (for polling)
     function checkExamStatus(examId) {
         // Check if we've exceeded maximum polling time
@@ -238,10 +238,10 @@ document.addEventListener('DOMContentLoaded', function() {
             showError('Exam evaluation is taking longer than expected. Please try again later.');
             return;
         }
-        
+
         // Calculate elapsed time for tracking only (not displayed)
         const elapsedSeconds = Math.floor((Date.now() - pollingStartTime) / 1000);
-        
+
         // Check if exam status and results are available
         fetch(`/facilitator/api/v1/exams/${examId}/status`)
             .then(response => {
@@ -271,7 +271,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Don't stop polling on network errors - will retry on next interval
             });
     }
-    
+
     // Fetch exam results from API
     function fetchExamResults(examId = null) {
         // If no exam ID provided, get it from the URL
@@ -282,19 +282,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
         }
-        
+
         // Store current exam ID for later use
         currentExamId = examId;
-        
+
         // Show loader
         pageLoader.style.display = 'flex';
         updateLoaderMessage('Loading exam results...');
-        
+
         errorMessage.style.display = 'none';
         resultsContent.style.display = 'none';
-        
+
         const apiUrl = `/facilitator/api/v1/exams/${examId}/result`;
-        
+
         fetch(apiUrl)
             .then(response => {
                 if (!response.ok) {
@@ -309,7 +309,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 if (data && data.data) {
                     renderExamResults(data.data);
-                    
+
                     // Reset the Re-evaluate button state if it was disabled
                     if (reEvaluateBtn.disabled) {
                         reEvaluateBtn.disabled = false;
@@ -325,7 +325,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .catch(error => {
                 console.error('Error loading exam results:', error);
                 showError(error.message || 'Failed to load exam results');
-                
+
                 // Reset the Re-evaluate button state if it was disabled
                 if (reEvaluateBtn.disabled) {
                     reEvaluateBtn.disabled = false;
@@ -333,7 +333,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
     }
-    
+
     // Check if we need to poll for results
     function checkResultsStatus(examId) {
         return fetch(`/facilitator/api/v1/exams/${examId}/status`)
@@ -360,28 +360,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
     }
-    
+
     // Render exam results
     function renderExamResults(results) {
         // Update basic info
         examIdElement.textContent = `Exam ID: ${results.examId}`;
         completedAtElement.textContent = `Completed: ${formatDate(results.completedAt)}`;
-        
+
         // Update score
         totalScoreElement.textContent = results.totalScore;
         totalPossibleScoreElement.textContent = results.totalPossibleScore;
-        
+
         // Update rank
-        rankTextElement.textContent = results.rank === 'high' ? 'High Score' : 
-                                    results.rank === 'medium' ? 'Medium Score' : 'Low Score';
-        
+        rankTextElement.textContent = results.rank === 'high' ? 'High Score' :
+            results.rank === 'medium' ? 'Medium Score' : 'Low Score';
+
         // Apply rank class
         rankBadgeElement.className = 'rank-badge';
         rankBadgeElement.classList.add(`rank-${results.rank}`);
-        
+
         // Clear questions container
         questionsContainer.innerHTML = '';
-        
+
         // Add questions and verifications
         if (results.evaluationResults && results.evaluationResults.length > 0) {
             // Sort questions by ID (convert to number for proper numeric sorting)
@@ -390,7 +390,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const idB = parseInt(b.id);
                 return idA - idB;
             });
-            
+
             sortedQuestions.forEach(question => {
                 // Sort verification steps by ID
                 const sortedVerifications = [...question.verificationResults].sort((a, b) => {
@@ -398,15 +398,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     const idB = parseInt(b.id);
                     return idA - idB;
                 });
-                
+
                 // Calculate question score
                 const questionScore = sortedVerifications.reduce((total, v) => total + v.score, 0);
                 const questionPossibleScore = sortedVerifications.reduce((total, v) => total + v.weightage, 0);
-                
+
                 // Create question card
                 const questionCard = document.createElement('div');
                 questionCard.className = 'question-card';
-                
+
                 // Create question header
                 const questionHeader = document.createElement('div');
                 questionHeader.className = 'question-header';
@@ -414,50 +414,50 @@ document.addEventListener('DOMContentLoaded', function() {
                     <h3 class="question-title">Question ${question.id}</h3>
                     <div class="question-score">${questionScore} of ${questionPossibleScore}</div>
                 `;
-                
+
                 // Create verification list
                 const verificationList = document.createElement('ul');
                 verificationList.className = 'verification-items';
-                
+
                 // Add verification items
                 sortedVerifications.forEach(verification => {
                     const item = document.createElement('li');
                     item.className = 'verification-item';
-                    
+
                     item.innerHTML = `
                         <div class="verification-description">${verification.description}</div>
                         <div class="verification-status ${verification.validAnswer ? 'status-success' : 'status-failure'}">
-                            ${verification.validAnswer ? 
-                                '<i class="fas fa-check-circle"></i>' : 
-                                '<i class="fas fa-times-circle"></i>'}
+                            ${verification.validAnswer ?
+                            '<i class="fas fa-check-circle"></i>' :
+                            '<i class="fas fa-times-circle"></i>'}
                         </div>
                     `;
-                    
+
                     verificationList.appendChild(item);
                 });
-                
+
                 // Assemble question card
                 questionCard.appendChild(questionHeader);
                 questionCard.appendChild(verificationList);
-                
+
                 // Add to container
                 questionsContainer.appendChild(questionCard);
             });
         } else {
             questionsContainer.innerHTML = '<p>No evaluation results available</p>';
         }
-        
+
         // Hide loader and show content
         pageLoader.style.display = 'none';
         resultsContent.style.display = 'block';
     }
-    
+
     // Add retry button event listener
     retryButton.addEventListener('click', fetchExamResults);
-    
+
     // Start by fetching exam results
     fetchExamResults();
-    
+
     // Clean up when leaving the page
     window.addEventListener('beforeunload', () => {
         stopPolling();

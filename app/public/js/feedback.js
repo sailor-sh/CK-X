@@ -4,28 +4,28 @@
  */
 
 // Wait for DOM to be loaded
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Show feedback reminder after a delay
-    setTimeout(function() {
+    setTimeout(function () {
         // Check if results have loaded
         const resultsContent = document.getElementById('resultsContent');
         if (resultsContent && resultsContent.style.display !== 'none') {
             showFeedbackReminder();
         } else {
             // If results haven't loaded yet, wait for them
-            const observer = new MutationObserver(function(mutations) {
-                mutations.forEach(function(mutation) {
+            const observer = new MutationObserver(function (mutations) {
+                mutations.forEach(function (mutation) {
                     if (mutation.target.style.display !== 'none') {
                         showFeedbackReminder();
                         observer.disconnect();
                     }
                 });
             });
-            
+
             if (resultsContent) {
-                observer.observe(resultsContent, { 
-                    attributes: true, 
-                    attributeFilter: ['style'] 
+                observer.observe(resultsContent, {
+                    attributes: true,
+                    attributeFilter: ['style']
                 });
             }
         }
@@ -50,24 +50,24 @@ function showFeedbackReminder() {
             <button class="toast-close">&times;</button>
         </div>
     `;
-    
+
     document.body.appendChild(toast);
-    
+
     // Add close functionality
-    toast.querySelector('.toast-close').addEventListener('click', function() {
+    toast.querySelector('.toast-close').addEventListener('click', function () {
         toast.style.animation = 'slideOut 0.5s ease forwards';
-        setTimeout(function() {
+        setTimeout(function () {
             if (document.body.contains(toast)) {
                 document.body.removeChild(toast);
             }
         }, 500);
     });
-    
+
     // Auto-close after 15 seconds
-    setTimeout(function() {
+    setTimeout(function () {
         if (document.body.contains(toast)) {
             toast.style.animation = 'slideOut 0.5s ease forwards';
-            setTimeout(function() {
+            setTimeout(function () {
                 if (document.body.contains(toast)) {
                     document.body.removeChild(toast);
                 }
