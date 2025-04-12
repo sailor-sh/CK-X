@@ -344,13 +344,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 return response.json();
             })
             .then(data => {
-                if (data.status === 'EVALUATION_FAILED') {
+                if (data.status === 'EVALUATING') {
+                    // Start polling if exam is being evaluated
+                    startPolling(examId);
+                    return { status: 'polling_started' };
+                } else if (data.status === 'EVALUATION_FAILED') {
                     throw new Error('Exam evaluation failed');
                 } else if (data.status !== 'EVALUATED') {
                     throw new Error(`Exam results not available. Current status: ${data.status}`);
                 } else {
-                    // If status is EVALUATED and we get results start polling
-                    
                     // If status is EVALUATED but no results found, there might be a delay
                     // Start polling anyway in case results are being finalized
                     startPolling(examId);
