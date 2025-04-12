@@ -152,8 +152,9 @@ function connectToSocketIO() {
     // Connect to Socket.io server
     socket = io('/ssh', {
         forceNew: true,
-        reconnectionAttempts: 5,
-        timeout: 10000
+        reconnectionAttempts: 1000,
+        timeout: 1000,
+        transports: ['polling'] // force polling for now to avoid invalid frame error , TODO: fix this
     });
     console.log('Creating new socket connection to SSH server');
     
@@ -199,10 +200,18 @@ function connectToSocketIO() {
         if (terminal) {
             terminal.writeln(`\r\n\x1b[1;31m[ERROR]\x1b[0m ${err.message}\r\n`);
         }
+        // try to reconnect
+        setTimeout(() => {
+            if (socket && !socket.connected) {
+                socket.connect();
+            }
+        }, 2000);
     });
     
     // Handle SSH data with processing for ANSI codes
     socket.on('data', (data) => {
+        console.log('Received data from SSH server:', data);
+        // if data is a string, write it to the terminal
         if (terminal) {
             terminal.write(data);
         }
