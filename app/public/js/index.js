@@ -381,17 +381,14 @@ document.addEventListener('DOMContentLoaded', function() {
             showLoadingOverlay(); // Show the loading overlay instead of pageLoader
             updateLoadingMessage('Starting lab environment...');
             updateExamInfo(`Lab: ${selectedLab.name} | Difficulty: ${selectedLab.difficulty || 'Medium'}`);
-            let userAgent = '';
-
+            
             // Checking if navigator exists, has a value different from undefined and null
             // and also if it's prop (userAgent) is evaluated
             if (typeof navigator !== 'undefined' && navigator?.userAgent) {
-                userAgent=navigator.userAgent;
+                selectedLab.userAgent = navigator.userAgent;
             } else {
                 console.error('Error getting user agent');
             }
-            
-            selectedLab.userAgent = userAgent;
             
             // Make a POST request to the facilitator API - using exams endpoint for POST
             fetch('/facilitator/api/v1/exams/', {
