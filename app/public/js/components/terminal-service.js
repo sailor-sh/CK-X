@@ -152,8 +152,8 @@ function connectToSocketIO() {
     // Connect to Socket.io server
     socket = io('/ssh', {
         forceNew: true,
-        reconnectionAttempts: 5,
-        timeout: 10000
+        reconnectionAttempts: 1000,
+        timeout: 1000
     });
     console.log('Creating new socket connection to SSH server');
     
@@ -203,6 +203,8 @@ function connectToSocketIO() {
     
     // Handle SSH data with processing for ANSI codes
     socket.on('data', (data) => {
+        console.log('Received data from SSH server:', data);
+        // if data is a string, write it to the terminal
         if (terminal) {
             terminal.write(data);
         }
