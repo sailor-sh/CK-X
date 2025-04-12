@@ -212,7 +212,7 @@ services:
       - LOG_LEVEL=info
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-      - TRACK_METRICS=true # based on the environment variable TRACK_METRICS, the facilitator will send metrics to the metric server
+      - TRACK_METRICS=false # based on the environment variable TRACK_METRICS, the facilitator will send metrics to the metric server
     restart: unless-stopped
     depends_on:
       - jumphost
