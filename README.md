@@ -24,7 +24,7 @@ Watch live demo video showcasing the CK-X Simulator in action:
 curl -fsSL https://raw.githubusercontent.com/nishanb/ck-x/master/scripts/install.sh | bash
 ```
 
-#### Windows
+#### Windows ( make sure WSL2 is enabled in the docker desktop )
 ```powershell
 irm https://raw.githubusercontent.com/nishanb/ck-x/master/scripts/install.ps1 | iex
 ```
