@@ -34,7 +34,7 @@
       "id": "2",
       "namespace": "default",
       "machineHostname": "ckad9999",
-      "question": "Create a static pod named `static-web` on `ckad9999` using the `nginx:1.19` image.\nThe pod should expose port 80.\n\nPlace the static pod manifest file at `/etc/kubernetes/manifests/static-web.yaml`.",
+      "question": "Create a static pod named `static-web` on `ckad9999` using the `nginx:1.19` image.\nThe pod should expose port `80`.\n\nPlace the static pod manifest file at `/etc/kubernetes/manifests/static-web.yaml`.",
       "concepts": ["static pods", "node configuration"],
       "verification": [
         {
