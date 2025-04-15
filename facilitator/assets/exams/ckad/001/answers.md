@@ -115,13 +115,13 @@ spec:
     image: nginx
     volumeMounts:
     - name: log-volume
-      mountPath: /var/log
+      mountPath: /var/my-log
   - name: sidecar
     image: busybox
-    command: ["sh", "-c", "while true; do date >> /var/log/date.log; sleep 10; done"]
+    command: ["sh", "-c", "while true; do date >> /var/my-log/date.log; sleep 10; done"]
     volumeMounts:
     - name: log-volume
-      mountPath: /var/log
+      mountPath: /var/my-log
   volumes:
   - name: log-volume
     emptyDir: {}
@@ -140,7 +140,7 @@ You can verify the pod is working correctly:
 kubectl get pod sidecar-pod -n troubleshooting
 
 # Verify the shared volume is mounted and the log file is being written
-kubectl exec -it sidecar-pod -n troubleshooting -c nginx -- cat /var/log/date.log
+kubectl exec -it sidecar-pod -n troubleshooting -c nginx -- cat /var/my-log/date.log
 
 # Check events related to the pod
 kubectl describe pod sidecar-pod -n troubleshooting
