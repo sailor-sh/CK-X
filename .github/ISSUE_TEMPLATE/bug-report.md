@@ -19,6 +19,10 @@ Why does it bother you, and how could it be harmful for the user?
 
 <!--
 
+- Architecture: [e.g. x86_64, ARM]
+- Docker Desktop: [yes/no]
+- For Windows: Is WSL2 enabled? [yes/no]
+- System resources: [CPU model, RAM size, available storage]
 - OS: [e.g. Ubuntu 22.04, Windows 11]
 - Browser: [e.g. Chrome 112]
 - CK-X Version: [e.g. v1.2.0 or commit SHA]
