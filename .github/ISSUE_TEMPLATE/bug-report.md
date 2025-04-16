@@ -15,6 +15,18 @@ Why does it bother you, and how could it be harmful for the user?
 
 -->
 
+## Environment (please complete the following):
+
+<!--
+
+- OS: [e.g. Ubuntu 22.04, Windows 11]
+- Browser: [e.g. Chrome 112]
+- CK-X Version: [e.g. v1.2.0 or commit SHA]
+- Docker version: `docker version`
+- How did you install CK-X? [installer script / manual / other]
+
+-->
+
 ## Report in Depth
 
 <!-- Please describe the bug clearly.
@@ -84,16 +96,6 @@ Or use a code block if you prefer:
 ...
 ```
 
--->
-
-## Environment (please complete the following):
-
-<!--
-- OS: [e.g. Ubuntu 22.04, Windows 11]
-- Browser: [e.g. Chrome 112]
-- CK-X Version: [e.g. v1.2.0 or commit SHA]
-- Docker version: `docker version`
-- How did you install CK-X? [installer script / manual / other]
 -->
 
 ## Additional context

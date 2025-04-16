@@ -45,9 +45,14 @@ Feel free to add or remove items depending on what your PR changes.
 -->
 
 - [ ] Pod starts without errors  
-- [ ] Nginx logs are available  
+- [ ] Docker Compose logs are available  
 - [ ] All relevant tests pass  
-- [ ] Documentation is updated (if needed)
+- [ ] Documentation is updated (if needed - usually it is)
+
+<!-- If you are adding labs, please, also add the following -->
+
+- [ ] New labs pass  
+- [ ] Answers work as expected  
 
 ---
 
@@ -71,20 +76,25 @@ Example: "I also tweaked the wording of the exercise to explicitly define contai
 
 ---
 
-#### 📸 Screenshots / Logs (if applicable)
-
-<!--
-
-Include screenshots or log excerpts to help illustrate the problem or verify the fix.
-
--->
-
----
-
 #### 🧠 Additional Context
 
 <!--
 
 Add any background or technical context that might help reviewers understand the motivation or constraints of the PR.
+
+-->
+
+---
+
+#### 📄 Attachments
+
+<!-- Add any relevant attachments such as:  
+
+- Screenshots of the labs list showing the the newly added labs
+- Screenshots of the labs running
+- Screenshots of the labs passing
+- E2E test results (screenshots or, preferably, logs/human-readable reports)
+- Static code analysis reports
+- Any other supporting material (e.g. logs, error traces, terminal output)
 
 -->

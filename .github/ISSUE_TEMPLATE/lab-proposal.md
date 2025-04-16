@@ -21,7 +21,7 @@ What skills or concepts should the user learn or demonstrate?
 <!--
 Who is this lab designed for?
 
-- CKA / CKS / KCNA / Custom?
+- CKA / CKS / Custom...?
 - Beginner, Intermediate, Advanced?
 - Any specific professional roles in mind (e.g. DevOps, SRE, Security Engineer)?
 -->
