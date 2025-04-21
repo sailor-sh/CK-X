@@ -1,6 +1,6 @@
 {
   "lab": "cka-001",
-  "workerNodes": 2,
+  "workerNodes": 1,
   "answers": "assets/exams/cka/001/answers.md",
   "questions": "assessment.json",
   "totalMarks": 100,

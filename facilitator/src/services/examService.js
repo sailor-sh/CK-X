@@ -8,9 +8,7 @@ const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 const logger = require('../utils/logger');
 const redisClient = require('../utils/redisClient');
-const config = require('../config');
 const jumphostService = require('./jumphostService');
-const sshService = require('./sshService');
 const MetricService = require('./metricService');
 
 /**
@@ -55,7 +53,7 @@ async function createExam(examData) {
     logger.info(`Exam created successfully with ID: ${examId}`);
     
     // Determine number of nodes required for the exam (default to 1 if not specified)
-    const nodeCount = examData.nodeCount || 1;
+    const nodeCount = examData.config.workerNodes || 1;
     
     // Set up the exam environment asynchronously
     // This will happen in the background while the response is sent back to the client

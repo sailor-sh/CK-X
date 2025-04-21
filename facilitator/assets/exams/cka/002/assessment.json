@@ -1,0 +1,597 @@
+{
+  "questions": [
+    {
+      "id": "1",
+      "namespace": "storage-task",
+      "machineHostname": "ckad9999",
+      "question": "Create a Dynamic PVC named `data-pvc` with the following specifications:\n\n- Storage Class: `standard`\n- Access Mode: `ReadWriteOnce`\n- Storage Request: `2Gi`\n\nThen create a Pod named `data-pod` using the `nginx` image that mounts this PVC as volume with name `data` at `/usr/share/nginx/html`.\n\nEnsure both the PVC and Pod are in the `storage-task` namespace.",
+      "concepts": ["storage", "persistent-volumes", "pods"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "PVC exists with correct specifications",
+          "verificationScriptFile": "q1_s1_validate_pvc.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "2",
+          "description": "Pod exists and is running",
+          "verificationScriptFile": "q1_s2_validate_pod.sh",
+          "expectedOutput": "0",
+          "weightage": 1
+        },
+        {
+          "id": "3",
+          "description": "PVC is correctly mounted in the pod",
+          "verificationScriptFile": "q1_s3_validate_mount.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "namespace": "storage-class",
+      "machineHostname": "ckad9999",
+      "question": "Create a new StorageClass named `fast-local` with the following specifications:\n\n- Provisioner: `rancher.io/local-path`\n- VolumeBindingMode: `WaitForFirstConsumer`\n- Set it as the `default` StorageClass\n\nNote: Ensure any existing default StorageClass is no longer marked as default.",
+      "concepts": ["storage", "storage-classes"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "StorageClass exists with correct specifications",
+          "verificationScriptFile": "q2_s1_validate_sc.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "2",
+          "description": "StorageClass is set as default",
+          "verificationScriptFile": "q2_s2_validate_default.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "3",
+          "description": "No other StorageClass is marked as default",
+          "verificationScriptFile": "q2_s3_validate_no_other_default.sh",
+          "expectedOutput": "0",
+          "weightage": 1
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "namespace": "manual-storage",
+      "machineHostname": "ckad9999",
+      "question": "Create a PersistentVolume named `manual-pv` with the following specifications:\n\n- Storage: `1Gi`\n- Access Mode: `ReadWriteOnce`\n- Host Path: `/mnt/data`\n- Node Affinity: Must run on node `k3d-cluster-agent-0`\n\nThen create a PersistentVolumeClaim named `manual-pvc` that binds to this PV.\n\nFinally, create a Pod named `manual-pod` using the `busybox` image that mounts this PVC at `/data` and runs the command `sleep 3600`. ",
+      "concepts": ["storage", "persistent-volumes", "node-affinity"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "PV exists with correct specifications",
+          "verificationScriptFile": "q3_s1_validate_pv.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "2",
+          "description": "PVC exists and is bound to PV",
+          "verificationScriptFile": "q3_s2_validate_pvc.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "3",
+          "description": "Pod exists, is running, and uses the PVC",
+          "verificationScriptFile": "q3_s3_validate_pod.sh",
+          "expectedOutput": "0",
+          "weightage": 1
+        }
+      ]
+    },
+    {
+      "id": "4",
+      "namespace": "scaling",
+      "machineHostname": "ckad9999",
+      "question": "Create a Deployment named `scaling-app` with the following specifications:\n\n- Image: `nginx`\n- Initial replicas: `2`\n- Resource requests: CPU: `200m`, Memory: `256Mi`\n- Resource limits: CPU: `500m`, Memory: `512Mi`\n\nThen create a `HorizontalPodAutoscaler` for this deployment:\n- Use apiVersion: `autoscaling/v1`\n- Min replicas: `2`\n- Max replicas: `5`\n- Target CPU utilization: `70%`",
+      "concepts": ["autoscaling", "deployments", "resource-management"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "Deployment exists with correct specifications",
+          "verificationScriptFile": "q4_s1_validate_deployment.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "2",
+          "description": "HPA exists with correct specifications",
+          "verificationScriptFile": "q4_s2_validate_hpa.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "3",
+          "description": "Deployment has correct resource configurations",
+          "verificationScriptFile": "q4_s3_validate_resources.sh",
+          "expectedOutput": "0",
+          "weightage": 1
+        }
+      ]
+    },
+    {
+      "id": "5",
+      "namespace": "scheduling",
+      "machineHostname": "ckad9999",
+      "question": "Create a deployment named `app-scheduling` with `3` replicas using the `nginx` image that must only run on node `k3d-cluster-agent-1` using node affinity (not node selector).\n\nRequirements:\n- Use `requiredDuringSchedulingIgnoredDuringExecution`\n- Match the node by its hostname\n- Label the target node with `disk=ssd` before creating the deployment",
+      "concepts": ["scheduling", "node-affinity", "deployments"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "Node is correctly labeled",
+          "verificationScriptFile": "q5_s1_validate_node_label.sh",
+          "expectedOutput": "0",
+          "weightage": 1
+        },
+        {
+          "id": "2",
+          "description": "Deployment exists with correct node affinity",
+          "verificationScriptFile": "q5_s2_validate_affinity.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "3",
+          "description": "All pods are running on the correct node",
+          "verificationScriptFile": "q5_s3_validate_pod_placement.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        }
+      ]
+    },
+    {
+      "id": "6",
+      "namespace": "security",
+      "machineHostname": "ckad9999",
+      "question": "Configure Pod Security for the `security` namespace and create a secure `nginx` pod with `nginx` image :\n\n1. Create the `security` namespace with Pod Security Admission (PSA) controls\n   - Set the namespace to enforce the 'restricted' security profile\n   - Use the latest version of the security profile\n\n2. Create a secure pod named `secure-pod` in the `security` namespace with the following specifications:\n   - Use the `nginx` image\n   - Set the pod-level security context to:\n     * Run as a non-root user with UID `1000`\n     * Enable `runAsNonRoot`\n\n   - Configure container-level security context to:\n     * Prevent privilege escalation\n     * Run as non-root user (UID `1000`)\n     * Drop ALL Linux capabilities\n\n   - Add a volume mount:\n     * Create an emptyDir volume named 'html'\n     * Mount the volume at '/usr/share/nginx/html' \n use default seccomp profile",
+      "concepts": ["security", "pod-security-policy"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "Pod Security Policy exists with correct specifications",
+          "verificationScriptFile": "q6_s1_validate_psp.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "2",
+          "description": "Pod exists and complies with the policy",
+          "verificationScriptFile": "q6_s2_validate_pod.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        }
+      ]
+    },
+    {
+      "id": "7",
+      "namespace": "scheduling",
+      "machineHostname": "ckad9999",
+      "question": "Configure node `k3d-cluster-agent-1` with a taint `key=special-workload`, `value=true` and `effect=NoSchedule`.\n\nThen create a deployment named `toleration-deploy` with `2` replicas using the `nginx` image that can tolerate this taint.\n\nFinally, create another deployment named `normal-deploy` with `2` replicas that should not run on the tainted node.",
+      "concepts": ["scheduling", "taints", "tolerations"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "Node is correctly tainted",
+          "verificationScriptFile": "q7_s1_validate_taint.sh",
+          "expectedOutput": "0",
+          "weightage": 1
+        },
+        {
+          "id": "2",
+          "description": "Toleration deployment exists and pods are scheduled correctly",
+          "verificationScriptFile": "q7_s2_validate_toleration_deploy.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "3",
+          "description": "Normal deployment exists and pods avoid tainted node",
+          "verificationScriptFile": "q7_s3_validate_normal_deploy.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        }
+      ]
+    },
+    {
+      "id": "8",
+      "namespace": "stateful",
+      "machineHostname": "ckad9999",
+      "question": "Create a StatefulSet named `web` with `3` replicas using the `nginx` image. Requirements:\n\n- Create a headless service named `web-svc` to expose the StatefulSet\n- Each pod should have a volume mounted at `/usr/share/nginx/html`\n- Use the StorageClass `cold` for dynamic provisioning\n- Volume claim template should request 1Gi storage\n\nEnsure pods are created in sequence and can be accessed using their stable network identity.",
+      "concepts": ["statefulsets", "headless-services", "storage"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "StatefulSet exists with correct specifications",
+          "verificationScriptFile": "q8_s1_validate_statefulset.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "2",
+          "description": "Headless service exists and is configured correctly",
+          "verificationScriptFile": "q8_s2_validate_service.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "3",
+          "description": "PVCs are created and bound correctly",
+          "verificationScriptFile": "q8_s3_validate_storage.sh",
+          "expectedOutput": "0",
+          "weightage": 1
+        }
+      ]
+    },
+    {
+      "id": "9",
+      "namespace": "dns-debug",
+      "machineHostname": "ckad9999",
+      "question": "Set up DNS service discovery testing environment:\n\n1. Create a deployment named `web-app` with `3` replicas using `nginx` image\n\n2. Create a `ClusterIP` service named `web-svc` to expose the deployment\n\n3. Create a Pod named `dns-test` using the `busybox` image that will:\n   - Run the command `wget -qO- http://web-svc && wget -qO- http://web-svc.dns-debug.svc.cluster.local && sleep 36000`\n   - Verify it can resolve both the service DNS (`web-svc.dns-debug.svc.cluster.local`)\n   - Verify it can resolve pod DNS entries\n4. Create a ConfigMap named `dns-config` with custom search domains for the test pod",
+      "concepts": ["dns", "service-discovery", "networking"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "Deployment and service exist and are correctly configured",
+          "verificationScriptFile": "q9_s1_validate_deployment_svc.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "2",
+          "description": "DNS test pod exists and can resolve service",
+          "verificationScriptFile": "q9_s2_validate_dns_resolution.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "3",
+          "description": "DNS configuration is correct with custom search domains",
+          "verificationScriptFile": "q9_s3_validate_dns_config.sh",
+          "expectedOutput": "0",
+          "weightage": 1
+        }
+      ]
+    },
+    {
+      "id": "10",
+      "namespace": "dns-config",
+      "machineHostname": "ckad9999",
+      "question": "Set up basic DNS service discovery:\n\n1. Create a deployment named `dns-app` with 2 replicas using the `nginx` image\n2. Create a service named `dns-svc` to expose the deployment\n3. Create a Pod named `dns-tester` using the `infoblox/dnstools` image that:\n   - Runs the command to test DNS resolution of the service\n   - Verifies both service DNS (`dns-svc.dns-config.svc.cluster.local`)\n   - Stores the test results in `/tmp/dns-test.txt` inside the pod\n\nNote: The test results should include both the service DNS resolution and FQDN resolution.",
+      "concepts": ["dns", "service-discovery", "networking"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "Deployment and service exist and are correctly configured",
+          "verificationScriptFile": "q10_s1_validate_deployment.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "2",
+          "description": "DNS resolution works correctly",
+          "verificationScriptFile": "q10_s2_validate_dns.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "3",
+          "description": "Test results are properly stored",
+          "verificationScriptFile": "q10_s3_validate_results.sh",
+          "expectedOutput": "0",
+          "weightage": 1
+        }
+      ]
+    },
+    {
+      "id": "11",
+      "namespace": "helm-test",
+      "machineHostname": "ckad9999",
+      "question": "Using Helm:\n\n1. Add the bitnami repository `https://charts.bitnami.com/bitnami`\n2. Install the `nginx` chart from bitnami with release name `web-release` in namespace `helm-test`\n3. Configure the service type as `NodePort` and set the replica count to `2`\n4. Verify the deployment is successful and pods are running",
+      "concepts": ["helm", "package-management"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "Helm repository is added correctly",
+          "verificationScriptFile": "q11_s1_validate_repo.sh",
+          "expectedOutput": "0",
+          "weightage": 1
+        },
+        {
+          "id": "2",
+          "description": "Helm release is installed with correct configuration",
+          "verificationScriptFile": "q11_s2_validate_release.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "3",
+          "description": "Deployment is running with correct specifications",
+          "verificationScriptFile": "q11_s3_validate_deployment.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        }
+      ]
+    },
+    {
+      "id": "12",
+      "namespace": "kustomize",
+      "machineHostname": "ckad9999",
+      "question": "Using Kustomize: in the directory `/tmp/exam/kustomize/` \n\n1. Create a base deployment for `nginx` with `2` replicas\n2. Create an overlay that:\n   - Adds a label `environment=production`\n   - Increases replicas to `3`\n   - Adds a ConfigMap named `nginx-config` with key `index.html` and value `Welcome to Production`, mount config map as volume named `nginx-index`\n3. Apply the overlay to create resources in the `kustomize` namespace",
+      "concepts": ["kustomize", "configuration-management"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "Kustomization files exist with correct structure",
+          "verificationScriptFile": "q12_s1_validate_files.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "2",
+          "description": "Resources are created with correct overlay modifications",
+          "verificationScriptFile": "q12_s2_validate_resources.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "3",
+          "description": "ConfigMap is created and mounted correctly",
+          "verificationScriptFile": "q12_s3_validate_configmap.sh",
+          "expectedOutput": "0",
+          "weightage": 1
+        }
+      ]
+    },
+    {
+      "id": "13",
+      "namespace": "gateway",
+      "machineHostname": "ckad9999",
+      "question": "Configure Gateway API resources:\n\n1. Create a Gateway named `main-gateway` listening on port `80`\n2. Create an HTTPRoute to route traffic to a backend service:\n   - Path: `/app1` should route to service `app1-svc` port `8080`\n   - Path: `/app2` should route to service `app2-svc` port `8080`\n3. Create two deployments (`app1` and `app2`) with corresponding services to test the routing",
+      "concepts": ["gateway-api", "networking"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "Gateway resource exists and is configured correctly",
+          "verificationScriptFile": "q13_s1_validate_gateway.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "2",
+          "description": "HTTPRoute exists with correct routing rules",
+          "verificationScriptFile": "q13_s2_validate_httproute.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "3",
+          "description": "Backend services and deployments are running",
+          "verificationScriptFile": "q13_s3_validate_backends.sh",
+          "expectedOutput": "0",
+          "weightage": 1
+        }
+      ]
+    },
+    {
+      "id": "14",
+      "namespace": "limits",
+      "machineHostname": "ckad9999",
+      "question": "Configure resource management:\n\n1. Create a LimitRange in namespace `limits` with:\n   - Default request: CPU: `100m`, Memory: `128Mi`\n   - Default limit: CPU: `200m`, Memory: `256Mi`\n   - Max limit: CPU: `500m`, Memory: `512Mi`\n\n2. Create a ResourceQuota for the namespace:\n   - Max total CPU: `2`\n   - Max total memory: `2Gi`\n   - Max number of pods: `5`\n\n3. Create a deployment named `test-limits` with `2` replicas to verify the limits are applied",
+      "concepts": ["resource-management", "limitrange", "resourcequota"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "LimitRange exists with correct specifications",
+          "verificationScriptFile": "q14_s1_validate_limitrange.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "2",
+          "description": "ResourceQuota exists with correct specifications",
+          "verificationScriptFile": "q14_s2_validate_quota.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "3",
+          "description": "Deployment respects resource constraints",
+          "verificationScriptFile": "q14_s3_validate_deployment.sh",
+          "expectedOutput": "0",
+          "weightage": 1
+        }
+      ]
+    },
+    {
+      "id": "15",
+      "namespace": "monitoring",
+      "machineHostname": "ckad9999",
+      "question": "Create a deployment named `resource-consumer` with 3 replicas that:\n\n1. Uses the image `gcr.io/kubernetes-e2e-test-images/resource-consumer:1.5`\n2. Sets resource requests:\n   - CPU: `100m`\n   - Memory: `128Mi`\n3. Sets resource limits:\n   - CPU: `200m`\n   - Memory: `256Mi`\n4. Create a `HorizontalPodAutoscaler` for this deployment:\n   - Min replicas: `3`\n   - Max replicas: `6`\n   - Target CPU utilization: `50%`\n\nNote: metrics-server is already installed in the cluster.",
+      "concepts": ["monitoring", "resource-management", "autoscaling"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "Deployment exists with correct resource configuration",
+          "verificationScriptFile": "q15_s1_validate_deployment.sh",
+          "expectedOutput": "0",
+          "weightage": 3
+        },
+        {
+          "id": "2",
+          "description": "HPA is configured correctly",
+          "verificationScriptFile": "q15_s2_validate_hpa.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "3",
+          "description": "Pods are running and ready",
+          "verificationScriptFile": "q15_s3_validate_pods.sh",
+          "expectedOutput": "0",
+          "weightage": 1
+        }
+      ]
+    },
+    {
+      "id": "16",
+      "namespace": "cluster-admin",
+      "machineHostname": "ckad9999",
+      "question": "Perform the following cluster administration tasks:\n\n1. Create a ServiceAccount named `app-admin` in the `cluster-admin` namespace\n2. Create a Role that allows:\n   - `List`, `get`, `watch` operations on `pods` and `deployments`\n   - `Create` and `delete` operations on `configmaps`\n   - `Update` operations on `deployments`\n3. Bind the Role to the ServiceAccount\n4. Create a test Pod named `admin-pod` that uses this ServiceAccount with:\n   - Image: `bitnami/kubectl:latest`\n   - Command: `sleep 3600`\n   - Mount the ServiceAccount token as a volume\n\nVerify the pod can perform the allowed operations but cannot perform other operations (like creating pods).",
+      "concepts": ["rbac", "service-accounts", "security"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "ServiceAccount exists with correct configuration",
+          "verificationScriptFile": "q16_s1_validate_sa.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "2",
+          "description": "Role and RoleBinding are configured correctly",
+          "verificationScriptFile": "q16_s2_validate_rbac.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "3",
+          "description": "Test pod is running with correct ServiceAccount",
+          "verificationScriptFile": "q16_s3_validate_pod.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        }
+      ]
+    },
+    {
+      "id": "17",
+      "namespace": "network",
+      "machineHostname": "ckad9999",
+      "question": "Configure network policies:\n\n1. Create a deployment named `web` using `nginx` image with label `app=web`\n2. Create a deployment named `api` using `nginx` image with label `app=api`\n3. Create a deployment named `db` using `postgres` image with label `app=db` and environment variable `POSTGRES_HOST_AUTH_METHOD=trust`\n4. Create NetworkPolicies to:\n   - Allow web to communicate only with api\n   - Allow api to communicate only with db\n   - Deny all other traffic between pods",
+      "concepts": ["networking", "network-policies", "security"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "Deployments exist with correct labels",
+          "verificationScriptFile": "q17_s1_validate_deployments.sh",
+          "expectedOutput": "0",
+          "weightage": 1
+        },
+        {
+          "id": "2",
+          "description": "Network policies exist with correct specifications",
+          "verificationScriptFile": "q17_s2_validate_policies.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        }
+      ]
+    },
+    {
+      "id": "18",
+      "namespace": "upgrade",
+      "machineHostname": "ckad9999",
+      "question": "Perform a rolling update:\n\n1. Create a deployment named `app-v1` with `4` replicas using `nginx:1.19`\n2. Perform a rolling update to `nginx:1.20` with:\n   - Max unavailable: 1\n   - Max surge: 1\n3. Record the update\n4. Save the output of `kubectl rollout history deployment app-v1 -n upgrade` to `/tmp/exam/rollout-history.txt`\n5. Roll back to the previous version",
+      "concepts": ["deployments", "rolling-updates", "rollback"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "Initial deployment exists with correct specifications",
+          "verificationScriptFile": "q18_s1_validate_initial.sh",
+          "expectedOutput": "0",
+          "weightage": 1
+        },
+        {
+          "id": "2",
+          "description": "Rolling update performed correctly and history saved",
+          "verificationScriptFile": "q18_s2_validate_update.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "3",
+          "description": "Rollback completed successfully",
+          "verificationScriptFile": "q18_s3_validate_rollback.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        }
+      ]
+    },
+    {
+      "id": "19",
+      "namespace": "scheduling",
+      "machineHostname": "ckad9999",
+      "question": "Configure advanced scheduling:\n\n1. Create a pod named `high-priority` with PriorityClass priority `1000`\n2. Create a pod named `low-priority` with PriorityClass priority `100`\n3. Configure pod anti-affinity to ensure these pods don't run on the same node\n4. Create enough resource pressure to trigger pod eviction and observe priority behavior\n\nNote for Testing Resource Pressure:\n- Use a resource-intensive image like `polinux/stress` to generate load\n- Example: Create a pod with command: `stress -c 4 -m 2 --vm-bytes 1G` to consume CPU and memory\n- Deploy multiple instances of resource-heavy pods to simulate node resource exhaustion",
+      "concepts": ["scheduling", "priority", "anti-affinity"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "PriorityClasses exist with correct priorities",
+          "verificationScriptFile": "q19_s1_validate_priority.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "2",
+          "description": "Pods are created with correct specifications",
+          "verificationScriptFile": "q19_s2_validate_pods.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "3",
+          "description": "Anti-affinity rules are enforced correctly",
+          "verificationScriptFile": "q19_s3_validate_antiaffinity.sh",
+          "expectedOutput": "0",
+          "weightage": 1
+        }
+      ]
+    },
+    {
+      "id": "20",
+      "namespace": "troubleshoot",
+      "machineHostname": "ckad9999",
+      "question": "A deployment named `failing-app` has been created in the namespace `troubleshoot` but pods are not running. The deployment uses image `nginx:1.25` and should have 3 replicas.\n\nFix the following issues:\n\n1. The deployment is using an incorrect container port (port 8080 instead of 80)\n2. The pods are failing due to insufficient memory (current limit is 64Mi, should be 256Mi)\n3. There's a misconfigured liveness probe checking port 8080 instead of 80\n\nEnsure all pods are running successfully after applying the fixes.",
+      "concepts": ["troubleshooting", "debugging", "deployment-configuration"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "Container port is correctly set to 80",
+          "verificationScriptFile": "q20_s1_validate_port.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "2",
+          "description": "Memory limits are set correctly to 256Mi",
+          "verificationScriptFile": "q20_s2_validate_memory.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "3",
+          "description": "Liveness probe is configured correctly",
+          "verificationScriptFile": "q20_s3_validate_probe.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "4",
+          "description": "All pods are running successfully",
+          "verificationScriptFile": "q20_s4_validate_pods.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        }
+      ]
+    }
+  ]
+} 

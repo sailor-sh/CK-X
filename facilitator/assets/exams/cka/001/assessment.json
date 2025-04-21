@@ -202,7 +202,7 @@
       "id": "9",
       "namespace": "default",
       "machineHostname": "ckad9999",
-      "question": "Create a ConfigMap named `app-config` with the key `APP_COLOR` and value `blue`.\n\nCreate a pod named `config-pod` that mounts this ConfigMap as a volume at `/etc/config`.",
+      "question": "Create a ConfigMap named `app-config` with the key `APP_COLOR` and value `blue`.\n\nCreate a pod named `config-pod` that mounts this ConfigMap as a volume named `config-volume` at `/etc/config`.",
       "concepts": ["configmaps", "volumes", "pod configuration"],
       "verification": [
         {
