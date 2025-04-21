@@ -4,7 +4,7 @@
       "id": "1",
       "namespace": "app-team1",
       "machineHostname": "ckad9999",
-      "question": "Create a pod named `nginx-pod` using the `nginx:1.19` image.\n\nEnsure the pod is created in the `app-team1` namespace and has the label `run=nginx-pod`.",
+      "question": "Create a pod named `nginx-pod` using the `nginx:1.19` image.\n\nEnsure the pod is created in the `app-team1` namespace and has the label `run=nginx-pod`.\n\nVerify that the pod is in the Running state.",
       "concepts": ["pods", "labels", "namespaces"],
       "verification": [
         {
@@ -80,7 +80,7 @@
       "id": "4",
       "namespace": "monitoring",
       "machineHostname": "ckad9999",
-      "question": "Create a pod named `logger` with two containers:\n\n1. A `busybox` container that writes logs to `/var/log/app.log`\n2. A `fluentd` container that reads logs from the same location\n\nUse an `emptyDir` volume to share logs between containers.",
+      "question": "Create a pod named `logger` in the `monitoring` namespace with two containers:\n\n1. A `busybox` container that writes logs to `/var/log/app.log`\n2. A `fluentd` container that reads logs from the same location\n\nUse an `emptyDir` volume named `log-volume` to share logs between containers. Mount this volume at `/var/log` in both containers.\n\nEnsure both containers are running.",
       "concepts": ["multi-container pods", "volumes", "logging"],
       "verification": [
         {
@@ -103,7 +103,7 @@
       "id": "5",
       "namespace": "default",
       "machineHostname": "ckad9999",
-      "question": "Create a ServiceAccount named `app-sa`.\n\nCreate a Role named `pod-reader` that allows listing and getting pods.\n\nCreate a RoleBinding named `read-pods` that binds the `pod-reader` Role to the `app-sa` ServiceAccount.",
+      "question": "Create a ServiceAccount named `app-sa` in the `default` namespace.\n\nCreate a Role named `pod-reader` that allows listing and getting pods.\n\nCreate a RoleBinding named `read-pods` that binds the `pod-reader` Role to the `app-sa` ServiceAccount.",
       "concepts": ["RBAC", "service accounts", "roles"],
       "verification": [
         {
@@ -133,7 +133,7 @@
       "id": "6",
       "namespace": "networking",
       "machineHostname": "ckad9999",
-      "question": "Create a NetworkPolicy named `db-policy` in the `networking` namespace that:\n\n1. Allows pods with label `role=frontend` to connect to pods with label `role=db` on port `3306`\n2. Denies all other ingress traffic to pods with label `role=db`",
+      "question": "Create a NetworkPolicy named `db-policy` in the `networking` namespace that:\n\n1. Allows pods with label `role=frontend` to connect to pods with label `role=db` on port `3306`\n2. Denies all other ingress traffic to pods with label `role=db`\n\nEnsure the policy is correctly applied to pods with the matching labels.",
       "concepts": ["network policies", "pod networking"],
       "verification": [
         {
@@ -156,7 +156,7 @@
       "id": "7",
       "namespace": "default",
       "machineHostname": "ckad9999",
-      "question": "Create a deployment named `web-app` with `3` replicas using the `nginx:1.19` image.\n\nCreate a NodePort service named `web-service` that exposes the deployment on port `80`.\n\nEnsure the pods are distributed across multiple nodes.",
+      "question": "Create a deployment named `web-app` in the `default` namespace with `3` replicas using the `nginx:1.19` image.\n\nCreate a NodePort service named `web-service` that exposes the deployment on port `80`.\n\nEnsure the pods are distributed across multiple nodes using an appropriate pod anti-affinity rule.",
       "concepts": ["deployments", "services", "pod distribution"],
       "verification": [
         {
@@ -179,7 +179,7 @@
       "id": "8",
       "namespace": "monitoring",
       "machineHostname": "ckad9999",
-      "question": "Create a pod named `resource-pod` in the `monitoring` namespace with the following resource requirements:\n\n- CPU request: `100m`\n- CPU limit: `200m`\n- Memory request: `128Mi`\n- Memory limit: `256Mi`",
+      "question": "Create a pod named `resource-pod` in the `monitoring` namespace using the `nginx` image with the following resource requirements:\n\n- CPU request: `100m`\n- CPU limit: `200m`\n- Memory request: `128Mi`\n- Memory limit: `256Mi`\n\nEnsure the pod is in the Running state with all resource constraints applied correctly.",
       "concepts": ["resource management", "pod configuration"],
       "verification": [
         {
@@ -202,7 +202,7 @@
       "id": "9",
       "namespace": "default",
       "machineHostname": "ckad9999",
-      "question": "Create a ConfigMap named `app-config` with the key `APP_COLOR` and value `blue`.\n\nCreate a pod named `config-pod` that mounts this ConfigMap as a volume named `config-volume` at `/etc/config`.",
+      "question": "Create a ConfigMap named `app-config` with the key `APP_COLOR` and value `blue`.\n\nCreate a pod named `config-pod` using the `nginx` image that mounts this ConfigMap as a volume named `config-volume` at `/etc/config`.\n\nVerify that the configuration is correctly accessible within the pod.",
       "concepts": ["configmaps", "volumes", "pod configuration"],
       "verification": [
         {
@@ -232,7 +232,7 @@
       "id": "10",
       "namespace": "default",
       "machineHostname": "ckad9999",
-      "question": "Create a pod named `health-check` with the following health check configuration:\n\n- Liveness probe: HTTP GET on `/` port `80` with initial delay of `5` seconds\n- Readiness probe: HTTP GET on `/` port `80` with initial delay of `5` seconds",
+      "question": "Create a pod named `health-check` in the `default` namespace using the `nginx` image with the following health check configuration:\n\n- Liveness probe: HTTP GET on path `/` port `80` with initial delay of `5` seconds\n- Readiness probe: HTTP GET on path `/` port `80` with initial delay of `5` seconds\n\nEnsure the pod is running with both probes functioning correctly.",
       "concepts": ["health checks", "pod lifecycle"],
       "verification": [
         {
