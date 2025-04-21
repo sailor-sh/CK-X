@@ -168,7 +168,7 @@
             "id": "6",
             "namespace": "troubleshooting",
             "machineHostname": "ckad9999",
-            "question": "The DevOps team needs a specialized pod to help with monitoring and logging. \n\nCreate a multi-container pod named `sidecar-pod` in the `troubleshooting` namespace with the following specifications: \n\n1. Main container: \n   - Image: `nginx` \n   - Purpose: Serve web content \n\n2. Sidecar container: \n   - Image: `busybox` \n   - Command: [`sh`, `-c`, `while true; do date >> /var/log/date.log; sleep 10; done`] \n\n3. Shared volume configuration: \n   - Volume name: `log-volume` \n   - Mount path: `/var/log` in both containers \n\nThis demonstrates the sidecar container pattern for extending application functionality.",
+            "question": "The DevOps team needs a specialized pod to help with monitoring and logging. \n\nCreate a multi-container pod named `sidecar-pod` in the `troubleshooting` namespace with the following specifications: \n\n1. Main container: \n   - Image: `nginx`\n   - Container name: `nginx` \n   - Purpose: Serve web content \n\n2. Sidecar container: \n   - Image: `busybox`\n   - Container name: `sidecar` \n   - Command: [`sh`, `-c`, `while true; do date >> /var/my-log/date.log; sleep 10; done`] \n\n3. Shared volume configuration: \n   - Volume name: `log-volume` \n   - Mount path: `/var/my-log` in both containers \n\nThis demonstrates the sidecar container pattern for extending application functionality.",
             "concepts": ["pods", "multi-container", "volumes", "sidecar-pattern"],
             "verification": [
                 {

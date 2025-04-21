@@ -31,6 +31,16 @@
         "examDurationInMinutes": 120
       },
       {
+        "id": "cka-002",
+        "assetPath": "assets/exams/cka/002",
+        "name": "CKA Practice Lab - Advanced Administration",
+        "category": "CKA",
+        "description": "Comprehensive lab covering advanced Kubernetes administration topics including storage, networking, security, and troubleshooting with focus on real-world scenarios, updated with the latest CKA exam curriculum changes.",
+        "warmUpTimeInSeconds": 360,
+        "difficulty": "Hard",
+        "examDurationInMinutes": 120
+      },
+      {
         "id": "cka-001",
         "assetPath": "assets/exams/cka/001",
         "name": "CKA Practice Lab - Core Concepts",
