@@ -23,6 +23,7 @@ class RequestHandler(BaseHTTPRequestHandler):
                     self.respond(400, {"error": "Missing clipboard content"})
                     return
                 
+                clipboard_content = clipboard_content.replace("'", "'\\''")
                 command = "echo -n '" + clipboard_content + "' | xclip -selection clipboard &"
                 subprocess.Popen(command, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
                 
