@@ -1,4 +1,8 @@
+
+![Master Kubernetes the Right Way (2)](https://github.com/user-attachments/assets/16edd8d8-5f96-4422-8659-3bb490b77204)
+
 # CK-X Simulator 🚀
+
 
 A powerful Kubernetes certification practice environment that provides a realistic exam-like experience for kubernetess exam preparation.
 
