@@ -131,6 +131,27 @@ function trackExamEvent(examId, events) {
     });
 }
 
+// Function to submit user feedback
+function submitFeedback(examId, feedbackData) {
+    return fetch(`/facilitator/api/v1/exams/metrics/${examId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(feedbackData)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .catch(error => {
+        console.error('Error submitting feedback:', error);
+        throw error; // Re-throw to be handled by the calling function
+    });
+}
+
 // Export the API functions
 export {
     getExamId,
@@ -140,5 +161,6 @@ export {
     evaluateExam,
     terminateSession,
     getVncInfo,
-    trackExamEvent
+    trackExamEvent,
+    submitFeedback
 }; 

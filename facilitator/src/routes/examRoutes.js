@@ -40,7 +40,7 @@ router.get('/:examId/questions', examController.getExamQuestions);
 router.post('/:examId/evaluate', validateEvaluateExam, examController.evaluateExam);
 
 /**
- * @route POST /api/v1/exams/:examId/end
+ * @route POST /api/v1/exams/:examId/terminate
  * @desc End an exam
  * @access Public
  */
@@ -73,5 +73,12 @@ router.get('/:examId/result', examController.getExamResult);
  * @access Public
  */
 router.post('/:examId/events', validateExamEvents, examController.updateExamEvents);
+
+/**
+ * @route POST /api/v1/exams/metrics/:examId
+ * @desc Submit feedback metrics for an exam
+ * @access Public
+ */
+router.post('/metrics/:examId', examController.submitMetrics);
 
 module.exports = router; 

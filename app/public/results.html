@@ -111,6 +111,61 @@
             </div>
         </div>
     </div>
+    
+    <!-- Feedback Modal -->
+    <div id="feedbackModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4>Your Feedback Matters</h4>
+            </div>
+            <div class="modal-body">
+                <div class="feedback-form">
+                    <div class="rating-container">
+                        <p>How would you rate your overall experience with CK-X?</p>
+                        <div class="star-rating">
+                            <input type="radio" id="star5" name="rating" value="5" />
+                            <label for="star5" title="5 stars"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="star4" name="rating" value="4" />
+                            <label for="star4" title="4 stars"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="star3" name="rating" value="3" />
+                            <label for="star3" title="3 stars"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="star2" name="rating" value="2" />
+                            <label for="star2" title="2 stars"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="star1" name="rating" value="1" />
+                            <label for="star1" title="1 star"><i class="fas fa-star"></i></label>
+                        </div>
+                    </div>
+                    
+                    <div class="feedback-text">
+                        <label for="feedbackComment">How was your overall experience?</label>
+                        <textarea id="feedbackComment" rows="4" placeholder="Please share your thoughts..."></textarea>
+                    </div>
+                    
+                    <div class="testimonial-option">
+                        <input type="checkbox" id="testimonialConsent" />
+                        <label for="testimonialConsent">I'd like to be featured in testimonials</label>
+                    </div>
+                    
+                    <div id="testimonialFields" style="display: none;">
+                        <div class="form-field">
+                            <label for="testimonialName">Name <span class="required">*</span></label>
+                            <input type="text" id="testimonialName" placeholder="Your name" required />
+                        </div>
+                        <div class="form-field">
+                            <label for="testimonialSocial">Social Handle (optional)</label>
+                            <input type="text" id="testimonialSocial" placeholder="@yoursocialhandle" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="skipFeedbackBtn" class="btn btn-secondary">Skip for now</button>
+                <button id="submitFeedbackBtn" class="btn btn-primary">
+                    <i class="fas fa-paper-plane me-2"></i> Submit Feedback
+                </button>
+            </div>
+        </div>
+    </div>
     <script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="nishan.b" data-description="Support me on Buy me a coffee!" data-message="CK-X helped you prep? A coffee helps it grow !!" data-color="#5F7FFF" data-position="Right" data-x_margin="18" data-y_margin="18"></script>
 </body>
 </html> 

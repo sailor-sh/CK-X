@@ -373,6 +373,34 @@ async function updateExamEvents(req, res) {
   }
 }
 
+/**
+ * Submit feedback metrics for an exam
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
+async function submitMetrics(req, res) {
+  const examId = req.params.examId;
+  const feedbackData = req.body;
+  
+  logger.info('Received feedback metrics submission', { examId, type: feedbackData.type });
+  
+  try {
+    // Send the feedback data to the metric service
+    const result = await MetricService.sendMetrics(examId, { event: { ...feedbackData } });
+    
+    return res.status(200).json({ 
+      success: true,
+      message: 'Feedback submitted successfully'
+    });
+  } catch (error) {
+    logger.error('Error submitting feedback metrics', { error: error.message });
+    return res.status(500).json({ 
+      error: 'Failed to submit feedback',
+      message: error.message
+    });
+  }
+}
+
 module.exports = {
   createExam,
   getCurrentExam,
@@ -383,5 +411,6 @@ module.exports = {
   getExamAnswers,
   getExamStatus,
   getExamResult,
-  updateExamEvents
+  updateExamEvents,
+  submitMetrics
 }; 

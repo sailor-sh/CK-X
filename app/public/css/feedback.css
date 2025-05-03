@@ -98,4 +98,97 @@
     font-size: 18px;
     cursor: pointer;
     color: #666;
+}
+
+/* Feedback modal styles */
+.feedback-form {
+    padding: 10px 0;
+}
+
+.rating-container {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.star-rating {
+    display: inline-flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+}
+
+.star-rating input {
+    display: none;
+}
+
+.star-rating label {
+    cursor: pointer;
+    font-size: 30px;
+    color: #ddd;
+    margin: 0 5px;
+    transition: color 0.2s ease;
+}
+
+.star-rating label:hover,
+.star-rating label:hover ~ label,
+.star-rating input:checked ~ label {
+    color: #ffb33e;
+}
+
+.feedback-text {
+    margin-bottom: 20px;
+}
+
+.feedback-text label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.feedback-text textarea {
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+.testimonial-option {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.testimonial-option input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.form-field {
+    margin-bottom: 5px;
+}
+
+.form-field label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.form-field input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: inherit;
+}
+
+#testimonialFields {
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+    margin-top: 10px;
+}
+
+.form-field label .required {
+    color: #e74c3c;
+    margin-left: 3px;
 } 
