@@ -9,6 +9,37 @@ exec >> /proc/1/fd/1 2>&1
 NUM_WORKERS=${1:-0}  # Default to 1 worker if not provided
 CLUSTER_NAME=${2:-cluster}
 
+# Check if k3d is installed, if not install it
+if ! command -v k3d &> /dev/null; then
+    echo "$(date '+%Y-%m-%d %H:%M:%S') | k3d not found. Attempting installation..."
+    
+    # Retry k3d installation up to 5 times
+    INSTALL_ATTEMPTS=0
+    while [ $INSTALL_ATTEMPTS -lt 5 ]; do
+        INSTALL_ATTEMPTS=$((INSTALL_ATTEMPTS+1))
+        echo "$(date '+%Y-%m-%d %H:%M:%S') | Installation attempt $INSTALL_ATTEMPTS"
+        
+        # Use the same installation method as in entrypoint.sh
+        TAG=v5.8.3 bash /usr/local/bin/k3d-install.sh
+        
+        # Check if installation was successful
+        if command -v k3d &> /dev/null; then
+            echo "$(date '+%Y-%m-%d %H:%M:%S') | k3d successfully installed"
+            break
+        else
+            echo "$(date '+%Y-%m-%d %H:%M:%S') | k3d installation failed. Retrying in 5 seconds..."
+            sleep 5
+        fi
+    done
+    
+    # If k3d still not installed after 5 attempts, exit with error
+    if ! command -v k3d &> /dev/null; then
+        echo "$(date '+%Y-%m-%d %H:%M:%S') | ERROR: Failed to install k3d after 5 attempts"
+        exit 1
+    fi
+fi
+
+
 # Delete cluster config if exists
 if [ -f "k3d-config.yaml" ]; then  
     echo "k3d-config.yaml already exists, deleting it"

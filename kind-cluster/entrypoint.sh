@@ -41,7 +41,8 @@ adduser -S -D -H -s /sbin/nologin -G sshd sshd
 /usr/sbin/sshd -D &
 
 #install k3d
-wget -q -O - https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | TAG=v5.8.3 bash
+echo "$(date '+%Y-%m-%d %H:%M:%S') | [INFO] Installing k3d"
+TAG=v5.8.3 bash /usr/local/bin/k3d-install.sh
 
 sleep 10
 touch /ready
