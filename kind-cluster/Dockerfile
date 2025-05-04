@@ -18,6 +18,7 @@ COPY scripts/ /usr/local/bin/
 #make scripts executable
 RUN chmod +x /usr/local/bin/env-setup
 RUN chmod +x /usr/local/bin/env-cleanup
+RUN chmod +x /usr/local/bin/k3d-install.sh
 
 ENV KIND_DEFAULT_VERSION=v1.32.3
 
