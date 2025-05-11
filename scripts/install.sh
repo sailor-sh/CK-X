@@ -142,7 +142,7 @@ wait_for_service() {
 
 # Function to open browser
 open_browser() {
-    local url="http://localhost:30080"
+    local url="https://play.sailor.sh/"
     echo -e "${BLUE}Opening Browser${NC}"
     echo -e "${CYAN}==============================================================${NC}"
     
@@ -162,7 +162,7 @@ open_browser() {
     fi
     
     echo -e "${YELLOW}Could not automatically open browser. Please visit:${NC}"
-    echo -e "${GREEN}http://localhost:30080${NC}"
+    echo -e "${GREEN}https://play.sailor.sh/${NC}"
     return 1
 }
 
@@ -225,6 +225,7 @@ main() {
     echo -e "${YELLOW}To Restart CK-X:${NC} ${GREEN}docker compose restart${NC}"
     echo -e "${YELLOW}To clean up all containers and images:${NC} ${GREEN}docker system prune -a${NC}"
     echo -e "${YELLOW}To remove only CK-X images:${NC} ${GREEN}docker compose down --rmi all${NC}"
+    echo -e "${YELLOW}To access CK-X Simulator:${NC} ${GREEN}https://play.sailor.sh/${NC}"
     echo
     echo -e "${CYAN}Thank you for installing CK-X Simulator!${NC}"
 }

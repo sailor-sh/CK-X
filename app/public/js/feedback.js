@@ -17,7 +17,6 @@ const feedbackState = {
 document.addEventListener('DOMContentLoaded', function() {
     // DOM elements
     const feedbackModal = document.getElementById('feedbackModal');
-    const skipFeedbackBtn = document.getElementById('skipFeedbackBtn');
     const submitFeedbackBtn = document.getElementById('submitFeedbackBtn');
     const testimonialConsent = document.getElementById('testimonialConsent');
     const testimonialFields = document.getElementById('testimonialFields');
@@ -64,16 +63,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     document.getElementById('testimonialSocial').addEventListener('input', function() {
         feedbackState.socialHandle = this.value.trim();
-    });
-    
-    // Skip feedback handler
-    skipFeedbackBtn.addEventListener('click', function() {
-        // Set a timestamp for when to ask again (30 minutes from now)
-        const thirtyMinutesFromNow = new Date().getTime() + (30 * 60 * 1000);
-        localStorage.setItem('ckx_feedback_skip_until', thirtyMinutesFromNow);
-        
-        // Hide the modal
-        feedbackModal.style.display = 'none';
     });
     
     // Submit feedback handler

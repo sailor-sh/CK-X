@@ -206,7 +206,7 @@ try {
 
     # Function to open browser
     function Open-Browser {
-        $url = "http://localhost:30080"
+        $url = "https://play.sailor.sh/"
         Write-ColorOutput "Opening Browser" "Blue"
         Write-ColorOutput "==============================================================" "Cyan"
         
@@ -221,7 +221,7 @@ try {
                 return $true
             } catch {
                 Write-ColorOutput "Could not automatically open browser. Please visit:" "Yellow"
-                Write-ColorOutput "http://localhost:30080" "Green"
+                Write-ColorOutput "https://play.sailor.sh/" "Green"
                 return $false
             }
         }
@@ -340,6 +340,8 @@ try {
         Write-ColorOutput "docker system prune -a" "Green"
         Write-ColorOutput "To remove only CK-X images: " -NoNewline
         Write-ColorOutput "docker compose down --rmi all" "Green"
+        Write-ColorOutput "To access CK-X Simulator: " -NoNewline
+        Write-ColorOutput "https://play.sailor.sh/" "Green"
         Write-Host ""
         Write-ColorOutput "Thank you for installing CK-X Simulator!" "Cyan"
     }

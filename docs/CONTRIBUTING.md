@@ -11,7 +11,7 @@ Thank you for your interest in contributing! Here's how you can help:
 
 ## Community
 
-- Join our [Telegram Community](https://t.me/ckxdev)
+- Join our [Discord Community](https://discord.gg/24HtTEjA)
 - Star the repository if you find it helpful
 
 ## Important Rules
@@ -35,7 +35,7 @@ Thank you for your interest in contributing! Here's how you can help:
 
 ## Questions?
 
-Check our [FAQ](docs/FAQ.md) or join our [Telegram Community](https://t.me/ckxdev).
+Check our [FAQ](docs/FAQ.md) or join our [Discord Community](https://discord.gg/24HtTEjA).
 
 ## License
 

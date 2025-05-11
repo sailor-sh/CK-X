@@ -38,7 +38,7 @@ For detailed installation instructions, please refer to our [Deployment Guide](s
 
 ## Community & Support
 
-- Join our [Telegram Community](https://t.me/ckxdev) for discussions and support
+- Join our [Discord Community](https://discord.gg/24HtTEjA) for discussions and support
 - Feature requests and pull requests are welcome
 
 ## Adding New Labs

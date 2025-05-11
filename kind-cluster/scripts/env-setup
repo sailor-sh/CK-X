@@ -15,7 +15,7 @@ if ! command -v k3d &> /dev/null; then
     
     # Retry k3d installation up to 5 times
     INSTALL_ATTEMPTS=0
-    while [ $INSTALL_ATTEMPTS -lt 5 ]; do
+    while [ $INSTALL_ATTEMPTS -lt 99999 ]; do
         INSTALL_ATTEMPTS=$((INSTALL_ATTEMPTS+1))
         echo "$(date '+%Y-%m-%d %H:%M:%S') | Installation attempt $INSTALL_ATTEMPTS"
         
@@ -27,8 +27,8 @@ if ! command -v k3d &> /dev/null; then
             echo "$(date '+%Y-%m-%d %H:%M:%S') | k3d successfully installed"
             break
         else
-            echo "$(date '+%Y-%m-%d %H:%M:%S') | k3d installation failed. Retrying in 5 seconds..."
-            sleep 5
+            echo "$(date '+%Y-%m-%d %H:%M:%S') | k3d installation failed. Retrying in 10 seconds..."
+            sleep 10
         fi
     done
     
