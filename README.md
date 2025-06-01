@@ -12,7 +12,7 @@ A powerful Kubernetes certification practice environment that provides a realist
 - Comprehensive practice labs for **CKAD, CKA, CKS**, and other Kubernetes certifications
 - **Smart evaluation system** with real-time solution verification
 - **Docker-based deployment** for easy setup and consistent environment
-- **Timed exam mode** with real exam-like conditions and countdown timer
+- **Timed exam mode** with real exam-like conditions and countdown timer 
 
 
 ## 
@@ -38,7 +38,7 @@ For detailed installation instructions, please refer to our [Deployment Guide](s
 
 ## Community & Support
 
-- Join our [Discord Community](https://discord.gg/24HtTEjA) for discussions and support
+- Join our [Discord Community](https://discord.gg/kbeggn9b) for discussions and support
 - Feature requests and pull requests are welcome
 
 ## Adding New Labs
