@@ -1,0 +1,135 @@
+{
+  "questions": [
+    {
+      "id": "1",
+      "namespace": "production",
+      "machineHostname": "ckad9999",
+      "question": "Create a NetworkPolicy named `backend-netpol` in the `production` namespace that:\n\n- Allows ingress traffic only from pods with label `app=frontend` on port 8080\n- Denies all other ingress traffic\n- Allows all egress traffic\n\nFirst create the namespace `production` if it doesn't exist.\n\nTest the policy by creating test pods with appropriate labels.",
+      "concepts": ["network-policies", "security", "namespaces"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "Namespace exists",
+          "verificationScriptFile": "q1_s1_validate_namespace.sh",
+          "expectedOutput": "0",
+          "weightage": 1
+        },
+        {
+          "id": "2",
+          "description": "NetworkPolicy exists with correct configuration",
+          "verificationScriptFile": "q1_s2_validate_networkpolicy.sh",
+          "expectedOutput": "0",
+          "weightage": 4
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "namespace": "kube-system",
+      "machineHostname": "ckad9999",
+      "question": "Backup the etcd database to `/opt/etcd-backup.db`.\n\nUse the etcd client to create a snapshot of the current cluster state.\n\nVerify that the backup file exists and has data in it.\n\nNote: You may need to find the etcd endpoints and certificates from the existing etcd pod configuration.",
+      "concepts": ["etcd", "backup", "cluster-maintenance"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "Backup file exists",
+          "verificationScriptFile": "q2_s1_validate_backup_exists.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "2",
+          "description": "Backup file has valid content",
+          "verificationScriptFile": "q2_s2_validate_backup_content.sh",
+          "expectedOutput": "0",
+          "weightage": 3
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "namespace": "web-app",
+      "machineHostname": "ckad9999",
+      "question": "Create a Deployment named `web-server` in the `web-app` namespace with the following requirements:\n\n- Use image `nginx:1.20`\n- 2 replicas\n- Resource requests: CPU 100m, Memory 128Mi\n- Resource limits: CPU 200m, Memory 256Mi\n- Rolling update strategy with maxSurge=1 and maxUnavailable=0\n- Add readiness probe on path `/` port 80\n- Add liveness probe on path `/` port 80 with initialDelaySeconds=10\n\nCreate a Service named `web-service` of type ClusterIP to expose the deployment on port 80.",
+      "concepts": ["deployments", "services", "resources", "probes", "rolling-updates"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "Deployment exists with correct configuration",
+          "verificationScriptFile": "q3_s1_validate_deployment.sh",
+          "expectedOutput": "0",
+          "weightage": 3
+        },
+        {
+          "id": "2",
+          "description": "Service exists and exposes deployment",
+          "verificationScriptFile": "q3_s2_validate_service.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        }
+      ]
+    },
+    {
+      "id": "4",
+      "namespace": "default",
+      "machineHostname": "ckad9999",
+      "question": "A node in the cluster is having issues. Find the node that is in `NotReady` state and make it ready again.\n\nInvestigate the kubelet service on that node and fix any issues.\n\nEnsure the node returns to `Ready` state within a reasonable time.",
+      "concepts": ["troubleshooting", "nodes", "kubelet"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "All nodes are in Ready state",
+          "verificationScriptFile": "q4_s1_validate_node_ready.sh",
+          "expectedOutput": "0",
+          "weightage": 5
+        }
+      ]
+    },
+    {
+      "id": "5",
+      "namespace": "database",
+      "machineHostname": "ckad9999",
+      "question": "Create a StatefulSet named `mysql-cluster` in the `database` namespace with:\n\n- Image: `mysql:8.0`\n- 2 replicas\n- Environment variable `MYSQL_ROOT_PASSWORD=secretpassword`\n- VolumeClaimTemplate for persistent storage:\n  - Storage class: `fast-storage` (create if doesn't exist)\n  - Access mode: ReadWriteOnce\n  - Size: 1Gi\n  - Mount path: `/var/lib/mysql`\n\nCreate a headless service named `mysql-service` to manage the StatefulSet.",
+      "concepts": ["statefulsets", "persistent-volumes", "storage-classes", "headless-services"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "StatefulSet exists and is running",
+          "verificationScriptFile": "q5_s1_validate_statefulset.sh",
+          "expectedOutput": "0",
+          "weightage": 3
+        },
+        {
+          "id": "2",
+          "description": "PVCs are created and bound",
+          "verificationScriptFile": "q5_s2_validate_pvcs.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        }
+      ]
+    },
+    {
+      "id": "6",
+      "namespace": "monitoring",
+      "machineHostname": "ckad9999",
+      "question": "Create a DaemonSet named `log-collector` in the `monitoring` namespace that:\n\n- Uses image `fluentd:latest`\n- Runs on all nodes (including control plane if possible)\n- Mounts the host directory `/var/log` to `/var/log` in the container as read-only\n- Mounts the host directory `/var/lib/docker/containers` to `/var/lib/docker/containers` as read-only\n- Uses hostNetwork: true\n- Has nodeSelector to only run on Linux nodes\n\nEnsure the DaemonSet pods are running on all worker nodes.",
+      "concepts": ["daemonsets", "node-selectors", "host-mounts", "host-networking"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "DaemonSet exists and is running",
+          "verificationScriptFile": "q6_s1_validate_daemonset.sh",
+          "expectedOutput": "0",
+          "weightage": 3
+        },
+        {
+          "id": "2",
+          "description": "Pods are running on all worker nodes",
+          "verificationScriptFile": "q6_s2_validate_pod_distribution.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        }
+      ]
+    }
+  ]
+}
