@@ -41,7 +41,7 @@ irm https://raw.githubusercontent.com/nishanb/CK-X/master/scripts/install.ps1 | 
 1. Clone the repository:
    ```bash
    git clone https://github.com/nishanb/CK-X.git
-   cd ck-x
+   cd CK-X
    ```
 
 2. Build and start the services using Docker Compose:
