@@ -203,6 +203,12 @@ services:
     hostname: facilitator
     expose:
       - "3000"
+    volumes:
+      - ./facilitator/assets/exams/labs.json:/usr/src/app/assets/exams/labs.json:ro
+      - ./facilitator/assets/exams/cka:/usr/src/app/assets/exams/cka:ro
+      - ./facilitator/assets/exams/ckad:/usr/src/app/assets/exams/ckad:ro
+      - ./facilitator/assets/exams/cks:/usr/src/app/assets/exams/cks:ro
+      - ./facilitator/assets/exams/other:/usr/src/app/assets/exams/other:ro
     environment:
       - PORT=3000
       - NODE_ENV=prod
