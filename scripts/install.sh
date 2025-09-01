@@ -194,12 +194,12 @@ main() {
 
     # Pull images
     echo -e "${YELLOW}Pulling Docker images...${NC}"
-    docker compose pull
+    docker compose pull || podman compose pull
     echo -e "${GREEN}✓ Docker images pulled successfully${NC}"
 
     # Start services
     echo -e "${YELLOW}Starting CK-X services...${NC}"
-    docker compose up -d
+    docker compose up -d || podman compose up -d
     echo -e "${GREEN}✓ Services started${NC}"
 
     # Combined waiting message instead of individual service wait messages
