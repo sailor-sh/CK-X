@@ -64,7 +64,7 @@ check_requirements() {
     check_container_runtime_running
 
     # Check Docker Compose
-    if ! (command_exists docker compose || command_exists podman-compose); then
+    if ! (command_exists docker compose || command_exists podman compose); then
         echo -e "${RED}✗ Docker Compose nor Podman Compose is installed${NC}"
         echo -e "${YELLOW}Please install Docker Compose or Podman Compose:${NC}"
         echo -e "${CYAN}Visit https://docs.docker.com/compose/install/ or https://podman-desktop.io/docs/compose/setting-up-compose/ for installation instructions${NC}"
