@@ -206,7 +206,7 @@ try {
 
     # Function to open browser
     function Open-Browser {
-        $url = "https://play.sailor.sh/"
+        $url = "http://localhost:30080/"
         Write-ColorOutput "Opening Browser" "Blue"
         Write-ColorOutput "==============================================================" "Cyan"
         
@@ -342,6 +342,8 @@ try {
         Write-ColorOutput "docker compose down --rmi all" "Green"
         Write-ColorOutput "To access CK-X Simulator: " -NoNewline
         Write-ColorOutput "https://play.sailor.sh/" "Green"
+        Write-ColorOutput "To access CK-X Simulator locally use: " -NoNewline
+        Write-ColorOutput "http://localhost:30080/" "Green"
         Write-Host ""
         Write-ColorOutput "Thank you for installing CK-X Simulator!" "Cyan"
     }
