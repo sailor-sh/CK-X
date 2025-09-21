@@ -6,8 +6,8 @@ services:
       context: ./remote-desktop
     hostname: terminal
     expose:
-      - "5901"  # VNC port (internal only)
-      - "6901"  # Web VNC port (internal only)
+      - "5901" # VNC port (internal only)
+      - "6901" # Web VNC port (internal only)
     environment:
       - VNC_PW=bakku-the-wizard
       - VNC_PASSWORD=bakku-the-wizard
@@ -21,10 +21,10 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1'
+          cpus: "1"
           memory: 1G
         reservations:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 512M
     networks:
       - ckx-network
@@ -35,7 +35,7 @@ services:
     build:
       context: ./app
     expose:
-      - "3000"  # Only exposed to internal network
+      - "3000" # Only exposed to internal network
     environment:
       - VNC_SERVICE_HOST=remote-desktop
       - VNC_SERVICE_PORT=6901
@@ -47,10 +47,10 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 512M
         reservations:
-          cpus: '0.2'
+          cpus: "0.2"
           memory: 256M
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:3000/"]
@@ -72,14 +72,14 @@ services:
       - facilitator
       - k8s-api-server
     ports:
-      - "30080:80"  # Expose Nginx on port 30080
+      - "30080:80" # Expose Nginx on port 30080
     deploy:
       resources:
         limits:
-          cpus: '0.2'
+          cpus: "0.2"
           memory: 256M
         reservations:
-          cpus: '0.1'
+          cpus: "0.1"
           memory: 128M
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/"]
@@ -98,15 +98,15 @@ services:
     privileged: true
     # No external port mappings - only accessible internally
     expose:
-      - "22"  # SSH port (internal only)
+      - "22" # SSH port (internal only)
     volumes:
-      - kube-config:/home/candidate/.kube  # Shared volume for Kubernetes config
+      - kube-config:/home/candidate/.kube # Shared volume for Kubernetes config
     deploy:
       resources:
         limits:
-          cpus: '1'
+          cpus: "1"
         reservations:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 512M
     networks:
       - ckx-network
@@ -115,7 +115,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
-      
+
   # Remote Terminal Service
   remote-terminal:
     image: nishanb/ck-x-simulator-remote-terminal:latest
@@ -123,14 +123,14 @@ services:
       context: ./remote-terminal
     hostname: remote-terminal
     expose:
-      - "22"  # SSH port (internal only)
+      - "22" # SSH port (internal only)
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 512M
         reservations:
-          cpus: '0.2'
+          cpus: "0.2"
           memory: 256M
     networks:
       - ckx-network
@@ -139,27 +139,27 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
-      
+
   # KIND Kubernetes Cluster
-  k8s-api-server:  # Service name that will be used for DNS resolution
+  k8s-api-server: # Service name that will be used for DNS resolution
     image: nishanb/ck-x-simulator-cluster:latest
     build:
       context: ./kind-cluster
     container_name: kind-cluster
     hostname: k8s-api-server
-    privileged: true  # Required for running containers inside KIND
+    privileged: true # Required for running containers inside KIND
     expose:
-      - "6443:6443" 
+      - "6443"
       - "22"
     volumes:
-      - kube-config:/home/candidate/.kube  # Shared volume for Kubernetes config
+      - kube-config:/home/candidate/.kube # Shared volume for Kubernetes config
     deploy:
       resources:
         limits:
-          cpus: '2'
+          cpus: "2"
           memory: 4G
         reservations:
-          cpus: '1'
+          cpus: "1"
           memory: 2G
     networks:
       - ckx-network
@@ -183,10 +183,10 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.3'
+          cpus: "0.3"
           memory: 256M
         reservations:
-          cpus: '0.1'
+          cpus: "0.1"
           memory: 128M
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
@@ -222,10 +222,10 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 512M
         reservations:
-          cpus: '0.2'
+          cpus: "0.2"
           memory: 256M
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:3000"]
@@ -239,4 +239,4 @@ networks:
     driver: bridge
 
 volumes:
-  kube-config:  # Shared volume for Kubernetes configuration
+  kube-config: # Shared volume for Kubernetes configuration
