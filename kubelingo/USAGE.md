@@ -1,0 +1,32 @@
+Kubelingo: Isolated Lab Generation (No CK-X Changes)
+
+Overview
+- Generate high‑quality, single‑question or small labs in an isolated folder without touching CK-X.
+- Default output root: `kubelingo/out`.
+- Optional: manually install a generated lab into CK-X when you’re ready.
+
+Quick Start (Isolated)
+- Generate a mock, deterministic lab (single question with setup + validation scripts):
+  - `python3 kubelingo/create_lab.py --lab-category ckad --lab-id 003 --topic deployment --difficulty medium --mock --non-interactive`
+- Output will be under: `kubelingo/out/facilitator/assets/exams/ckad/003/`
+  - Files: `config.json`, `assessment.json`, `answers.md`, `scripts/…`
+- Validate the lab structure and references:
+  - `python3 kubelingo/validate_lab.py --root kubelingo/out --lab-category ckad --lab-id 003`
+
+What Gets Generated
+- Setup script: cleans namespace(s) and prepares resources deterministically.
+- Validation script: checks resource existence and key fields (replicas, images, selectors, probes, ports).
+- Assessment: references validation script using filename only (CK-X compatible convention).
+- Answers: contains the question and suggested manifest.
+
+Installing Into CK-X (Manual, Optional)
+1) Copy the generated lab into CK-X assets:
+   - From `kubelingo/out/facilitator/assets/exams/<category>/<id>/` to `facilitator/assets/exams/<category>/<id>/`.
+2) Update `facilitator/assets/exams/labs.json` to include the new entry:
+   - `{ "id": "<category>-<id>", "assetPath": "assets/exams/<category>/<id>", "name": "…", "category": "<CATEGORY>", "description": "…", "warmUpTimeInSeconds": 60, "difficulty": "medium" }`
+3) Restart the facilitator so it tars the `scripts/` folder into `assets.tar.gz` on startup.
+
+Notes
+- By default, this workflow does not write to `facilitator/` or alter CK-X behavior.
+- For richer content, you can run with `--no-mock` after configuring a provider, but keep determinism in mind for validations.
+
