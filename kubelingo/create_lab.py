@@ -79,6 +79,7 @@ class LabState:
     topic: str
     difficulty: str
     mock: bool = True
+    hostname: str = "ckad9999"
 
     lab_id: str = field(init=False)
     name: str = ""
@@ -176,15 +177,36 @@ class LabCreator:
         click.secho("Question approved.", fg="green")
 
     def step_3_generate_verification(self, non_interactive: bool = False) -> None:
-        # For simplicity, use a single validation script that covers all checks
+        # Define four specific checks for clearer scoring and feedback
         steps = [
             {
                 "id": "1",
-                "description": "All required resources and fields validate",
-                "verificationScriptFile": "q1_validate.sh",
+                "description": "Deployment exists",
+                "verificationScriptFile": "q1_s1_validate_exists.sh",
                 "expectedOutput": "0",
-                "weightage": 4,
-            }
+                "weightage": 1,
+            },
+            {
+                "id": "2",
+                "description": "Deployment has correct replicas",
+                "verificationScriptFile": "q1_s2_validate_replicas.sh",
+                "expectedOutput": "0",
+                "weightage": 1,
+            },
+            {
+                "id": "3",
+                "description": "Deployment uses correct image",
+                "verificationScriptFile": "q1_s3_validate_image.sh",
+                "expectedOutput": "0",
+                "weightage": 1,
+            },
+            {
+                "id": "4",
+                "description": "Deployment has correct selector label(s)",
+                "verificationScriptFile": "q1_s4_validate_selector.sh",
+                "expectedOutput": "0",
+                "weightage": 1,
+            },
         ]
         text = json.dumps({"verification": steps}, indent=2)
         ok, content = self.prompt_for_approval("Verification Steps", text, non_interactive)
@@ -245,6 +267,93 @@ class LabCreator:
         }
         click.secho("Scripts generated.", fg="green")
 
+        # Generate specific per-criterion validation scripts for clearer scoring
+        # Parse values from the suggested manifest
+        with open(qfile, "r") as f:
+            qy = yaml.safe_load(f)
+        suggested = qy.get("suggested_answer", "")
+        try:
+            docs = list(yaml.safe_load_all(suggested)) if suggested else []
+        except Exception:
+            docs = []
+        dep = None
+        for d in docs:
+            if isinstance(d, dict) and (d.get("kind", "").lower() == "deployment"):
+                dep = d
+                break
+        # Defaults
+        dep_name = "nginx-deploy"
+        dep_ns = "default"
+        replicas = 2
+        image = "nginx:1.25"
+        # Read from manifest if present
+        if isinstance(dep, dict):
+            dep_name = (dep.get("metadata", {}).get("name") or dep_name)
+            dep_ns = (dep.get("metadata", {}).get("namespace") or dep_ns)
+            replicas = dep.get("spec", {}).get("replicas", replicas)
+            # choose first container image
+            try:
+                containers = dep.get("spec", {}).get("template", {}).get("spec", {}).get("containers", [])
+                if containers and isinstance(containers, list):
+                    c0 = containers[0]
+                    image = c0.get("image", image)
+            except Exception:
+                pass
+        val_dir = self.s.scripts_val_dir
+        os.makedirs(val_dir, exist_ok=True)
+
+        def _w(path: str, content: str) -> None:
+            with open(path, "w") as f:
+                f.write(content)
+            try:
+                os.chmod(path, 0o755)
+            except Exception:
+                pass
+
+        # Script 1: exists
+        s1 = f"""#!/bin/bash
+set -euo pipefail
+kubectl get deploy '{dep_name}' -n '{dep_ns}' >/dev/null 2>&1
+"""
+        _w(os.path.join(val_dir, "q1_s1_validate_exists.sh"), s1)
+
+        # Script 2: replicas
+        s2 = f"""#!/bin/bash
+set -euo pipefail
+rv=$(kubectl get deploy '{dep_name}' -n '{dep_ns}' -o jsonpath='{{.spec.replicas}}' 2>/dev/null || echo '')
+[[ "$rv" = "{replicas}" ]]
+"""
+        _w(os.path.join(val_dir, "q1_s2_validate_replicas.sh"), s2)
+
+        # Script 3: image (match any container image)
+        s3 = f"""#!/bin/bash
+set -euo pipefail
+imgs=$(kubectl get deploy '{dep_name}' -n '{dep_ns}' -o jsonpath='{{.spec.template.spec.containers[*].image}}' 2>/dev/null || echo '')
+grep -qw -- '{image}' <<< "$imgs"
+"""
+        _w(os.path.join(val_dir, "q1_s3_validate_image.sh"), s3)
+
+        # Script 4: selector labels (if present)
+        # Try to validate at least app= label from matchLabels; fallback to ok if none specified
+        match_ok = False
+        if isinstance(dep, dict):
+            sel = dep.get("spec", {}).get("selector", {}).get("matchLabels", {})
+            for k, v in sel.items():
+                s4 = f"""#!/bin/bash
+set -euo pipefail
+val=$(kubectl get deploy '{dep_name}' -n '{dep_ns}' -o jsonpath='{{{{.spec.selector.matchLabels.{k}}}}}' 2>/dev/null || echo '')
+[[ "$val" = "{v}" ]]
+"""
+                _w(os.path.join(val_dir, "q1_s4_validate_selector.sh"), s4)
+                match_ok = True
+                break
+        if not match_ok:
+            # If no selector labels found in manifest, create a no-op that passes
+            s4 = """#!/bin/bash
+exit 0
+"""
+            _w(os.path.join(val_dir, "q1_s4_validate_selector.sh"), s4)
+
     def step_5_create_answers(self, non_interactive: bool = False) -> None:
         answers_md = [f"# {self.s.name}", "", "## Question", "", self.s.question.get("question", "")] 
         suggested = self.s.question.get("suggested_answer", "")
@@ -285,26 +394,18 @@ class LabCreator:
                 {
                     "id": "1",
                     "namespace": "default",
-                    "machineHostname": "node01",
+                    "machineHostname": self.s.hostname or "ckad9999",
                     "question": self.s.question.get("question", ""),
                     "concepts": [self.s.topic],
                     "verification": [
                         {
                             "id": step.get("id", "1"),
                             "description": step.get("description", "Validation"),
-                            # Store filename only for CK-X compatibility (resolved under scripts/validation)
-                            "verificationScriptFile": scripts_val_basename,
+                            "verificationScriptFile": step.get("verificationScriptFile", "q1_s1_validate_exists.sh"),
                             "expectedOutput": str(step.get("expectedOutput", "0")),
                             "weightage": int(step.get("weightage", 1)),
                         }
-                        for step in getattr(self, "scripts_meta", []) or [
-                            {
-                                "id": "1",
-                                "description": "All required resources and fields validate",
-                                "expectedOutput": "0",
-                                "weightage": 4,
-                            }
-                        ]
+                        for step in getattr(self, "scripts_meta", [])
                     ],
                 }
             ]
@@ -365,7 +466,8 @@ class LabCreator:
 @click.option("--description", default="", help="Optional custom description")
 @click.option("--mock/--no-mock", default=True, help="Use deterministic offline generation")
 @click.option("--non-interactive", is_flag=True, default=False, help="Auto-approve all gates")
-def main(root: str, lab_category: str, lab_numeric: str, topic: str, difficulty: str, name: str, description: str, mock: bool, non_interactive: bool) -> None:
+@click.option("--hostname", default="ckad9999", help="Machine hostname shown in question (e.g., ckad9999)")
+def main(root: str, lab_category: str, lab_numeric: str, topic: str, difficulty: str, name: str, description: str, mock: bool, non_interactive: bool, hostname: str) -> None:
     """Run the interactive lab creator as described in CONTRIBUTING_AI.md."""
     state = LabState(
         root=root,
@@ -375,6 +477,7 @@ def main(root: str, lab_category: str, lab_numeric: str, topic: str, difficulty:
         difficulty=difficulty,
         mock=mock,
     )
+    state.hostname = hostname
     state.name = name
     state.description = description
     creator = LabCreator(state)

@@ -39,10 +39,15 @@ def main() -> int:
     ap.add_argument("--out", required=True, help="Path for merged labs.json output")
     args = ap.parse_args()
 
-    base_dir = os.path.join(args.root, "facilitator", "assets", "exams", args.lab_category, args.lab_id)
+    root_abs = os.path.abspath(args.root)
+    base_dir = os.path.join(root_abs, "facilitator", "assets", "exams", args.lab_category, args.lab_id)
     cfg_path = os.path.join(base_dir, "config.json")
     if not os.path.exists(cfg_path):
         print(f"ERROR: missing config.json for lab at {base_dir}", file=sys.stderr)
+        print(
+            "Hint: pass an absolute --root (e.g., /abs/path/to/CK-X/kubelingo/out) or run from the CK-X repo root.",
+            file=sys.stderr,
+        )
         return 2
 
     try:
@@ -81,4 +86,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
