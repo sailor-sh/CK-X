@@ -45,6 +45,13 @@ For detailed installation instructions, please refer to our [Deployment Guide](s
 
 Check our [Lab Creation Guide](docs/how-to-add-new-labs.md) for instructions on adding new labs.
 
+## Kubelingo Labs (Isolated Generation)
+
+If you want to generate and test custom labs without modifying CK-X, use the tools under `kubelingo/`:
+- Quick usage: `kubelingo/USAGE.md`
+- Detailed integration and E2E test plan: `kubelingo/INTEGRATION.md`
+- Live Docker walk‑through (generate, install, run, cleanup): `kubelingo/TUTORIAL_LIVE_DOCKER.md`
+
 ## Contributing
 
 We welcome contributions! Whether you want to:
