@@ -10,7 +10,7 @@ Prerequisites
 
 Step 1 — Generate a New Lab (Isolated)
 1) Create the lab in deterministic mode (no AI):
-   - `python3 kubelingo/create_lab.py --lab-category ckad --lab-id 003 --topic deployment --difficulty medium --mock --non-interactive`
+   - `python3 -m kubelingo.create_lab --lab-category ckad --lab-id 003 --topic deployment --difficulty medium --hostname ckad9999 --mock --non-interactive`
 2) Verify output:
    - Check `kubelingo/out/facilitator/assets/exams/ckad/003/` for `config.json`, `assessment.json`, `answers.md`, and `scripts/{setup,validation}/*`.
 3) Validate structure and references:
@@ -38,6 +38,10 @@ Important: the facilitator tar-process deletes the `scripts/` folder after packa
    - `docker cp kubelingo/out/labs.merged.json "$FID":/usr/src/app/assets/exams/labs.json`
 4) Restart facilitator so it packs the `scripts/` as `assets.tar.gz`:
    - `docker compose restart facilitator`
+
+Alternative: Use the Helper Script
+- `chmod +x kubelingo/install_lab.sh`
+- `./kubelingo/install_lab.sh --category ckad --id 003`
 
 Step 4 — Run the Lab in the Web App
 1) Open the CK-X UI (via nginx, typically `http://localhost:30080`).
@@ -70,4 +74,11 @@ Appendix C — Troubleshooting
 - Lab not visible: ensure labs.json in the container includes your lab entry; restart facilitator.
 - Validation fails unexpectedly: open the validation script in the container under `/usr/src/app/assets/exams/<cat>/<id>/scripts/validation/…` and verify resource names/namespaces.
 - Assets not found on jumphost: confirm facilitator started after the lab was copied (it tars scripts on startup); restarting facilitator rebuilds `assets.tar.gz`.
-
+Appendix D — Overwriting an Existing Lab
+- To refresh a lab with the same ID (e.g., ckad-003):
+  1. Regenerate locally with the same ID:
+     - `python3 -m kubelingo.create_lab --lab-category ckad --lab-id 003 --topic deployment --difficulty medium --hostname ckad9999 --mock --non-interactive`
+     - Validate: `python3 kubelingo/validate_lab.py --root kubelingo/out --lab-category ckad --lab-id 003`
+  2. Copy into the facilitator and restart:
+     - `./kubelingo/install_lab.sh --category ckad --id 003`
+  3. Reopen the UI and run the lab; your updated verification steps and hostname will apply.

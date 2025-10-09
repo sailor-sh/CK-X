@@ -12,7 +12,9 @@ Modes
 
 1) Generate a Lab (Isolated)
 - Command:
-  - `python3 kubelingo/create_lab.py --lab-category ckad --lab-id 003 --topic deployment --difficulty medium --mock --non-interactive`
+  - `python3 -m kubelingo.create_lab --lab-category ckad --lab-id 003 --topic deployment --difficulty medium --mock --non-interactive`
+  - Tip: Set the host shown in the question to `ckad9999` to match the environment:
+    - Add `--hostname ckad9999`
 - Output:
   - `kubelingo/out/facilitator/assets/exams/ckad/003/`
     - `config.json`, `assessment.json`, `answers.md`, `scripts/{setup,validation}/*`
@@ -38,8 +40,8 @@ Important: facilitator tars `scripts/` and removes them on startup. Do NOT bind-
 
 3) Use In Web App
 - Open the CK-X UI. The new lab should appear in the assessments list.
-- Select the lab, start the exam, and wait for environment `READY`.
-- Answer the question and trigger evaluation; results and scoring appear as usual.
+  - Select the lab, start the exam, and wait for environment `READY`.
+  - Answer the question and trigger evaluation; four distinct criteria will be shown and scored.
 
 4) E2E Test Plan
 - Unit-level (local):
@@ -82,3 +84,8 @@ Important: facilitator tars `scripts/` and removes them on startup. Do NOT bind-
   - `docker exec facilitator rm -rf /usr/src/app/assets/exams/<category>/<id>`
   - Copy back the original labs.json or re-merge without the lab entry, then `docker compose restart facilitator`.
 
+10) Overwriting an Existing Lab
+- Regenerate the lab locally with the same ID:
+  - `python3 -m kubelingo.create_lab --lab-category <cat> --lab-id <id> --topic <t> --difficulty <d> --hostname ckad9999 --mock --non-interactive`
+- Validate and install using `./kubelingo/install_lab.sh --category <cat> --id <id>`.
+- Restart facilitator (installer does this) and re-run in the UI.

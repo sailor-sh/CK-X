@@ -7,11 +7,24 @@ Overview
 
 Quick Start (Isolated)
 - Generate a mock, deterministic lab (single question with setup + validation scripts):
-  - `python3 kubelingo/create_lab.py --lab-category ckad --lab-id 003 --topic deployment --difficulty medium --mock --non-interactive`
+  - `python3 -m kubelingo.create_lab --lab-category ckad --lab-id 003 --topic deployment --difficulty medium --hostname ckad9999 --mock --non-interactive`
 - Output will be under: `kubelingo/out/facilitator/assets/exams/ckad/003/`
   - Files: `config.json`, `assessment.json`, `answers.md`, `scripts/…`
 - Validate the lab structure and references:
   - `python3 kubelingo/validate_lab.py --root kubelingo/out --lab-category ckad --lab-id 003`
+
+Install Into a Running Facilitator (Helper Script)
+- Make the helper executable and run:
+  - `chmod +x kubelingo/install_lab.sh`
+  - `./kubelingo/install_lab.sh --category ckad --id 003`
+- This script will:
+  - Ensure the stack is up
+  - Copy the lab into the facilitator container
+  - Merge labs.json (using kubelingo/merge_labs.py)
+  - Restart facilitator so `assets.tar.gz` is rebuilt
+
+Troubleshooting
+- See `kubelingo/TROUBLESHOOTING.md` for fixes to common issues (empty container ID, wrong paths, visibility in UI, etc.).
 
 What Gets Generated
 - Setup script: cleans namespace(s) and prepares resources deterministically.
@@ -29,4 +42,3 @@ Installing Into CK-X (Manual, Optional)
 Notes
 - By default, this workflow does not write to `facilitator/` or alter CK-X behavior.
 - For richer content, you can run with `--no-mock` after configuring a provider, but keep determinism in mind for validations.
-
