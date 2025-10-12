@@ -1,0 +1,6 @@
+services:
+  facilitator:
+    image: ckx-facilitator-generated:latest
+    build:
+      context: . #clear out the build context from the original docker-compose
+      dockerfile: kubelingo/Dockerfile.facilitator
