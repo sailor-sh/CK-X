@@ -128,7 +128,7 @@ wait_for_service() {
     # No output headers here anymore
 
     while [ $attempt -le $max_attempts ]; do
-        if docker compose ps $service | grep -q "healthy"; then
+        if (docker compose ps "$service" 2>/dev/null || podman compose ps "$service" 2>/dev/null) | grep -q "healthy"; then
             return 0
         fi
         # No progress dots
@@ -193,9 +193,9 @@ main() {
     echo -e "${GREEN}✓ Docker Compose file downloaded${NC}"
 
     # Pull images
-    echo -e "${YELLOW}Pulling Docker images...${NC}"
+    echo -e "${YELLOW}Pulling container images...${NC}"
     docker compose pull || podman compose pull
-    echo -e "${GREEN}✓ Docker images pulled successfully${NC}"
+    echo -e "${GREEN}✓ Container images pulled successfully${NC}"
 
     # Start services
     echo -e "${YELLOW}Starting CK-X services...${NC}"
@@ -221,10 +221,10 @@ main() {
     echo -e "\n${BLUE}Useful Commands${NC}"
     echo -e "${CYAN}==============================================================${NC}"
     echo -e "${YELLOW}CK-X Simulator has been installed in:${NC} ${GREEN}$(pwd)${NC}, run all below commands from this directory"
-    echo -e "${YELLOW}To stop CK-X  ${GREEN}docker compose down --volumes --remove-orphans --rmi all${NC}"
-    echo -e "${YELLOW}To Restart CK-X:${NC} ${GREEN}docker compose restart${NC}"
-    echo -e "${YELLOW}To clean up all containers and images:${NC} ${GREEN}docker system prune -a${NC}"
-    echo -e "${YELLOW}To remove only CK-X images:${NC} ${GREEN}docker compose down --rmi all${NC}"
+    echo -e "${YELLOW}To stop CK-X  ${GREEN}docker compose down --volumes --remove-orphans --rmi all${NC} ${YELLOW}or${NC} ${GREEN}podman compose down --volumes --remove-orphans --rmi all${NC}"
+    echo -e "${YELLOW}To Restart CK-X:${NC} ${GREEN}docker compose restart${NC} ${YELLOW}or${NC} ${GREEN}podman compose restart${NC}"
+    echo -e "${YELLOW}To clean up all containers and images:${NC} ${GREEN}docker system prune -a${NC} ${YELLOW}or${NC} ${GREEN}podman system prune -a${NC}"
+    echo -e "${YELLOW}To remove only CK-X images:${NC} ${GREEN}docker compose down --rmi all${NC} ${YELLOW}or${NC} ${GREEN}podman compose down --rmi all${NC}"
     echo -e "${YELLOW}To access CK-X Simulator:${NC} ${GREEN}https://play.sailor.sh/${NC}"
     echo -e "${YELLOW}To access CK-X Simulator locally use:${NC} ${GREEN}http://localhost:30080/${NC}"
     echo
