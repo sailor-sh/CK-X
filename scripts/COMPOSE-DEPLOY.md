@@ -4,7 +4,7 @@ This guide provides instructions for deploying the CK-X Simulator on different o
 
 ## Prerequisites
 
-- Docker Desktop (Windows/Mac) or Docker Engine (Linux)
+- Docker Desktop (Windows/Mac), Podman Desktop (Mac/Linux), Docker Engine (Linux) or Podman Engine (Mac/Linux)
 - 4GB RAM minimum (8GB recommended)
 - 10GB free disk space
 - Internet connection
@@ -44,14 +44,17 @@ irm https://raw.githubusercontent.com/nishanb/CK-X/master/scripts/install.ps1 | 
    cd CK-X
    ```
 
-2. Build and start the services using Docker Compose:
+2. Build and start the services using Docker or Podman Compose:
    ```bash
+   # for Docker setup
    docker compose up -d
+   # for Podman setup
+   podman compose up -d
    ```
 
 ### Via Script 
 
-If you prefer to install manually or the quick install doesn't work:
+If you prefer to install manually or the quick installation doesn't work:
 
 1. Download the installation script:
    - Linux/macOS: [install.sh](https://raw.githubusercontent.com/nishanb/CK-X/master/scripts/install.sh)
@@ -79,23 +82,36 @@ http://localhost:30080
 
 ### Start Services
 ```bash
+# for Docker setup
 docker compose up -d
+# for Podman setup
+podman compose up -d
 ```
 
 ### Stop Services
 ```bash
+# for Docker setup
 docker compose down
+# for Podman setup
+podman compose down
 ```
 
 ### View Logs
 ```bash
+# for Docker setup
 docker compose logs -f
+# for Podman setup
+podman compose logs -f
 ```
 
 ### Update
 ```bash
+# for Docker setup
 docker compose pull
 docker compose up -d
+# for Podman setup
+podman compose pull
+podman compose up -d
 ```
 
 ## Troubleshooting
@@ -108,22 +124,22 @@ docker compose up -d
      - Linux/Mac: `lsof -i :30080`
    - Stop the conflicting service or change the port in docker-compose.yml
 
-2. **Docker Not Running**
-   - Windows/Mac: Start Docker Desktop
-   - Linux: `sudo systemctl start docker`
+2. **Docker or Podman Not Running**
+   - Windows/Mac: Start Docker or Podman Desktop
+   - Linux: `sudo systemctl start docker` or `sudo systemctl start podman`
 
 3. **Permission Issues**
    - Windows: Run PowerShell as Administrator
    - Linux: Add user to docker group or use sudo
 
 4. **Services Not Starting**
-   - Check logs: `docker compose logs -f`
+   - Check logs: `docker compose logs -f` or `podman compose logs -f`
    - Ensure sufficient system resources
 
 ### Getting Help
 
 If you encounter issues:
-1. Check the logs: `docker compose logs -f`
+1. Check the logs: `docker compose logs -f` or `podman compose logs -f`
 2. Visit our [GitHub Issues](https://github.com/nishanb/CK-X/issues)
 3. Contact support with logs and system information
 
@@ -132,8 +148,13 @@ If you encounter issues:
 To completely remove CK-X Simulator:
 
 ```bash
+# for Docker setup
 # Stop and remove containers
 docker compose down
+
+# for Podman setup
+# Stop and remove containers
+podman compose down
 
 # Remove downloaded files
 cd ..

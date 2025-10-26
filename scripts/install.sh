@@ -32,7 +32,7 @@ command_exists() {
     command -v "$1" >/dev/null 2>&1
 }
 
-# Function to check if Docker is running
+# Function to check if Docker or Podman is running
 check_container_runtime_running() {
 
     if ! (docker info >/dev/null 2>&1 || podman info >/dev/null 2>&1); then
@@ -53,19 +53,19 @@ check_requirements() {
 
     # Check Docker or Podman
     if ! (command_exists docker || command_exists podman); then
-        echo -e "${RED}✗ Docker nor Podman is installed${NC}"
+        echo -e "${RED}✗ Neither Docker nor Podman is installed${NC}"
         echo -e "${YELLOW}Please install Docker or Podman first:${NC}"
         echo -e "${CYAN}Visit https://docs.docker.com/get-docker/ or https://podman-desktop.io/docs/installation/ for installation instructions${NC}"
         exit 1
     fi
     echo -e "${GREEN}✓ Docker or Podman is installed${NC}"
 
-    # Check if Docker is running
+    # Check if Docker or Podman is running
     check_container_runtime_running
 
-    # Check Docker Compose
+    # Check Docker or Podman Compose
     if ! (command_exists docker compose || command_exists podman compose); then
-        echo -e "${RED}✗ Docker Compose nor Podman Compose is installed${NC}"
+        echo -e "${RED}✗ Neither Docker Compose nor Podman Compose is installed${NC}"
         echo -e "${YELLOW}Please install Docker Compose or Podman Compose:${NC}"
         echo -e "${CYAN}Visit https://docs.docker.com/compose/install/ or https://podman-desktop.io/docs/compose/setting-up-compose/ for installation instructions${NC}"
         exit 1
