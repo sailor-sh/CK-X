@@ -1,0 +1,103 @@
+{
+  "questions": [
+        {
+            "id": "1",
+            "namespace": "troubleshooting",
+            "machineHostname": "ckad9999",
+            "question": "The development team has reported an issue with their application deployment. \n\nThe deployment `broken-app` in namespace `troubleshooting` is consistently failing to start and maintain running pods. \n\nYour task is to investigate this deployment, identify the root cause of the failure, and implement the necessary fixes to make the deployment operational. \n\nCheck for issues such as incorrect container image references, resource constraints, configuration problems, or any other factors preventing successful deployment. \n\nDocument your findings and the changes you make to fix the issue.",
+            "concepts": ["deployments", "troubleshooting", "debugging"],
+            "verification": [
+                {
+                    "id": "1",
+                    "description": "Deployment pods are running",
+                    "verificationScriptFile": "q1_s1_validate_pods_running.sh",
+                    "expectedOutput": "0",
+                    "weightage": 3
+                },
+                {
+                    "id": "2",
+                    "description": "Deployment has correct container image",
+                    "verificationScriptFile": "q1_s2_validate_container_image.sh",
+                    "expectedOutput": "0",
+                    "weightage": 2
+                }
+            ]
+        },
+        {
+            "id": "2",
+            "namespace": "app",
+            "machineHostname": "ckad9999",
+            "question": "The development team has reported an issue with their application deployment. \n\nThe deployment `nice-app` in namespace `app` is not exposed, causing the service to not route traffic correctly. \n\nYour task is to investigate this namespace, identify the root cause of the failure, and implement the necessary fixes to make the service operational. \n\nYou can test the service by using curl `k exec -n app -it curl-test-pod -- curl http://nice-app`",
+            "concepts": ["services", "debugging"],
+            "verification": [
+                {
+                    "id": "1",
+                    "description": "Deployment pods are running",
+                    "verificationScriptFile": "q2_s1_validate_pods_running.sh",
+                    "expectedOutput": "0",
+                    "weightage": 1
+                },
+                {
+                    "id": "2",
+                    "description": "Service has correct selector to route traffic to deployment pods",
+                    "verificationScriptFile": "q2_s2_validate_endpoints.sh",
+                    "expectedOutput": "0",
+                    "weightage": 3
+                }
+            ]
+        },
+        {
+            "id": "3",
+            "namespace": "workloads",
+            "machineHostname": "ckad9999",
+            "question": "To ensure application reliability, the team needs to implement health checking for a critical service. \n\nCreate a Pod named `health-pod` in namespace `workloads` using the `emilevauge/whoami` image with the following health monitoring configuration: \n\n1) A liveness probe that performs an HTTP GET request to the path `/healthz` on port `80` every `15` seconds to determine if the container is alive. If this check fails, Kubernetes will restart the container. \n\n2) A readiness probe that checks if the container is ready to serve traffic by testing if port `80` is open and accepting connections every 10 seconds. \n\nConfigure appropriate initial delay, timeout, and failure threshold values based on best practices.",
+            "concepts": ["pods", "probes", "liveness-probe", "readiness-probe", "health-checks"],
+            "verification": [
+                {
+                    "id": "1",
+                    "description": "Pod is created and running",
+                    "verificationScriptFile": "q3_s1_validate_pod_running.sh",
+                    "expectedOutput": "0",
+                    "weightage": 1
+                },
+                {
+                    "id": "2",
+                    "description": "Pod has correct liveness probe",
+                    "verificationScriptFile": "q3_s2_validate_liveness_probe.sh",
+                    "expectedOutput": "0",
+                    "weightage": 2
+                },
+                {
+                    "id": "3",
+                    "description": "Pod has correct readiness probe",
+                    "verificationScriptFile": "q3_s3_validate_readiness_probe.sh",
+                    "expectedOutput": "0",
+                    "weightage": 2
+                }
+            ]
+        },
+        {
+            "id": "4",
+            "namespace": "cluster-admin",
+            "machineHostname": "ckad9999",
+            "question": "Deploy the Bitnami Nginx chart in the `web` namespace using Helm. \n\nFirst, add the Bitnami repository (`https://charts.bitnami.com/bitnami`) if not already present. \n\nThen, deploy the `Bitnami` `nginx` chart with exactly `2` replicas to ensure high availability. \n\nVerify the deployment is successful by checking that pods are running and the service is correctly configured.",
+            "concepts": ["helm", "package-management", "nginx", "services"],
+            "verification": [
+                {
+                    "id": "1",
+                    "description": "Bitnami repository is added",
+                    "verificationScriptFile": "q4_s1_validate_helm_repo.sh",
+                    "expectedOutput": "0",
+                    "weightage": 2
+                },
+                {
+                    "id": "2",
+                    "description": "Bitnami Nginx is deployed with correct configuration",
+                    "verificationScriptFile": "q4_s2_validate_nginx_deployed.sh",
+                    "expectedOutput": "0",
+                    "weightage": 3
+                }
+            ]
+        }
+  ]
+}

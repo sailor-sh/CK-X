@@ -69,6 +69,16 @@
         "warmUpTimeInSeconds": 260,
         "difficulty": "Medium",
         "examDurationInMinutes": 90
+      },
+      {
+        "id": "berlin-001",
+        "assetPath": "assets/exams/other/003",
+        "name": "Berlin Lab",
+        "category": "Other",
+        "description": "Small assessment with some basic Kubernetes tasks to be solved in a limited time frame.",
+        "warmUpTimeInSeconds": 260,
+        "difficulty": "Medium",
+        "examDurationInMinutes": 40
       }
     ]
-  } 
+  }
