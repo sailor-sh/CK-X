@@ -47,18 +47,16 @@ Check our [Lab Creation Guide](docs/how-to-add-new-labs.md) for instructions on 
 
 ## CKAD Exam 3 (ckad-003)
 
-For the new CKAD Exam 3 assets and a reliable developer workflow:
+Run the simulator and take the single added exam (ckad-003):
 
-- Developer guide: [docs/EXAM3_DEV_GUIDE.md](docs/EXAM3_DEV_GUIDE.md)
-- Fresh start script (full clean + rebuild + start):
-  - `./scripts/dev_fresh_exam3.sh`
-- Faster restart (rebuild/start only):
-  - `./scripts/setup_exam3_local.sh`
+- Start services (uses any docker-compose.override.yaml you created):
+  - `docker compose up -d`
+- Open the UI: http://localhost:30080 → Start Exam → “CKAD Comprehensive Lab - 3”.
 
-The Exam 3 assets live under `facilitator/assets/exams/ckad/003/` and include:
-- `config.json`, `assessment.json`, and `answers.md`
-- `scripts/setup/` for cluster/question setup
-- `scripts/validation/` for per-question validation
+If you want to reset and pull images fresh before a run, use the one‑shot helper:
+- `./scripts/reset_and_pull_exam3.sh`
+
+Exam assets live under `facilitator/assets/exams/ckad/003/`.
 
 ## Kubelingo Labs (Isolated Generation)
 
