@@ -4,42 +4,22 @@ This guide explains how to run CKAD Exam 3 locally, reset cleanly between runs, 
 
 ## Quick Start
 
-- Fresh start (full clean + rebuild + start):
-  - `./scripts/dev_fresh_exam3.sh`
-  - Opens http://localhost:30080 → Start Exam → “CKAD Comprehensive Lab - 3”
+Start the simulator and take CKAD-003:
 
-- Faster restart (rebuild/start only):
-  - `./scripts/setup_exam3_local.sh`
+- `docker compose up -d`
+- Open http://localhost:30080 → Start Exam → “CKAD Comprehensive Lab - 3”
 
-## Speeding up with Docker Hub (optional)
+## Reset and pull fresh (one command)
 
-Avoid local rebuilds by publishing images to your Docker Hub account and pulling them:
+If you need a clean slate and fresh images:
 
-1) Build images once locally (via `./scripts/setup_exam3_local.sh`).
+- `./scripts/reset_and_pull_exam3.sh`
 
-2) Tag and push to your namespace:
-   - `docker login`
-   - `DOCKERHUB_NAMESPACE=<your_dockerhub_user> VERSION=exam3-v1 ./scripts/publish_images.sh`
+This stops the stack, removes volumes, forces fresh image pulls, and starts everything again.
 
-3) Use the generated compose override to pull images instead of building:
-   - Save the printed override as `docker-compose.override.yaml`
-   - `docker compose up -d`
+## Where the exam lives
 
-This significantly reduces startup time compared to local rebuilds, especially on arm64 hosts.
-
-## What the scripts do
-
-- `scripts/dev_fresh_exam3.sh`
-  - docker compose down --volumes --remove-orphans --rmi all
-  - docker system prune -af; docker volume prune -f
-  - Rebuilds the stack and packages assets from `facilitator/assets/exams`
-  - Waits for the facilitator healthcheck and verifies `ckad-003` appears in the labs endpoint
-  - Opens the simulator URL
-
-- `scripts/setup_exam3_local.sh`
-  - Copies the docker-compose override (if needed)
-  - Builds and starts the stack
-  - Waits briefly for assets to be packaged
+- `facilitator/assets/exams/ckad/003/` contains `assessment.json`, `config.json`, setup and validation scripts, and `answers.md`.
 
 ## Starting Exam 3 in the UI
 
@@ -79,14 +59,14 @@ Problem: “Preparing Your Lab Environment” never finishes
 - Check logs:
   - `docker compose logs facilitator | tail -n 200`
   - `docker compose logs jumphost | tail -n 200`
-- Try a fresh run: `./scripts/dev_fresh_exam3.sh`
+- Try a clean reset: `./scripts/reset_and_pull_exam3.sh`
 
 Problem: kubectl connection refused
 - In SSH panel:
   - `echo $KUBECONFIG` → `/home/candidate/.kube/kubeconfig`
   - `grep server $KUBECONFIG` → `https://k8s-api-server:6443`
   - `kubectl cluster-info` and `kubectl get nodes` should work
-- If not, re-run fresh: `./scripts/dev_fresh_exam3.sh`
+- If not, reset clean: `./scripts/reset_and_pull_exam3.sh`
 
 Problem: File-based validations fail to see my files
 - Use the SSH panel and write under `/opt/course/exam3/qXX/`.

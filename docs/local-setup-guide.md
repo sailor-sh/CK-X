@@ -8,20 +8,18 @@ git clone https://github.com/@nishanb/CK-X.git
 cd ck-x
 ```
 
-2. Run the deployment script:
+2. Start the services:
 ```bash
-./scripts/compose-deploy.sh
+docker compose up -d
 ```
 
-Alternatively,
-
-2. Use the command `docker compose up` and manually navigate to `http://localhost:30080` in your browser
+Then navigate to `http://localhost:30080` in your browser and select “CKAD Comprehensive Lab - 3”.
 
 The script will deploy all services locally and open the application in your browser.
 
-After making any changes to the code, you can redeploy with:
+To force fresh images and a clean state between runs, use:
 ```bash
-docker compose up -d
+./scripts/reset_and_pull_exam3.sh
 ```
 
 This setup has been tested on Mac and Linux environments. 
