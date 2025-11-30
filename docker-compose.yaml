@@ -13,6 +13,7 @@ services:
       - VNC_PASSWORD=bakku-the-wizard
       - VNC_VIEW_ONLY=false
       - VNC_RESOLUTION=1280x800
+      - KUBECONFIG=/home/candidate/.kube/kubeconfig
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:6901/"]
       interval: 10s
@@ -125,8 +126,11 @@ services:
     hostname: remote-terminal
     expose:
       - "22" # SSH port (internal only)
+    environment:
+      - KUBECONFIG=/home/candidate/.kube/kubeconfig
     volumes:
       - course-data:/opt/course # Shared course data for file-based tasks
+      - kube-config:/home/candidate/.kube # Shared kubeconfig for kubectl
     deploy:
       resources:
         limits:
