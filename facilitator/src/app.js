@@ -31,7 +31,9 @@ app.use(morgan('combined', {
 // API routes
 app.use('/api/v1', sshRoutes);
 app.use('/api/v1/exams', examRoutes);
+// Backward-compat: original route had a typo (assements). Keep it and add the correct alias.
 app.use('/api/v1/assements', assessmentRoutes);
+app.use('/api/v1/assessments', assessmentRoutes);
 app.use('/api/v1/remote-desktop', remoteDesktopRoutes);
 
 // Root route

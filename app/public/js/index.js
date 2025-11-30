@@ -250,7 +250,7 @@ document.addEventListener('DOMContentLoaded', function() {
             loaderMessage.textContent = 'Loading labs...';
         }
         
-        fetch('/facilitator/api/v1/assements/')
+        fetch('/facilitator/api/v1/assessments/')
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Failed to fetch labs. Status: ' + response.status);
@@ -258,7 +258,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return response.json();
             })
             .then(data => {
-                labs = data;
+                labs = data.sort((a, b) => a.id.localeCompare(b.id)); // Sort labs by id
                 console.log('Labs loaded successfully, count:', labs.length);
                 if (showLoader) {
                     pageLoader.style.display = 'none';
