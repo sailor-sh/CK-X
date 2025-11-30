@@ -194,7 +194,7 @@ Your task is to retrieve the token, decode it from base64, and save it to a file
 | Namespace          | `ckad-q05`                             |
 | Output File Path   | `/opt/course/exam3/q05/token`          |
 
-**Hint:** First, you will need to identify the Secret associated with the `neptune-sa-v2` ServiceAccount. Then, you can retrieve the token data from that Secret. The token is base64 encoded, so you will need to decode it. You can use `kubectl get secret <secret-name> -o jsonpath='{.data.token}' | base64 --decode`.""",,
+**Hint:** First, you will need to identify the Secret associated with the `neptune-sa-v2` ServiceAccount. Then, you can retrieve the token data from that Secret. The token is base64 encoded, so you will need to decode it. You can use `kubectl get secret <secret-name> -o jsonpath='{.data.token}' | base64 --decode`."""
         setup_resources=[
             {"kind": "Namespace", "metadata": {"name": "ckad-q05"}},
             {"kind": "ServiceAccount", "metadata": {"name": "neptune-sa-v2", "namespace": "ckad-q05"}},
@@ -604,17 +604,37 @@ Save the YAML manifest of the modified `secret-handler` Pod to the following loc
         namespace="ckad-q15",
         difficulty="medium",
         timeout=600,
-        task="""Team Moonpie has a nginx server Deployment called web-moon in Namespace ckad-q15.
-Someone started configuring it but it was never completed.
+        task="""Team Moonpie is in the process of setting up an Nginx web server using a Deployment named `web-moon` in the `ckad-q15` namespace. Your task is to finalize its configuration by creating a ConfigMap containing the Nginx HTML content, and then verifying the setup.
 
-To complete, create a ConfigMap called configmap-web-moon-html
-containing the content of file /opt/course/exam3/q15/web-moon.html
-under the data key-name: index.html
+**Namespace:** `ckad-q15`
 
-The Deployment web-moon is already configured to work with this ConfigMap and serve its content.
-Test the nginx configuration for example using curl from a temporary nginx:alpine Pod.
+**Task 1: Create the ConfigMap**
 
-Save your ConfigMap definition to /opt/course/exam3/q15/configmap.yaml""",
+Create a ConfigMap with the following specifications:
+
+| Property           | Value                                   |
+| ------------------ | --------------------------------------- |
+| ConfigMap Name     | `configmap-web-moon-html`               |
+| Namespace          | `ckad-q15`                              |
+| Data Key-Name      | `index.html`                            |
+| Content Source     | The content of the file `/opt/course/exam3/q15/web-moon.html` |
+
+**Task 2: Test the Nginx Configuration**
+
+The existing `web-moon` Deployment is pre-configured to use this ConfigMap. After creating the ConfigMap:
+
+1.  Deploy a temporary Pod (e.g., using `nginx:alpine`).
+2.  From this temporary Pod, use `curl` to access the `web-moon` Deployment.
+3.  Verify that the Nginx server is serving the content provided by the `configmap-web-moon-html` ConfigMap.
+
+**Task 3: Save the ConfigMap Manifest**
+
+Save the YAML manifest of the `configmap-web-moon-html` ConfigMap to the following file:
+
+| Property  | Value                                       |
+| --------- | ------------------------------------------- |
+| File Path | `/opt/course/exam3/q15/configmap.yaml`       |
+""",
         setup_resources=[
             {"kind": "Namespace", "metadata": {"name": "ckad-q15"}},
         ],
@@ -630,18 +650,38 @@ Save your ConfigMap definition to /opt/course/exam3/q15/configmap.yaml""",
         namespace="ckad-q16",
         difficulty="hard",
         timeout=600,
-        task="""The Tech Lead decided it's time for more logging. There is an existing container named cleaner-con
-in Deployment cleaner in Namespace ckad-q16.
-This container mounts a volume and writes logs into a file called cleaner.log.
+        task="""The Tech Lead has requested improved log collection for the `cleaner` Deployment in the `ckad-q16` namespace. The existing `cleaner-con` container writes logs to a file within a mounted volume. Your task is to add a sidecar container to tail these logs and expose them via standard output.
 
-The yaml for the existing Deployment is available at /opt/course/exam3/q16/cleaner.yaml.
-Persist your changes at /opt/course/exam3/q16/cleaner-new.yaml and make sure the Deployment is running.
+**Namespace:** `ckad-q16`
 
-Create a sidecar container named logger-con, image busybox:1.31.0, which mounts the same volume
-and writes the content of cleaner.log to stdout using: tail -f /var/log/cleaner/cleaner.log
-This way it can be picked up by kubectl logs.
+**Existing Setup:**
+*   Deployment: `cleaner`
+*   Container: `cleaner-con`
+*   Logs written to: `cleaner.log` within a mounted volume.
+*   Original Deployment YAML: `/opt/course/exam3/q16/cleaner.yaml`
 
-Check if the logs of the new container reveal something about missing data incidents.""",
+**Task 1: Add a Sidecar Container**
+
+Modify the `cleaner` Deployment to include a new sidecar container with the following specifications:
+
+| Property             | Value                                   |
+| -------------------- | --------------------------------------- |
+| Container Name       | `logger-con`                            |
+| Image                | `busybox:1.31.0`                        |
+| Volume Mount         | Mount the **same volume** as `cleaner-con` |
+| Command              | `tail -f /var/log/cleaner/cleaner.log`  |
+
+This setup will ensure that the logs written by `cleaner-con` to `cleaner.log` are piped to `stdout` by `logger-con`, making them accessible via `kubectl logs`.
+
+**Task 2: Save and Apply Changes**
+
+1.  Save the modified Deployment YAML to `/opt/course/exam3/q16/cleaner-new.yaml`.
+2.  Apply the changes to ensure the Deployment is running with the new sidecar.
+
+**Task 3: Verify Log Output**
+
+After the sidecar is running, use `kubectl logs` to inspect the logs of the `logger-con` container and check for any information related to "missing data incidents."
+""",
         setup_resources=[
             {"kind": "Namespace", "metadata": {"name": "ckad-q16"}},
         ],
@@ -657,18 +697,41 @@ Check if the logs of the new container reveal something about missing data incid
         namespace="ckad-q17",
         difficulty="medium",
         timeout=600,
-        task="""Your coworker would like to see an InitContainer in action.
-There is a Deployment yaml at /opt/course/exam3/q17/test-init-container.yaml.
-This Deployment spins up a single Pod of image nginx:1.17.3-alpine and serves files from a mounted volume,
-which is empty right now.
+        task="""A coworker is interested in how InitContainers work. Your task is to modify an existing Deployment to include an InitContainer that pre-populates a mounted volume with an `index.html` file.
 
-Create an InitContainer named init-con which also mounts that volume and creates a file index.html
-with content "check this out!" in the root of the mounted volume.
+**Namespace:** `ckad-q17`
 
-The InitContainer should be using image busybox:1.31.0.
-Test your implementation for example using curl from a temporary nginx:alpine Pod.
+**Existing Setup:**
+*   Deployment YAML: `/opt/course/exam3/q17/test-init-container.yaml`
+*   This Deployment creates a Pod with an `nginx:1.17.3-alpine` image and a mounted volume that is currently empty.
 
-Save your modified Deployment to /opt/course/exam3/q17/test-init-container-new.yaml""",
+**Task 1: Add the InitContainer**
+
+Modify the existing Deployment to include an InitContainer with the following specifications:
+
+| Property             | Value                                   |
+| -------------------- | --------------------------------------- |
+| InitContainer Name   | `init-con`                              |
+| Image                | `busybox:1.31.0`                        |
+| Volume Mount         | Mount the **same volume** as the main container |
+| Command              | `sh -c "echo 'check this out!' > /<path_to_mounted_volume>/index.html"` (replace `<path_to_mounted_volume>` with the actual mount path) |
+
+**Task 2: Test the Implementation**
+
+After applying the changes, verify that the `index.html` file is being served by the Nginx container:
+
+1.  Deploy a temporary Pod (e.g., using `nginx:alpine`).
+2.  From this temporary Pod, use `curl` to access the Nginx service (or directly the Pod if no service is configured).
+3.  Confirm that the response contains "check this out!".
+
+**Task 3: Save the Modified Deployment Manifest**
+
+Save the YAML manifest of the modified Deployment to the following file:
+
+| Property  | Value                                        |
+| --------- | -------------------------------------------- |
+| File Path | `/opt/course/exam3/q17/test-init-container-new.yaml` |
+""",
         setup_resources=[
             {"kind": "Namespace", "metadata": {"name": "ckad-q17"}},
         ],
@@ -707,15 +770,35 @@ Setup creates the Deployment and broken Service for you to debug and fix.""",
         namespace="ckad-q19",
         difficulty="medium",
         timeout=600,
-        task="""In Namespace ckad-q19 you'll find an apache Deployment named jupiter-crew-deploy
-and a ClusterIP Service called jupiter-crew-svc which exposes it.
+        task="""An existing web application, currently exposed via a ClusterIP Service, needs to be made externally accessible via a NodePort Service.
 
-Change this service to a NodePort one to make it available on all nodes on port 30100.
+**Namespace:** `ckad-q19`
 
-Test the NodePort Service using the internal IP of all available nodes and the port 30100 using curl.
-You can reach the internal node IPs directly from your main terminal.
+**Existing Setup:**
+*   Deployment: `jupiter-crew-deploy` (Apache web server)
+*   Service: `jupiter-crew-svc` (ClusterIP type)
 
-On which nodes is the Service reachable? On which node is the Pod running?""",
+**Task 1: Change Service Type to NodePort**
+
+Modify the `jupiter-crew-svc` Service to have the following specifications:
+
+| Property           | Value         |
+| ------------------ | ------------- |
+| Service Type       | `NodePort`    |
+| NodePort           | `30100`       |
+
+**Task 2: Test External Accessibility**
+
+After changing the Service type, verify its external accessibility:
+
+1.  Identify the internal IP addresses of all available nodes in the cluster.
+2.  From your terminal, use `curl` to access the NodePort Service using each node's internal IP address and the configured NodePort (`30100`).
+3.  Note which nodes successfully serve the application.
+
+**Task 3: Identify Pod Location (Reflection)**
+
+Determine on which specific node the Pod(s) associated with the `jupiter-crew-deploy` Deployment are currently running.
+""",
         setup_resources=[
             {"kind": "Namespace", "metadata": {"name": "ckad-q19"}},
         ],
@@ -732,16 +815,37 @@ On which nodes is the Service reachable? On which node is the Pod running?""",
         namespace="ckad-p1",
         difficulty="medium",
         timeout=600,
-        task="""There is an existing Deployment named project-23-api in Namespace ckad-p1.
-The original yaml is available at /opt/course/exam3/p1/project-23-api.yaml
+        task="""You need to enhance the resilience of an existing application by adding a liveness probe to its Deployment. The liveness probe will ensure that unresponsive Pods are automatically restarted.
 
-Add a liveness-probe to the Deployment:
-- Type: TCP socket
-- Port: 80
-- Initial delay: 10 seconds
-- Period: 15 seconds
+**Namespace:** `ckad-p1`
 
-Save your changes at /opt/course/exam3/p1/project-23-api-new.yaml and apply the changes.""",
+**Existing Setup:**
+*   Deployment: `project-23-api`
+*   Original Deployment YAML: `/opt/course/exam3/p1/project-23-api.yaml`
+
+**Task 1: Add Liveness Probe**
+
+Modify the `project-23-api` Deployment to include a liveness probe with the following specifications:
+
+| Property           | Value         |
+| ------------------ | ------------- |
+| Type               | `TCP socket`  |
+| Port               | `80`          |
+| Initial Delay      | `10 seconds`  |
+| Period             | `15 seconds`  |
+
+**Task 2: Save and Apply Changes**
+
+1.  Save the YAML manifest of the modified Deployment to the following file:
+    | Property  | Value                                        |
+    | --------- | -------------------------------------------- |
+    | File Path | `/opt/course/exam3/p1/project-23-api-new.yaml` |
+2.  Apply the changes to the cluster to update the `project-23-api` Deployment.
+
+**Task 3: Verify Liveness Probe (Optional but Recommended)**
+
+*   Observe the Pod's lifecycle to ensure the liveness probe is functioning as expected. You can simulate a failure to see if the Pod restarts.
+""",
         setup_resources=[
             {"kind": "Namespace", "metadata": {"name": "ckad-p1"}},
         ],
@@ -757,18 +861,43 @@ Save your changes at /opt/course/exam3/p1/project-23-api-new.yaml and apply the 
         namespace="ckad-p2",
         difficulty="medium",
         timeout=600,
-        task="""Team needs a new Deployment named sunny with 4 replicas of image nginx:1.17.3-alpine
-in Namespace ckad-p2.
+        task="""Your team requires a new Deployment and an associated Service to deploy a web application. The Deployment needs to use a specific ServiceAccount, and a script for monitoring its status needs to be created.
 
-The Deployment and its Pods should use the existing ServiceAccount sa-sun-deploy.
-(Setup creates this ServiceAccount for you)
+**Namespace:** `ckad-p2`
 
-Expose the Deployment internally using a ClusterIP Service named sun-srv on port 9999.
-The nginx containers should run as default on port 80.
+**Task 1: Create the Deployment**
 
-The management team would like to execute a command to check that all Pods are running on occasion.
-Write that command into file /opt/course/exam3/p2/sunny_status_command.sh.
-The command should use kubectl.""",
+Create a Deployment with the following specifications:
+
+| Property             | Value                        |
+| -------------------- | ---------------------------- |
+| Deployment Name      | `sunny`                      |
+| Replicas             | `4`                          |
+| Image                | `nginx:1.17.3-alpine`        |
+| ServiceAccount       | `sa-sun-deploy` (already exists) |
+| Container Port       | `80` (default for Nginx)     |
+
+**Task 2: Create the Service**
+
+Expose the `sunny` Deployment internally using a Service with the following specifications:
+
+| Property             | Value                        |
+| -------------------- | ---------------------------- |
+| Service Name         | `sun-srv`                    |
+| Service Type         | `ClusterIP`                  |
+| Port (Service)       | `9999`                       |
+| Target Port (Pod)    | `80`                         |
+| Selector             | (appropriate labels for `sunny` Deployment) |
+
+**Task 3: Create a Status Check Script**
+
+The management team needs a quick way to check the status of the `sunny` Deployment's Pods. Create a shell script with the following specifications:
+
+| Property          | Value                                            |
+| ----------------- | ------------------------------------------------ |
+| File Path         | `/opt/course/exam3/p2/sunny_status_command.sh`   |
+| Script Content    | A single `kubectl` command that verifies all Pods of the `sunny` Deployment are running and healthy. |
+""",
         setup_resources=[
             {"kind": "Namespace", "metadata": {"name": "ckad-p2"}},
             {"kind": "ServiceAccount", "metadata": {"name": "sa-sun-deploy", "namespace": "ckad-p2"}},
@@ -787,19 +916,36 @@ The command should use kubectl.""",
         namespace="ckad-p3",
         difficulty="hard",
         timeout=600,
-        task="""There is a Deployment in Namespace ckad-p3 that should be accessible via Service.
-The Service tests show a connection timeout when trying to reach the Service.
+        task="""You are tasked with troubleshooting a connectivity issue within the `ckad-p3` namespace. A Deployment's Pods are not becoming ready, leading to the associated Service having no endpoints. Your objective is to diagnose and fix the readiness probe configuration and document the resolution.
 
-Upon investigation you find:
-- The Deployment earth-3cc-web exists but shows 0/4 ready replicas
-- A Service earth-3cc-web-svc exists but has no endpoints
+**Namespace:** `ckad-p3`
 
-Check the Deployment configuration for the issue. The readiness-probe might be checking the wrong port.
-Fix the readiness-probe port to make the Pods ready.
+**Problem Symptoms:**
+*   **Deployment:** `earth-3cc-web` exists, but shows `0/4` ready replicas.
+*   **Service:** `earth-3cc-web-svc` exists, but has no endpoints.
+*   **Connectivity:** Service tests result in connection timeouts.
 
-(Setup creates the Deployment and Service with wrong readiness-probe port for you to fix)
+**Likely Cause:**
+*   The readiness probe in the `earth-3cc-web` Deployment might be configured to check the wrong port.
 
-After fixing, write the issue description into /opt/course/exam3/p3/ticket-description.txt""",
+**Task 1: Diagnose and Fix the Readiness Probe**
+
+1.  Investigate the configuration of the `earth-3cc-web` Deployment to identify the misconfigured readiness probe port.
+2.  Correct the readiness probe port to ensure the Pods become ready.
+
+**Task 2: Verify the Fix**
+
+1.  Confirm that all Pods of the `earth-3cc-web` Deployment transition to a `Ready` state (e.g., `4/4` replicas ready).
+2.  Verify that the `earth-3cc-web-svc` Service now has active endpoints.
+
+**Task 3: Document the Issue Description**
+
+After successfully fixing the issue, write a clear description of the problem and its resolution into the following file:
+
+| Property  | Value                                        |
+| --------- | -------------------------------------------- |
+| File Path | `/opt/course/exam3/p3/ticket-description.txt` |
+""",
         setup_resources=[
             {"kind": "Namespace", "metadata": {"name": "ckad-p3"}},
         ],
