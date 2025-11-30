@@ -61,3 +61,6 @@ coverage/
 terraform.tfstate
 terraform.tfstate.backup
 .terragrunt-cache/ 
+AGENTS.md
+GEMINI.md
+kubelingo/CKAD-exam3_113025/WORKLOG.md
