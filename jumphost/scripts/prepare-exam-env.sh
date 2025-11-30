@@ -58,18 +58,36 @@ find /tmp/exam-assets -type f -exec chmod +x {} \;
 echo "Exam assets downloaded and prepared successfully" 
 
 export KUBECONFIG=/home/candidate/.kube/kubeconfig
+echo "Using KUBECONFIG=$KUBECONFIG"
+
+# Ensure kubeconfig exists; if missing, try to fetch from k8s-api-server
+if [ ! -f "$KUBECONFIG" ]; then
+  echo "KUBECONFIG not found; attempting to copy from k8s-api-server..."
+  mkdir -p /home/candidate/.kube
+  scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null candidate@k8s-api-server:/home/candidate/.kube/kubeconfig "$KUBECONFIG" || true
+fi
 
 sleep 5
 
-#wait till api-server is ready
-while ! kubectl get nodes > /dev/null 2>&1; do
+# Wait until API server responds, but don't hang indefinitely (timeout ~2 min)
+attempt=0
+until kubectl get nodes >/dev/null 2>&1; do
+  attempt=$((attempt+1))
+  if [ "$attempt" -ge 24 ]; then
+    echo "Timed out waiting for API server; proceeding with setup scripts anyway"
+    break
+  fi
   sleep 5
 done
 
-echo "API server is ready"
+if kubectl get nodes >/dev/null 2>&1; then
+  echo "API server is ready"
+else
+  echo "API server may not be ready; continuing"
+fi
 
-#Run setup scripts
-for script in /tmp/exam-assets/scripts/setup/q*_setup.sh; do $script; done
+# Run setup scripts
+for script in /tmp/exam-assets/scripts/setup/q*_setup.sh; do echo "Running $script"; $script || true; done
 
 log "Exam environment preparation completed successfully"
 exit 0 
