@@ -1,28 +1,28 @@
 services:
   remote-desktop:
-    image: je01/ckx-remote-desktop:exam3-v1
+    image: je01/ckx-remote-desktop:exam3-v2
     build: null
 
   webapp:
-    image: je01/ckx-webapp:exam3-v1
+    image: je01/ckx-webapp:exam3-v2
     build: null
 
   nginx:
-    image: je01/ckx-nginx:exam3-v1
+    image: je01/ckx-nginx:exam3-v2
     build: null
 
   jumphost:
-    image: je01/ckx-jumphost:exam3-v1
+    image: je01/ckx-jumphost:exam3-v2
     build: null
 
   remote-terminal:
-    image: je01/ckx-remote-terminal:exam3-v1
+    image: je01/ckx-remote-terminal:exam3-v2
     build: null
 
   k8s-api-server:
-    image: je01/ckx-cluster:exam3-v1
+    image: je01/ckx-cluster:exam3-v2
     build: null
 
   facilitator:
-    image: je01/ckx-facilitator:exam3-v1
+    image: je01/ckx-facilitator:exam3-v2
     build: null
