@@ -7,34 +7,67 @@
 function processQuestionContent(content) {
     // First, preserve existing HTML formatting
     let processedContent = content;
-    
-    // Add highlighting to text in single quotes that isn't already styled
-    processedContent = processedContent.replace(
-        /`([^`]+)`/g, 
-        function(match, text) {
-            // Skip if already inside an HTML tag or existing styled element
-            if (match.match(/<.*>/) || 
-                match.includes('class="code"') || 
-                match.includes('class="highlight"')) {
-                return match;
-            }
-            return `<span class="inline-code">${text}</span>`;
-        }
+
+    // 1) Style inline code delimited by backticks: `code`
+    processedContent = processedContent.replace(/`([^`]+)`/g, '<span class="inline-code">$1</span>');
+
+    // 2) Style inline code delimited by single quotes: 'code'
+    processedContent = processedContent.replace(/'([^'<>]+)'/g, '<span class="inline-code">$1</span>');
+
+    // 2a) Style inline code delimited by double quotes in prose (avoid HTML attributes)
+    // Match a leading whitespace or '>' before the quote to avoid attribute contexts like class="..."
+    processedContent = processedContent.replace(/(^|[\s>])"([^"<>\n]+)"/g, (m, pre, inner) => `${pre}<span class="inline-code">${inner}</span>`);
+
+    // 3) Style absolute file paths like /opt/course/exam3/q01/namespaces (avoid matching inside tags)
+    processedContent = processedContent.replace(/(^|\s)(\/(?:opt|etc|var|home|tmp|root|usr)(?:\/[A-Za-z0-9._-]+)+)/g,
+        (m, ws, path) => `${ws}<span class=\"inline-code\">${path}</span>`
     );
-    
-    // Style inline code with backticks if not already styled
-    processedContent = processedContent.replace(
-        /`([^`]+)`/g, 
-        '<code class="bg-light px-1 rounded">$1</code>'
+
+    // 4) Style kubectl commands inline (from the verb onward, until line break)
+    processedContent = processedContent.replace(/(^|\n)(\s*)(kubectl[^\n<]+)/g,
+        (m, br, sp, cmd) => `${br}${sp}<span class=\"inline-code\">${cmd}</span>`
     );
-    
-    // Style bold text
+
+    // 4a) Also style other common CLI commands
+    processedContent = processedContent.replace(/(^|\n)(\s*)((?:helm|docker|podman)\s+[^\n<]+)/g,
+        (m, br, sp, cmd) => `${br}${sp}<span class=\"inline-code\">${cmd}</span>`
+    );
+
+    // 5) Style resource names following common keywords in prose (Pod/Deployment/etc.)
+    processedContent = processedContent.replace(/\b(Pod|Deployment|Service|ConfigMap|Secret|StorageClass|PersistentVolumeClaim|PersistentVolume|PVC|PV|Job|CronJob|ServiceAccount)\s+(?:named|called)?\s*([A-Za-z0-9._-]+)/gi,
+        (m, kind, name) => `${kind} <span class=\"inline-code\">${name}</span>`
+    );
+
+    // 6) Style image references (image: nginx:1.17.3-alpine)
+    processedContent = processedContent.replace(/\b(Image|image)\s*[:=]\s*([A-Za-z0-9._\/-]+:[A-Za-z0-9._-]+)/g,
+        (m, key, img) => `${key}: <span class=\"inline-code\">${img}</span>`
+    );
+
+    // 7) Style file names with common extensions
+    processedContent = processedContent.replace(/(^|\s)([A-Za-z0-9._-]+\.(?:ya?ml|json|sh|txt|log))\b/g,
+        (m, ws, file) => `${ws}<span class=\"inline-code\">${file}</span>`
+    );
+
+    // 8) Style any token that looks like a path (contains a slash), erring on inclusion
+    processedContent = processedContent.replace(/(^|\s)([A-Za-z0-9._-]+(?:\/[A-Za-z0-9._-]+)+)\b/g,
+        (m, ws, p) => `${ws}<span class=\"inline-code\">${p}</span>`
+    );
+
+    // 9) Style IP addresses
+    processedContent = processedContent.replace(/\b\d{1,3}(?:\.\d{1,3}){3}\b/g, '<span class="inline-code">$&</span>');
+
+    // 10) Style port references (port: 30100, nodePort: 30100)
+    processedContent = processedContent.replace(/\b(node)?[Pp]ort\s*[:=]\s*(\d{2,5})/g,
+        (m, np, port) => `${np ? 'nodePort' : 'port'}: <span class=\"inline-code\">${port}</span>`
+    );
+
+    // 5) Style bold text
     processedContent = processedContent.replace(
         /\*\*([^*]+)\*\*/g, 
         '<strong>$1</strong>'
     );
     
-    // Style italic text
+    // 6) Style italic text
     processedContent = processedContent.replace(
         /\*([^*]+)\*/g, 
         '<em>$1</em>'
@@ -77,11 +110,11 @@ function generateQuestionContent(question) {
                 <div class="question-header">
                     
                     <div class="mb-3">
-                        <strong>Solve this question on instance:</strong> <span class="inline-code">ssh ${machineHostname}</span></span>
+                        <strong>Solve this question on instance:</strong> <span class="inline-code">ssh ${machineHostname}</span>
                     </div>
                     
                     <div class="mb-3">
-                        <strong>Namespace:</strong> <span class="text-primary">${namespace}</span>
+                        <strong>Namespace:</strong> <span class="inline-code">${namespace}</span>
                     </div>
                     
                     <div class="mb-3">

@@ -155,6 +155,8 @@ services:
     container_name: kind-cluster
     hostname: k8s-api-server
     privileged: true # Required for running containers inside KIND
+    environment:
+      - API_PORT=6443
     expose:
       - "6443"
       - "22"

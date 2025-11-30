@@ -1,55 +1,48 @@
-# Custom Facilitator Build Process
+# Kubelingo: Exam Development and Testing
 
-This document outlines the process for building a custom `facilitator` Docker image that includes generated questions from the `kubelingo` directory.
+This directory contains the tools and assets for creating, managing, and testing exams for the CK-X simulator.
 
-This allows you to test your own generated questions without interfering with the standard application setup.
+## 1. Folder Structure
 
-## Files
+- **/CKAD-exam3_113025**: Staging and development area for the CKAD Exam 3. Contains the original PDF, Python scripts for question generation, and test files. This is a temporary development directory and its contents should be considered volatile.
+- **/facilitator/assets/exams/ckad/003**: The final, canonical location for the CKAD Exam 3 assets. This includes the `assessment.json`, `config.json`, and the `setup` and `validation` scripts.
+- **/out**: A directory for generated output, not checked into version control.
 
-*   `Dockerfile.facilitator`: A dedicated Dockerfile for building the custom facilitator image. It uses the project root as the build context to access both the `facilitator` application source and the generated questions in `kubelingo/out`.
+## 2. Exam Architecture: CKAD Exam 3 (`ckad-003`)
 
-*   `build_facilitator.sh`: A shell script that orchestrates the custom build. It builds the Docker image using `Dockerfile.facilitator` and tags it as `ckx-facilitator-generated:latest`.
+- **Namespace Isolation:** To prevent resource collisions in the single-cluster environment, each question is isolated in its own namespace (e.g., `ckad-q01`, `ckad-q02`, etc.).
+- **Setup Scripts:** Located in `facilitator/assets/exams/ckad/003/scripts/setup/`. These scripts are responsible for seeding the environment for each question (e.g., creating resources, namespaces).
+- **Validation Scripts:** Located in `facilitator/assets/exams/ckad/003/scripts/validation/`. These scripts are used to verify that a question has been answered correctly.
+- **`assessment.json`**: The core of the exam, defining each question, its namespace, the question text, and linking to the corresponding validation script.
 
-*   `docker-compose.override.yaml`: An override file for Docker Compose. It is stored in this directory to keep all custom build files together.
+## 3. How to Add a New Exam
 
-## Instructions
+1.  **Create a Development Directory:** Create a new directory under `kubelingo` for your exam (e.g., `CKAD-exam4_YYYYMMDD`).
+2.  **Generate Questions:** Use Python scripts (like `generate_exam3_questions.py` as a template) to create the `qXX.yaml` or similar question definition files.
+3.  **Create `assessment.json`:** Generate the main `assessment.json` file with the question text, namespaces, and links to validation scripts.
+4.  **Write Setup and Validation Scripts:** Create the necessary setup and validation shell scripts. Place them in the appropriate `facilitator/assets/exams/<exam_name>/<version>/scripts/` directory.
+5.  **Register the Exam:** Add a new entry for your exam in `facilitator/assets/exams/labs.json`.
 
-### 1. Generate Questions
+## 4. How to Test an Exam
 
-Make sure you have generated your questions and they are located in the `kubelingo/out/facilitator/assets/exams` directory.
+The primary testing scripts are located in `kubelingo/CKAD-exam3_113025/exam3-testing_113025/`.
 
-### 2. Build the Custom Image
+- **`test_exam3.sh`**: Runs the full automated test suite, checking for YAML generation, namespace creation, directory structure, and more.
+- **`test_question.sh <question_number>`**: Runs a specific set of validation checks for an individual question.
 
-Run the build script from the **root directory** of the project:
+**Example Test Workflow:**
 
-```bash
-./kubelingo/build_facilitator.sh
-```
+1.  **Start the Simulator:** Ensure the CK-X simulator is running.
+2.  **Start the Exam in the UI:** Open `http://localhost:30080`, select your exam, and click "Start". This will automatically run the necessary setup scripts.
+3.  **Simulate User Actions:** For each question, manually perform the required actions (e.g., creating files, running `kubectl` commands).
+4.  **Run Validation:** Execute the validation script for the question to check your work:
+    ```bash
+    bash facilitator/assets/exams/ckad/003/scripts/validation/q1_validate.sh
+    ```
 
-This will create a new Docker image named `ckx-facilitator-generated:latest`.
+## 5. Agent Roles and Collaboration
 
-### 3. Run the Application with the Custom Image
+- **Codex (Main Agent):** Responsible for implementing new exams, creating setup/validation scripts, and defining the `assessment.json`.
+- **Gemini (Testing Agent):** Responsible for verifying the work of Codex by running tests, checking for inconsistencies, and ensuring the exam works as expected from a user's perspective.
 
-To use the custom image, you first need to copy the `docker-compose.override.yaml` file from this directory (`kubelingo`) to the project's root directory.
-
-```bash
-cp kubelingo/docker-compose.override.yaml .
-```
-
-With the `docker-compose.override.yaml` file in the project root, you can start the application as usual:
-
-```bash
-docker-compose up -d
-```
-
-Docker Compose will automatically merge `docker-compose.yaml` and `docker-compose.override.yaml`, and it will use your custom image for the `facilitator` service.
-
-### 4. Reverting to the Standard Build
-
-To revert to the standard `facilitator` image, simply delete the `docker-compose.override.yaml` file from the project root.
-
-```bash
-rm docker-compose.override.yaml
-```
-
-With the override file removed, `docker-compose up --build` will build the `facilitator` image from its original `facilitator/Dockerfile`.
+All agent-related planning and status updates should be logged in the root `GEMINI.md` file.

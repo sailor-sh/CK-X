@@ -112,6 +112,9 @@ body {
     overflow-y: auto;
     transition: opacity 0.2s ease; /* Add smooth transition */
     max-height: calc(100vh - 95px); /* Header + Question Nav */
+    /* Improve readability: avoid horizontal scrolling */
+    word-break: break-word;
+    overflow-wrap: anywhere;
 }
 .info-box {
     background-color: #e3f2fd;
@@ -210,7 +213,7 @@ ul.requirements li {
     opacity: 1;
 }
 .panel-divider {
-    width: 8px;
+    width: 14px; /* Larger hit area for easier grab */
     height: 100%;
     background-color: #ddd;
     cursor: col-resize;

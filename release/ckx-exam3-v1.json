@@ -1,0 +1,8 @@
+[
+  {"image":"je01/ckx-remote-desktop:exam3-v1","digest":"sha256:02e37093322fee6f5cdfd201d08d3adc2cc36e958fab586723a47ae7ea3834c2"},
+  {"image":"je01/ckx-webapp:exam3-v1","digest":"sha256:cb5c0f01a2a2a8492024504d34e9be4ec5d3094696342628b8a558c072ee06ba"},
+  {"image":"je01/ckx-nginx:exam3-v1","digest":"sha256:68c51744bcb630a219b2d3f24006879108bda9347912800b43b87c8e39015333"},
+  {"image":"je01/ckx-jumphost:exam3-v1","digest":"sha256:20aa00168d1fceb9c67e3cf0b300ede05a8d85bc598de7fc1722a155e723b110"},
+  {"image":"je01/ckx-remote-terminal:exam3-v1","digest":"sha256:3ff6bac981e0d48a5e3ca1a40276367503ae1d8dcd0ff5262da57580acaf6847"},
+  {"image":"je01/ckx-cluster:exam3-v1","digest":"sha256:12ad3c7804e2ba12cbd098484d4e2725ad52b6ce1204615c11e7d25f03857a91"},
+  {"image":"je01/ckx-facilitator:exam3-v1","digest":"sha256:1c1197964a56e2b1dca3f28781fb4aa9eb4e2282149e28eadbb6b346aba16a67"}]

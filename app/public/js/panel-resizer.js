@@ -134,18 +134,4 @@ class PanelResizer {
         }
     }
 }
-
-// Initialize the panel resizer when the DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-    // Create a global instance of PanelResizer
-    window.panelResizer = new PanelResizer({
-        dividerId: 'panelDivider',
-        leftPanelId: 'questionPanel',
-        rightPanelId: 'vncPanel',
-        containerId: 'mainContainer',
-        minLeftWidth: 200, // Minimum width for question panel
-        minRightWidth: 300, // Minimum width for VNC panel
-        storageKey: 'examPanelWidth',
-        debug: true // Enable debug for troubleshooting
-    });
-}); 
+ 

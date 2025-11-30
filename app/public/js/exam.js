@@ -160,6 +160,36 @@ document.addEventListener('DOMContentLoaded', function() {
     TerminalService.setCallbacks({
         showConnectionStatus: showSshConnectionStatus
     });
+
+    // Layout convenience actions
+    const maximizeQuestionsBtn = document.getElementById('maximizeQuestionsBtn');
+    const maximizeVncBtn = document.getElementById('maximizeVncBtn');
+    const resetLayoutBtn = document.getElementById('resetLayoutBtn');
+    const questionPanelEl = document.getElementById('questionPanel');
+
+    function setPanelWidth(width) {
+        if (questionPanelEl) {
+            questionPanelEl.style.width = width;
+            try { localStorage.setItem('examPanelWidth', width); } catch (e) {}
+        }
+        // Give the DOM a tick, then resize terminal to fit
+        setTimeout(() => {
+            const sshTerminalContainer = document.getElementById('sshTerminalContainer');
+            if (sshTerminalContainer) {
+                TerminalService.resizeTerminal(sshTerminalContainer);
+            }
+        }, 50);
+    }
+
+    if (maximizeQuestionsBtn) {
+        maximizeQuestionsBtn.addEventListener('click', function(e) { e.preventDefault(); setPanelWidth('45%'); });
+    }
+    if (maximizeVncBtn) {
+        maximizeVncBtn.addEventListener('click', function(e) { e.preventDefault(); setPanelWidth('25%'); });
+    }
+    if (resetLayoutBtn) {
+        resetLayoutBtn.addEventListener('click', function(e) { e.preventDefault(); setPanelWidth('30%'); });
+    }
     
     // Load exam environment for completed exams
     function loadExamEnvironment(examId) {
@@ -640,6 +670,18 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Setup UI event listeners
         setupUIEventListeners();
+
+        // Initialize panel resizer AFTER all UI elements are set up
+        window.panelResizer = new PanelResizer({
+            dividerId: 'panelDivider',
+            leftPanelId: 'questionPanel',
+            rightPanelId: 'vncPanel',
+            containerId: 'mainContainer',
+            minLeftWidth: 200, // Minimum width for question panel
+            minRightWidth: 300, // Minimum width for VNC panel
+            storageKey: 'examPanelWidth',
+            debug: true // Enable debug for troubleshooting
+        });
         
         // Setup clipboard copy for inline code elements
         ClipboardService.setupInlineCodeCopy();

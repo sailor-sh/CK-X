@@ -367,9 +367,26 @@ document.addEventListener('DOMContentLoaded', function() {
         examIdElement.textContent = `Exam ID: ${results.examId}`;
         completedAtElement.textContent = `Completed: ${formatDate(results.completedAt)}`;
         
-        // Update score
+        // Update score (points)
         totalScoreElement.textContent = results.totalScore;
         totalPossibleScoreElement.textContent = results.totalPossibleScore;
+
+        // Compute and update check counts (passed vs total)
+        let totalChecks = 0;
+        let passedChecks = 0;
+        if (results.evaluationResults && results.evaluationResults.length > 0) {
+            results.evaluationResults.forEach(q => {
+                const ver = Array.isArray(q.verificationResults) ? q.verificationResults : [];
+                totalChecks += ver.length;
+                passedChecks += ver.filter(v => v.validAnswer).length;
+            });
+        }
+        const passedChecksEl = document.getElementById('passedChecks');
+        const totalChecksEl = document.getElementById('totalChecks');
+        if (passedChecksEl && totalChecksEl) {
+            passedChecksEl.textContent = passedChecks;
+            totalChecksEl.textContent = totalChecks;
+        }
         
         // Update rank
         rankTextElement.textContent = results.rank === 'high' ? 'High Score' : 

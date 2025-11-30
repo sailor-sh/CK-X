@@ -7,11 +7,11 @@ WORKDIR /usr/src/app
 RUN apk add --no-cache openssh-client
 
 # Install dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
+# Copy package.json (lock file may not exist in repo)
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production
+# Install production deps without requiring a lockfile
+RUN npm install --omit=dev
 
 # Bundle app source
 COPY . .

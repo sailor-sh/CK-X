@@ -1,6 +1,28 @@
 services:
+  remote-desktop:
+    image: je01/ckx-remote-desktop:exam3-v1
+    build: null
+
+  webapp:
+    image: je01/ckx-webapp:exam3-v1
+    build: null
+
+  nginx:
+    image: je01/ckx-nginx:exam3-v1
+    build: null
+
+  jumphost:
+    image: je01/ckx-jumphost:exam3-v1
+    build: null
+
+  remote-terminal:
+    image: je01/ckx-remote-terminal:exam3-v1
+    build: null
+
+  k8s-api-server:
+    image: je01/ckx-cluster:exam3-v1
+    build: null
+
   facilitator:
-    image: ckx-facilitator-generated:latest
-    build:
-      context: . #clear out the build context from the original docker-compose
-      dockerfile: kubelingo/Dockerfile.facilitator
+    image: je01/ckx-facilitator:exam3-v1
+    build: null
