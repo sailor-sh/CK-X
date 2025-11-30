@@ -45,6 +45,21 @@ For detailed installation instructions, please refer to our [Deployment Guide](s
 
 Check our [Lab Creation Guide](docs/how-to-add-new-labs.md) for instructions on adding new labs.
 
+## CKAD Exam 3 (ckad-003)
+
+For the new CKAD Exam 3 assets and a reliable developer workflow:
+
+- Developer guide: [docs/EXAM3_DEV_GUIDE.md](docs/EXAM3_DEV_GUIDE.md)
+- Fresh start script (full clean + rebuild + start):
+  - `./scripts/dev_fresh_exam3.sh`
+- Faster restart (rebuild/start only):
+  - `./scripts/setup_exam3_local.sh`
+
+The Exam 3 assets live under `facilitator/assets/exams/ckad/003/` and include:
+- `config.json`, `assessment.json`, and `answers.md`
+- `scripts/setup/` for cluster/question setup
+- `scripts/validation/` for per-question validation
+
 ## Kubelingo Labs (Isolated Generation)
 
 If you want to generate and test custom labs without modifying CK-X, use the tools under `kubelingo/`:
