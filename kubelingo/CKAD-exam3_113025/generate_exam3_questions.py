@@ -56,12 +56,34 @@ Command: mkdir -p /opt/course/exam3/q01 && kubectl get ns > /opt/course/exam3/q0
         namespace="ckad-q02",
         difficulty="easy",
         timeout=300,
-        task="""Create a single Pod of image httpd:2.4.41-alpine in Namespace ckad-q02.
-The Pod should be named pod1 and the container should be named pod1-container.
+        task="""The operations team requires a simple web server to be deployed for connectivity testing.
+Your task is to create a Pod to host the web server and also to provide a shell script that can be used to check the pod's status.
 
-Your manager would like to run a command manually on occasion to output the status of that exact Pod.
-Please write a command that does this into /opt/course/exam3/q02/pod1-status-command.sh.
-The command should use kubectl.""",
+All resources should be created in the `ckad-q02` namespace.
+
+**Task 1: Create the Web Server Pod**
+
+Create a Pod with the following specifications:
+
+| Property         | Value              |
+| ---------------- | ------------------ |
+| Pod Name         | `pod1`             |
+| Container Name   | `pod1-container`   |
+| Image            | `httpd:2.4.41-alpine` |
+
+**Task 2: Create the Status Check Script**
+
+Your manager wants a simple script to quickly check the status of the new pod.
+
+Create a script with the following specifications:
+
+| Property          | Value                                         |
+| ----------------- | --------------------------------------------- |
+| File Path         | `/opt/course/exam3/q02/pod1-status-command.sh`  |
+| Permissions       | Executable (`+x`)                             |
+| Script Content    | The script must contain a single `kubectl` command that outputs the `.status.phase` of the `pod1` Pod. |
+
+**Hint:** You can use `kubectl` with a `jsonpath` output expression to extract a specific field from a resource. For example: `kubectl get pod <pod-name> -o jsonpath='{.status.phase}'`. Remember to include the shebang `#!/bin/bash` in your script.""",
         setup_resources=[
             {"kind": "Namespace", "metadata": {"name": "ckad-q02"}},
         ],
@@ -78,12 +100,35 @@ The command should use kubectl.""",
         namespace="ckad-q03",
         difficulty="medium",
         timeout=600,
-        task="""Team Neptune needs a Job template located at /opt/course/exam3/q03/job.yaml.
-This Job should run image busybox:1.31.0 and execute: sleep 2 && echo done
-It should be in namespace ckad-q03, run a total of 3 times and should execute 2 runs in parallel.
+        task="""Team Neptune requires a parallel Job to run a series of computations.
 
-Start the Job and check its history. Each pod created by the Job should have the label id: awesome-job.
-The job should be named neb-new-job and the container neb-new-job-container.""",
+Your task is to create the Job and save its manifest. All resources should be in the `ckad-q03` namespace.
+
+**Task 1: Create the Job**
+
+Create a Job with the following specifications:
+
+| Property           | Value                           |
+| ------------------ | ------------------------------- |
+| Job Name           | `neb-new-job`                   |
+| Container Name     | `neb-new-job-container`         |
+| Image              | `busybox:1.31.0`                |
+| Command            | `sleep 2 && echo done`          |
+| Completions        | `3`                             |
+| Parallelism        | `2`                             |
+| Pod Label          | `id: awesome-job`               |
+
+Once created, ensure the Job is started and runs to completion.
+
+**Task 2: Save the Manifest**
+
+Save the YAML manifest for the `neb-new-job` Job to the following location:
+
+| Property  | Value                          |
+| --------- | ------------------------------ |
+| File Path | `/opt/course/exam3/q03/job.yaml` |
+
+""",
         setup_resources=[
             {"kind": "Namespace", "metadata": {"name": "ckad-q03"}},
         ],
@@ -102,13 +147,25 @@ The job should be named neb-new-job and the container neb-new-job-container.""",
         namespace="ckad-q04",
         difficulty="medium",
         timeout=600,
-        task="""Team Mercury asked you to perform operations using Helm, all in Namespace ckad-q04:
-1. First, setup: helm repo add killershell http://localhost:6000 && helm repo update
-2. Delete release internal-issue-report-apiv1
-3. Upgrade release internal-issue-report-apiv2 to any newer version of chart killershell/nginx
-4. Install a new release internal-issue-report-apache of chart killershell/apache.
-   The Deployment should have two replicas, set these via Helm-values during install
-5. Find and delete any releases stuck in pending-install state""",
+        task="""The Mercury team needs you to perform several Helm operations in the `ckad-q04` namespace.
+
+**Task 1: Add and Update Helm Repository**
+
+First, add the `killershell` repository and update your local repo information:
+
+```bash
+helm repo add killershell http://localhost:6000 && helm repo update
+```
+
+**Task 2: Manage Helm Releases**
+
+Perform the following actions on the Helm releases:
+
+1.  **Delete** the `internal-issue-report-apiv1` release.
+2.  **Upgrade** the `internal-issue-report-apiv2` release to any newer version of the `killershell/nginx` chart.
+3.  **Install** a new release named `internal-issue-report-apache` from the `killershell/apache` chart.
+    *   The `Deployment` should have **two replicas**. Set this value during installation using the `--set` flag or a custom values file.
+4.  **Find and delete** any releases that are stuck in the `pending-install` state.""",
         setup_resources=[
             {"kind": "Namespace", "metadata": {"name": "ckad-q04"}},
         ],
@@ -124,11 +181,20 @@ The job should be named neb-new-job and the container neb-new-job-container.""",
         namespace="ckad-q05",
         difficulty="easy",
         timeout=300,
-        task="""Team Neptune has its own ServiceAccount named neptune-sa-v2 in Namespace ckad-q05.
-A coworker needs the token from the Secret that belongs to that ServiceAccount.
-Write the base64 decoded token to file /opt/course/exam3/q05/token on localhost.
+        task="""Team Neptune has its own ServiceAccount, `neptune-sa-v2`, in the `ckad-q05` namespace.
+A coworker needs the authentication token from the Secret that is automatically generated for this ServiceAccount.
 
-Setup: Create ServiceAccount neptune-sa-v2 and a Secret associated with it before completing task.""",
+Your task is to retrieve the token, decode it from base64, and save it to a file.
+
+**Specifications:**
+
+| Property           | Value                                  |
+| ------------------ | -------------------------------------- |
+| ServiceAccount Name| `neptune-sa-v2`                          |
+| Namespace          | `ckad-q05`                             |
+| Output File Path   | `/opt/course/exam3/q05/token`          |
+
+**Hint:** First, you will need to identify the Secret associated with the `neptune-sa-v2` ServiceAccount. Then, you can retrieve the token data from that Secret. The token is base64 encoded, so you will need to decode it. You can use `kubectl get secret <secret-name> -o jsonpath='{.data.token}' | base64 --decode`.""",,
         setup_resources=[
             {"kind": "Namespace", "metadata": {"name": "ckad-q05"}},
             {"kind": "ServiceAccount", "metadata": {"name": "neptune-sa-v2", "namespace": "ckad-q05"}},
@@ -145,14 +211,30 @@ Setup: Create ServiceAccount neptune-sa-v2 and a Secret associated with it befor
         namespace="ckad-q06",
         difficulty="medium",
         timeout=300,
-        task="""Create a single Pod named pod6 in Namespace ckad-q06 of image busybox:1.31.0.
-The Pod should have a readiness-probe executing: cat /tmp/ready
-It should initially wait 5 and periodically wait 10 seconds.
-This will set the container ready only if the file /tmp/ready exists.
+        task="""A developer needs a Pod that only becomes 'Ready' after a specific condition is met.
+You are tasked with creating a Pod that uses a `readinessProbe` to check for the existence of a file.
 
-The Pod should run the command: touch /tmp/ready && sleep 1d
-which will create the necessary file to be ready and then idles.
-Create the Pod and confirm it starts and becomes Ready.""",
+All resources should be in the `ckad-q06` namespace.
+
+**Pod Specifications:**
+
+| Property         | Value                          |
+| ---------------- | ------------------------------ |
+| Pod Name         | `pod6`                         |
+| Image            | `busybox:1.31.0`               |
+| Command          | `touch /tmp/ready && sleep 1d` |
+
+**Readiness Probe Specifications:**
+
+| Property           | Value              |
+| ------------------ | ------------------ |
+| Type               | `exec`             |
+| Command            | `cat /tmp/ready`   |
+| Initial Delay (s)  | `5`                |
+| Period (s)         | `10`               |
+
+Create the Pod and then verify that it starts and its status eventually becomes 'Running' and 'Ready'.
+""",
         setup_resources=[
             {"kind": "Namespace", "metadata": {"name": "ckad-q06"}},
         ],
@@ -168,14 +250,28 @@ Create the Pod and confirm it starts and becomes Ready.""",
         namespace="ckad-q07",
         difficulty="hard",
         timeout=600,
-        task="""The board of Team Neptune decided to take over control of one e-commerce webserver from Team Saturn.
-The administrator who once setup this webserver is not part of the organisation any longer.
-All information you could get was that the e-commerce system is called my-happy-shop.
+        task="""The Neptune team is taking over an e-commerce webserver from Team Saturn. Your task is to locate and migrate the `my-happy-shop` Pod from its current namespace to a new target namespace.
 
-Search for the correct Pod in Namespace ckad-q07-source and move it to Namespace ckad-q07-target.
-It doesn't matter if you shut it down and spin it up again.
+**Namespaces:**
+*   Source Namespace: `ckad-q07-source`
+*   Target Namespace: `ckad-q07-target`
 
-(Setup creates the source pod with the my-happy-shop annotation for discovery)""",
+**Task 1: Identify the Pod**
+
+Locate the Pod in the `ckad-q07-source` namespace that is associated with the `my-happy-shop` e-commerce system.
+**Hint:** The Pod will have an annotation that identifies it as part of `my-happy-shop`. You can use `kubectl get pod -n <namespace> -o yaml` and then search for annotations.
+
+**Task 2: Migrate the Pod**
+
+Migrate the identified Pod from `ckad-q07-source` to `ckad-q07-target`. You can achieve this by:
+1.  Extracting the Pod's YAML definition.
+2.  Modifying the `namespace` field in the YAML to `ckad-q07-target`.
+3.  Deleting the original Pod from `ckad-q07-source`.
+4.  Creating the Pod in `ckad-q07-target` using the modified YAML.
+
+**Task 3: Verify Migration**
+
+Confirm that the Pod is successfully running in `ckad-q07-target` and is no longer present in `ckad-q07-source`.""",
         setup_resources=[
             {"kind": "Namespace", "metadata": {"name": "ckad-q07-source"}},
             {"kind": "Namespace", "metadata": {"name": "ckad-q07-target"}},
@@ -193,12 +289,26 @@ It doesn't matter if you shut it down and spin it up again.
         namespace="ckad-q08",
         difficulty="hard",
         timeout=600,
-        task="""There is an existing Deployment named api-new-c32 in Namespace ckad-q08.
-A developer did make an update to the Deployment but the updated version never came online.
-Check the Deployment history and find a revision that works, then rollback to it.
-Could you tell Team Neptune what the error was so it doesn't happen again?
+        task="""An issue has occurred with an existing Deployment named `api-new-c32` in the `ckad-q08` namespace. A recent update caused the Deployment to fail, and the new version never became ready.
 
-(Setup creates the deployment with a broken revision for you to fix)""",
+Your tasks are to identify a stable revision, perform a rollback, and document the cause of the failure.
+
+**Namespace:** `ckad-q08`
+
+**Task 1: Investigate and Rollback**
+
+1.  **Examine the Deployment history** for `api-new-c32` to find previous revisions.
+    *   **Hint:** Use `kubectl rollout history deployment/<deployment-name>` and `kubectl rollout undo deployment/<deployment-name> --to-revision=<revision-number>`.
+2.  **Identify a working revision** from the history.
+3.  **Perform a rollback** to the identified working revision.
+4.  **Verify** that the Deployment is stable and all Pods are running.
+
+**Task 2: Document the Error**
+
+After fixing the Deployment, determine what caused the original update to fail.
+
+1.  **Identify the specific error** that prevented the updated version from coming online.
+2.  **Explain the error concisely** to help prevent similar issues in the future.""",
         setup_resources=[
             {"kind": "Namespace", "metadata": {"name": "ckad-q08"}},
         ],
@@ -214,16 +324,31 @@ Could you tell Team Neptune what the error was so it doesn't happen again?
         namespace="ckad-q09",
         difficulty="medium",
         timeout=600,
-        task="""In Namespace ckad-q09 there is single Pod named holy-api.
-It has been working okay for a while now but Team needs it to be more reliable.
-Convert the Pod into a Deployment named holy-api with 3 replicas and delete the single Pod once done.
+        task="""A simple API, currently running as a single Pod named `holy-api`, needs to be made more reliable.
+Your task is to convert the existing Pod into a high-availability Deployment.
 
-In addition, the new Deployment should set:
-  allowPrivilegeEscalation: false
-  privileged: false
-for the security context on container level.
+The existing Pod is in the `ckad-q09` namespace.
 
-Please create the Deployment and save its yaml under /opt/course/exam3/q09/holy-api-deployment.yaml""",
+**Task 1: Create the Deployment**
+
+Create a new Deployment with the following specifications, based on the existing `holy-api` Pod:
+
+| Property                 | Value                                        |
+| ------------------------ | -------------------------------------------- |
+| Deployment Name          | `holy-api`                                   |
+| Replicas                 | `3`                                          |
+| Security Context (Container Level) | `allowPrivilegeEscalation: false`, `privileged: false` |
+
+Once the Deployment is running successfully, delete the original `holy-api` Pod.
+
+**Task 2: Save the Manifest**
+
+Save the YAML manifest for the new `holy-api` Deployment to the following file:
+
+| Property  | Value                                       |
+| --------- | ------------------------------------------- |
+| File Path | `/opt/course/exam3/q09/holy-api-deployment.yaml` |
+""",
         setup_resources=[
             {"kind": "Namespace", "metadata": {"name": "ckad-q09"}},
         ],
@@ -240,16 +365,34 @@ Please create the Deployment and save its yaml under /opt/course/exam3/q09/holy-
         namespace="ckad-q10",
         difficulty="medium",
         timeout=600,
-        task="""Team needs a new cluster internal Service. Create a ClusterIP Service named project-plt-6cc-svc
-in Namespace ckad-q10. This Service should expose a single Pod named project-plt-6cc-api
-of image nginx:1.17.3-alpine, create that Pod as well.
-The Pod should be identified by label: project=plt-6cc-api
+        task="""A new internal service needs to be deployed and tested. This involves creating a Pod, exposing it via a Service, and then verifying connectivity and logging.
 
-The Service should use tcp port redirection of 3333:80.
+All resources should be created in the `ckad-q10` namespace.
 
-Finally use curl from a temporary nginx:alpine Pod to get the response from the Service.
-Write the response into /opt/course/exam3/q10/service_test.html
-Also check if the logs of Pod project-plt-6cc-api show the request and write those into /opt/course/exam3/q10/service_test.log""",
+**Task 1: Create the Pod**
+
+| Property         | Value                   |
+| ---------------- | ----------------------- |
+| Pod Name         | `project-plt-6cc-api`   |
+| Image            | `nginx:1.17.3-alpine`   |
+| Label            | `project: plt-6cc-api`  |
+
+**Task 2: Create the Service**
+
+| Property         | Value                   |
+| ---------------- | ----------------------- |
+| Service Name     | `project-plt-6cc-svc`   |
+| Service Type     | `ClusterIP`             |
+| Port Mapping     | `3333:80` (TCP)         |
+| Selector         | `project: plt-6cc-api`  |
+
+**Task 3: Test the Service and Save Artifacts**
+
+1.  From a temporary `nginx:alpine` Pod, use `curl` to access the `project-plt-6cc-svc` service.
+2.  Save the HTML response from the `curl` command to `/opt/course/exam3/q10/service_test.html`.
+3.  Retrieve the logs from the `project-plt-6cc-api` Pod.
+4.  Save the logs to `/opt/course/exam3/q10/service_test.log`.
+""",
         setup_resources=[
             {"kind": "Namespace", "metadata": {"name": "ckad-q10"}},
         ],
@@ -267,17 +410,35 @@ Also check if the logs of Pod project-plt-6cc-api show the request and write tho
         namespace="ckad-q11",
         difficulty="hard",
         timeout=900,
-        task="""There are files to build a container image located at /opt/course/exam3/q11/image on localhost.
-The container will run a Golang application which outputs information to stdout.
+        task="""You are provided with a set of files at `/opt/course/exam3/q11/image` on `localhost` for building a container image. This container will execute a Golang application that writes output to `stdout`.
 
-Perform the following tasks:
-1. Change the Dockerfile: set ENV variable SUN_CIPHER_ID to value: 5b9c1065-e39d-4a43-a04a-e59bcea3e03f
-2. Build the image using docker, tag it registry.killer.sh:5000/sun-cipher:v1-docker and push it
-3. Build the image using podman, tag it registry.killer.sh:5000/sun-cipher:v1-podman and push it
-4. Run a container using podman, which keeps running detached, named sun-cipher using the podman image
-5. Write the logs your container produces into /opt/course/exam3/q11/logs
+Your tasks involve modifying the Dockerfile, building and pushing the image using both Docker and Podman, running a Podman container, and capturing its logs.
 
-Note: Run docker/podman as root using sudo.""",
+**Task 1: Modify the Dockerfile**
+
+Edit the Dockerfile located in `/opt/course/exam3/q11/image` to set the `ENV` variable `SUN_CIPHER_ID` to the value `5b9c1065-e39d-4a43-a04a-e59bcea3e03f`.
+
+**Task 2: Build and Push Images**
+
+1.  **Build with Docker:**
+    *   Build the image using `docker`.
+    *   Tag the image as `registry.killer.sh:5000/sun-cipher:v1-docker`.
+    *   Push the tagged Docker image to the registry.
+2.  **Build with Podman:**
+    *   Build the image using `podman`.
+    *   Tag the image as `registry.killer.sh:5000/sun-cipher:v1-podman`.
+    *   Push the tagged Podman image to the registry.
+
+**Task 3: Run Podman Container and Capture Logs**
+
+1.  **Run Container:**
+    *   Run a new container using `podman` from the `registry.killer.sh:5000/sun-cipher:v1-podman` image.
+    *   Name the container `sun-cipher`.
+    *   Ensure the container runs in detached mode (in the background).
+2.  **Capture Logs:**
+    *   Write all logs produced by the `sun-cipher` container into the file `/opt/course/exam3/q11/logs` on `localhost`.
+
+**Note:** You may need to run `docker` and `podman` commands as `root` (e.g., using `sudo`).""",
         validation_checks={
             "file_exists": "/opt/course/exam3/q11/logs",
             "file_contains": "SUN_CIPHER_ID"
@@ -290,17 +451,43 @@ Note: Run docker/podman as root using sudo.""",
         namespace="ckad-q12",
         difficulty="medium",
         timeout=600,
-        task="""Create a new PersistentVolume named earth-project-earthflower-pv.
-It should have a capacity of 2Gi, accessMode ReadWriteOnce, hostPath /Volumes/Data
-and no storageClassName defined.
+        task="""A new application requires persistent storage. Your task is to provision a PersistentVolume, claim it with a PersistentVolumeClaim, and consume it within a Deployment.
 
-Next create a new PersistentVolumeClaim in Namespace ckad-q12 named earth-project-earthflower-pvc.
-It should request 2Gi storage, accessMode ReadWriteOnce and should not define a storageClassName.
-The PVC should bound to the PV correctly.
+All namespaced resources should be in `ckad-q12`.
 
-Finally create a new Deployment project-earthflower in Namespace ckad-q12
-which mounts that volume at /tmp/project-data.
-The Pods of that Deployment should be of image httpd:2.4.41-alpine.""",
+**Task 1: Create the PersistentVolume**
+
+| Property         | Value                          |
+| ---------------- | ------------------------------ |
+| PV Name          | `earth-project-earthflower-pv` |
+| Capacity         | `2Gi`                          |
+| Access Modes     | `ReadWriteOnce`                |
+| Host Path        | `/Volumes/Data`                |
+| Storage Class    | (none)                         |
+
+**Task 2: Create the PersistentVolumeClaim**
+
+| Property         | Value                          |
+| ---------------- | ------------------------------ |
+| PVC Name         | `earth-project-earthflower-pvc`|
+| Namespace        | `ckad-q12`                     |
+| Capacity Request | `2Gi`                          |
+| Access Modes     | `ReadWriteOnce`                |
+| Storage Class    | (none)                         |
+
+After creation, verify that the PVC successfully binds to the PV.
+
+**Task 3: Create the Deployment**
+
+| Property         | Value                          |
+| ---------------- | ------------------------------ |
+| Deployment Name  | `project-earthflower`          |
+| Namespace        | `ckad-q12`                     |
+| Image            | `httpd:2.4.41-alpine`          |
+| Volume Name      | `project-data-vol` (example)   |
+| Volume Mount Path| `/tmp/project-data`            |
+| PVC to Use       | `earth-project-earthflower-pvc`|
+""",
         setup_resources=[
             {"kind": "Namespace", "metadata": {"name": "ckad-q12"}},
         ],
@@ -318,17 +505,35 @@ The Pods of that Deployment should be of image httpd:2.4.41-alpine.""",
         namespace="ckad-q13",
         difficulty="medium",
         timeout=600,
-        task="""Team Moonpie (Namespace ckad-q13) needs more storage.
-Create a new PersistentVolumeClaim named moon-pvc-126 in that namespace.
+        task="""Team Moonpie needs to dynamically provision storage using a custom StorageClass that is not yet available. Your task is to create the StorageClass and a PersistentVolumeClaim that uses it.
 
-This claim should use a new StorageClass moon-retain with:
-  - provisioner: moon-retainer
-  - reclaimPolicy: Retain
+All namespaced resources should be in `ckad-q13`.
 
-The claim should request storage of 3Gi, accessMode ReadWriteOnce and use the new StorageClass.
+**Task 1: Create the StorageClass**
 
-The provisioner moon-retainer will be created by another team, so it's expected that the PVC will not bind yet.
-Confirm this by writing the event message from the PVC into file /opt/course/exam3/q13/pvc-126-reason""",
+| Property         | Value             |
+| ---------------- | ----------------- |
+| SC Name          | `moon-retain`     |
+| Provisioner      | `moon-retainer`   |
+| Reclaim Policy   | `Retain`          |
+
+**Task 2: Create the PersistentVolumeClaim**
+
+| Property         | Value             |
+| ---------------- | ----------------- |
+| PVC Name         | `moon-pvc-126`    |
+| Namespace        | `ckad-q13`        |
+| Capacity Request | `3Gi`             |
+| Access Modes     | `ReadWriteOnce`   |
+| Storage Class    | `moon-retain`     |
+
+**Task 3: Verify and Document**
+
+The `moon-retainer` provisioner does not exist, so the PVC will remain in a `Pending` state.
+1.  Verify that the PVC status is `Pending`.
+2.  Extract the event message associated with the pending PVC.
+3.  Save this message to the file `/opt/course/exam3/q13/pvc-126-reason`.
+""",
         setup_resources=[
             {"kind": "Namespace", "metadata": {"name": "ckad-q13"}},
         ],
@@ -346,18 +551,43 @@ Confirm this by writing the event message from the PVC into file /opt/course/exa
         namespace="ckad-q14",
         difficulty="medium",
         timeout=600,
-        task="""You need to make changes on an existing Pod in Namespace ckad-q14 called secret-handler.
+        task="""An existing Pod named `secret-handler` in the `ckad-q14` namespace needs to be updated to consume a Secret as environment variables and a ConfigMap as a volume.
 
-Create a new Secret secret1 which contains: user=test and pass=pwd
-The Secret's content should be available in Pod secret-handler as environment variables:
-  SECRET1_USER and SECRET1_PASS
+**Task 1: Create the Secret**
 
-Create a ConfigMap secret2 and mount it inside the same Pod at /tmp/secret2.
+Create a Secret with the following specifications:
 
-Your changes should be saved under /opt/course/exam3/q14/secret-handler-new.yaml
-Both Secrets should only be available in Namespace ckad-q14.
+| Property         | Value        |
+| ---------------- | ------------ |
+| Secret Name      | `secret1`    |
+| Namespace        | `ckad-q14`   |
+| Data             | `user=test`, `pass=pwd` |
 
-Setup creates the initial Pod for you.""",
+**Task 2: Create the ConfigMap**
+
+Create a ConfigMap with the following specifications:
+
+| Property         | Value        |
+| ---------------- | ------------ |
+| ConfigMap Name   | `secret2`    |
+| Namespace        | `ckad-q14`   |
+| Data             | (empty, or specify a dummy key-value pair if required for validation) |
+
+**Task 3: Modify the Existing Pod**
+
+Modify the `secret-handler` Pod (which is provided by the setup) in `ckad-q14` to:
+
+1.  Make the `secret1` data (`user`, `pass`) available as environment variables named `SECRET1_USER` and `SECRET1_PASS` respectively.
+2.  Mount the `secret2` ConfigMap as a volume at the path `/tmp/secret2` inside the Pod.
+
+**Task 4: Save the Pod Manifest**
+
+Save the YAML manifest of the modified `secret-handler` Pod to the following location:
+
+| Property  | Value                                        |
+| --------- | -------------------------------------------- |
+| File Path | `/opt/course/exam3/q14/secret-handler-new.yaml` |
+""",
         setup_resources=[
             {"kind": "Namespace", "metadata": {"name": "ckad-q14"}},
         ],
