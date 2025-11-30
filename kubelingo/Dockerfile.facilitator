@@ -11,13 +11,13 @@ RUN apk add --no-cache openssh-client
 COPY facilitator/package*.json ./
 
 # Install dependencies
-RUN npm ci --only=production
+RUN npm install --omit=dev
 
 # Bundle app source
 COPY facilitator/ .
 
 # Copy generated questions from kubelingo output
-COPY kubelingo/out/facilitator/assets/exams/ ./assets/exams/
+# Use repository assets (facilitator/assets/exams) already copied above.
 
 # Create logs directory
 RUN mkdir -p logs

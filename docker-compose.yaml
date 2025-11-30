@@ -101,6 +101,7 @@ services:
       - "22" # SSH port (internal only)
     volumes:
       - kube-config:/home/candidate/.kube # Shared volume for Kubernetes config
+      - course-data:/opt/course # Shared course data for file-based tasks
     deploy:
       resources:
         limits:
@@ -124,6 +125,8 @@ services:
     hostname: remote-terminal
     expose:
       - "22" # SSH port (internal only)
+    volumes:
+      - course-data:/opt/course # Shared course data for file-based tasks
     deploy:
       resources:
         limits:
@@ -239,4 +242,5 @@ networks:
     driver: bridge
 
 volumes:
+  course-data:
   kube-config: # Shared volume for Kubernetes configuration
