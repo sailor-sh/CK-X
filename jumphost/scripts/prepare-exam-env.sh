@@ -39,8 +39,9 @@ if ! [[ "$NUMBER_OF_NODES" =~ ^[0-9]+$ ]]; then
   exit 1
 fi
 
-# Setup kind cluster
-ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null candidate@k8s-api-server "env-setup $NUMBER_OF_NODES $CLUSTER_NAME"
+# Clean up any existing cluster and set up a fresh one with fixed API port
+ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null candidate@k8s-api-server "env-cleanup $CLUSTER_NAME || true"
+ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null candidate@k8s-api-server "API_PORT=6443 env-setup $NUMBER_OF_NODES $CLUSTER_NAME"
 
 #Pull assets from URL
 curl facilitator:3000/api/v1/exams/$EXAM_ID/assets -o assets.tar.gz
