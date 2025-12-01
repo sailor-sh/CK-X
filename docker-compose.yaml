@@ -1,9 +1,8 @@
 services:
   # VNC Server (Ubuntu)
   remote-desktop:
-    image: nishanb/ck-x-simulator-remote-desktop:latest
-    build:
-      context: ./remote-desktop
+    image: ${REMOTE_DESKTOP_IMAGE:-${CKX_IMAGE_NS:-je01}/ckx-remote-desktop:${CKX_VERSION:-exam3-v2}}
+    platform: ${CKX_PLATFORM:-}
     hostname: terminal
     expose:
       - "5901" # VNC port (internal only)
@@ -32,9 +31,8 @@ services:
 
   # Web Application (not directly exposed to users)
   webapp:
-    image: nishanb/ck-x-simulator-webapp:latest
-    build:
-      context: ./app
+    image: ${WEBAPP_IMAGE:-${CKX_IMAGE_NS:-je01}/ckx-webapp:${CKX_VERSION:-exam3-v2}}
+    platform: ${CKX_PLATFORM:-}
     expose:
       - "3000" # Only exposed to internal network
     environment:
@@ -63,9 +61,8 @@ services:
 
   # Nginx Reverse Proxy - ONLY SERVICE EXPOSED TO USERS
   nginx:
-    image: nishanb/ck-x-simulator-nginx:latest
-    build:
-      context: ./nginx
+    image: ${NGINX_IMAGE:-${CKX_IMAGE_NS:-je01}/ckx-nginx:${CKX_VERSION:-exam3-v2}}
+    platform: ${CKX_PLATFORM:-}
     depends_on:
       - webapp
       - remote-desktop
@@ -92,9 +89,8 @@ services:
 
   # Jump Host (ckad9999 and ckad9988)
   jumphost:
-    image: nishanb/ck-x-simulator-jumphost:latest
-    build:
-      context: ./jumphost
+    image: ${JUMPHOST_IMAGE:-${CKX_IMAGE_NS:-je01}/ckx-jumphost:${CKX_VERSION:-exam3-v2}}
+    platform: ${CKX_PLATFORM:-}
     hostname: ckad9999
     privileged: true
     # No external port mappings - only accessible internally
@@ -120,9 +116,8 @@ services:
 
   # Remote Terminal Service
   remote-terminal:
-    image: nishanb/ck-x-simulator-remote-terminal:latest
-    build:
-      context: ./remote-terminal
+    image: ${REMOTE_TERMINAL_IMAGE:-${CKX_IMAGE_NS:-je01}/ckx-remote-terminal:${CKX_VERSION:-exam3-v2}}
+    platform: ${CKX_PLATFORM:-}
     hostname: remote-terminal
     expose:
       - "22" # SSH port (internal only)
@@ -149,9 +144,8 @@ services:
 
   # KIND Kubernetes Cluster
   k8s-api-server: # Service name that will be used for DNS resolution
-    image: nishanb/ck-x-simulator-cluster:latest
-    build:
-      context: ./kind-cluster
+    image: ${CLUSTER_IMAGE:-${CKX_IMAGE_NS:-je01}/ckx-cluster:${CKX_VERSION:-exam3-v2}}
+    platform: ${CKX_PLATFORM:-}
     container_name: kind-cluster
     hostname: k8s-api-server
     privileged: true # Required for running containers inside KIND
@@ -205,10 +199,8 @@ services:
 
   # Facilitator Service
   facilitator:
-    image: nishanb/ck-x-simulator-facilitator:latest
-    build:
-      context: ./facilitator
-      dockerfile: Dockerfile
+    image: ${FACILITATOR_IMAGE:-${CKX_IMAGE_NS:-je01}/ckx-facilitator:${CKX_VERSION:-exam3-v2}}
+    platform: ${CKX_PLATFORM:-}
     hostname: facilitator
     expose:
       - "3000"
@@ -249,4 +241,6 @@ networks:
 
 volumes:
   course-data:
+    name: ${CKX_COURSE_VOLUME:-ckx-course-data}
   kube-config: # Shared volume for Kubernetes configuration
+    name: ${CKX_KUBECONFIG_VOLUME:-ckx-kube-config}
