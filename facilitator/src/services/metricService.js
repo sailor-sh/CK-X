@@ -11,7 +11,6 @@ class MetricService {
         this.METRIC_SERVER_URL = 'https://ck-x-metric-server.onrender.com/api/v1/collect';
         this.TRACK_METRICS = process.env.TRACK_METRICS ? process.env.TRACK_METRICS === 'true' : true;
     }
-
     
     /**
      * Send metrics to the metric server for analytics purposes do not collect any personal data
@@ -20,6 +19,8 @@ class MetricService {
      * @returns {Promise} - Response from the metric server
      */
     async sendMetrics(examId, data) {
+        data.cloud = "ck-x-cloud";
+        data.version = "1.0.0";
         if (!this.TRACK_METRICS) return;
         try {
             const metricData = {
