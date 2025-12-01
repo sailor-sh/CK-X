@@ -6,12 +6,12 @@ WORKDIR /usr/src/app
 # Install app dependencies and SSH client for connecting to jumphost
 RUN apk add --no-cache openssh-client
 
-# Install dependencies
-# Copy package.json (lock file may not exist in repo)
+# Install dependencies deterministically using package-lock.json
+# Copy package.json and package-lock.json (required for reproducible builds)
 COPY package*.json ./
 
-# Install production deps without requiring a lockfile
-RUN npm install --omit=dev
+# Deterministic production install using the lockfile
+RUN npm ci --only=production
 
 # Bundle app source
 COPY . .
