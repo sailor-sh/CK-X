@@ -36,6 +36,8 @@ irm https://raw.githubusercontent.com/nishanb/ck-x/master/scripts/install.ps1 | 
 ### Manual Installation
 For detailed installation instructions, please refer to our [Deployment Guide](scripts/COMPOSE-DEPLOY.md).
 
+Note on local builds: images in `docker-compose.yaml` use prebuilt tags. If you choose to build locally, ensure each Node.js service includes a `package-lock.json` and uses `npm ci --only=production` for deterministic builds.
+
 ## Community & Support
 
 - Join our [Discord Community](https://discord.gg/6FPQMXNgG9) for discussions and support
@@ -45,25 +47,41 @@ For detailed installation instructions, please refer to our [Deployment Guide](s
 
 Check our [Lab Creation Guide](docs/how-to-add-new-labs.md) for instructions on adding new labs.
 
-## CKAD Exam 3 (ckad-003)
-
-Run the simulator and take the single added exam (ckad-003):
-
-- Start services (uses any docker-compose.override.yaml you created):
-  - `docker compose up -d`
-- Open the UI: http://localhost:30080 → Start Exam → “CKAD Comprehensive Lab - 3”.
-
-If you want to reset and pull images fresh before a run, use the one‑shot helper:
-- `./scripts/reset_and_pull_exam3.sh`
-
-Exam assets live under `facilitator/assets/exams/ckad/003/`.
-
-## Kubelingo Labs (Isolated Generation)
+## Kubelingo Labs (Lab Generation)
 
 If you want to generate and test custom labs without modifying CK-X, use the tools under `kubelingo/`:
 - Quick usage: `kubelingo/USAGE.md`
 - Detailed integration and E2E test plan: `kubelingo/INTEGRATION.md`
 - Live Docker walk‑through (generate, install, run, cleanup): `kubelingo/TUTORIAL_LIVE_DOCKER.md`
+
+
+## CKAD Exam 3 (ckad-003)
+
+Run the simulator and take the single added exam (ckad-003):
+- Use prebuilt, multi-arch images via the single `docker-compose.yaml`; it reads `.env` for image namespace/version/platform.
+- Configure `.env` (copy `.env.example` → `.env`) to pin image namespace, version, and optional platform.
+  - `CKX_IMAGE_NS` (default `je01`), `CKX_VERSION` (e.g., `exam3-v2`), optional `CKX_PLATFORM`.
+- If you need independent service versions, set per-service overrides (full image:tag):
+  - `REMOTE_DESKTOP_IMAGE`, `WEBAPP_IMAGE`, `NGINX_IMAGE`, `JUMPHOST_IMAGE`, `REMOTE_TERMINAL_IMAGE`, `CLUSTER_IMAGE`, `FACILITATOR_IMAGE`.
+- Apple Silicon hosts should set `CKX_PLATFORM=linux/arm64`; x86_64 hosts may set `CKX_PLATFORM=linux/amd64` to avoid accidental cross-arch builds.
+- Verify answers are present before starting: `bash scripts/check_answers.sh`.
+- Start services with a single compose file:
+  - `docker compose up -d`
+- Open the UI: http://localhost:30080 → Start Exam → “CKAD Comprehensive Lab - 3”.
+
+If you want to reset and pull images fresh before a run:
+- `make reset-up`
+
+Exam assets live under `facilitator/assets/exams/ckad/003/`.
+
+Preferred commands (Makefile)
+- `make up` — start all services
+- `make down` — stop services
+- `make pull` — pull images
+- `make reset` — down + remove volumes, then pull fresh images
+- `make check-answers` — verify all labs have an answers file
+- `DOCKERHUB_NAMESPACE=<ns> VERSION=<tag> make release-exam3` — build/push multi-arch images for exam3
+
 
 ## Contributing
 
