@@ -41,4 +41,4 @@ Installing Into CK-X (Manual, Optional)
 
 Notes
 - By default, this workflow does not write to `facilitator/` or alter CK-X behavior.
-- For richer content, you can run with `--no-mock` after configuring a provider, but keep determinism in mind for validations.
+- For exam-003 specifics, refer to `exam-003/` at the repo root (consolidated guide + generator).
