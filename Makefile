@@ -14,6 +14,7 @@ help:
 	@echo "  make reset           # Down + remove volumes, then pull"
 	@echo "  make check-answers   # Verify answers.md paths exist"
 	@echo "  make release-exam3   # Build and push multi-arch images for exam3"
+	@echo "  make test            # Run repository tests"
 
 .PHONY: up
 up:
@@ -49,7 +50,11 @@ release-exam3:
 		echo "Set DOCKERHUB_NAMESPACE and VERSION, e.g. DOCKERHUB_NAMESPACE=je01 VERSION=exam3-v2"; \
 		exit 1; \
 	fi
-	./scripts/buildx_multiarch_exam3.sh
+	bash scripts/buildx_multiarch_exam3.sh
 
 .PHONY: build-and-push
 build-and-push: release-exam3
+
+.PHONY: test
+test:
+	bash tests/run_all.sh
