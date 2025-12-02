@@ -63,6 +63,7 @@ sleep 5
 
 #wait till api-server is ready
 while ! kubectl get nodes > /dev/null 2>&1; do
+  log "API server is not ready, retrying..."
   sleep 5
 done
 

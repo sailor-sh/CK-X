@@ -54,13 +54,9 @@ metadata:
   name: $CLUSTER_NAME
 servers: 1
 agents: $NUM_WORKERS
-ports:
-  - port: "$API_PORT:6443"
-    nodeFilters:
-      - loadbalancer
 kubeAPI:
   host: "127.0.0.1"
-  hostPort: "$API_PORT"
+  hostPort: "6443"
 options:
   k3s:
     extraArgs:
@@ -107,9 +103,14 @@ echo "$(date '+%Y-%m-%d %H:%M:%S') | ✅ K3d cluster '$CLUSTER_NAME' is up and r
 
 echo "$(date '+%Y-%m-%d %H:%M:%S') | Docker and KIND environment is ready for use"
 
+k3d kubeconfig get $CLUSTER_NAME > /home/candidate/.kube/kubeconfig
+echo "Kubeconfig file created: /home/candidate/.kube/kubeconfig"
+
 # Save kubeconfig and set API server address
-cp /home/candidate/.kube/config /home/candidate/.kube/kubeconfig
 sed -i 's|server: https://127\.0\.0\.1:\([0-9]*\)|server: https://k8s-api-server:\1|' /home/candidate/.kube/kubeconfig
+
+echo "Kubeconfig file content:"
+cat /home/candidate/.kube/kubeconfig
 
 export KUBECONFIG=/home/candidate/.kube/kubeconfig
 
