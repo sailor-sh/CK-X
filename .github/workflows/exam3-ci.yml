@@ -1,0 +1,29 @@
+name: Exam 3 CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Run answer tests
+      run: bash tests/exam3/test_answers.sh
+
+    - name: Run assessment schema tests
+      run: bash tests/exam3/test_assessment_schema.sh
+
+    - name: Run path and convention tests
+      run: bash tests/exam3/test_paths_and_conventions.sh
+
+    - name: Run registration tests
+      run: bash tests/exam3/test_registration.sh
+
+    - name: Run setup script tests
+      run: bash tests/exam3/test_setup_scripts.sh
