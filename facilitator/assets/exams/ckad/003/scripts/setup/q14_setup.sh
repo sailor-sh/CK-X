@@ -21,4 +21,6 @@ spec:
   - name: secret2
     emptyDir: {}
 EOF
-echo "Seeded Pod secret-handler in ${NS}."
+echo "Seeded Pod secret-handler in ${NS}, waiting for Ready..."
+kubectl -n "$NS" wait --for=condition=Ready pod/secret-handler --timeout=60s
+echo "Pod secret-handler is Ready."
