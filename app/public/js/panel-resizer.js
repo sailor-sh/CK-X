@@ -1,7 +1,8 @@
 /**
  * Panel Resizer - Handles resizing of panels by dragging
+ * Exported as an ES module to make dependency order explicit.
  */
-class PanelResizer {
+export class PanelResizer {
     constructor(options) {
         this.divider = document.getElementById(options.dividerId);
         this.leftPanel = document.getElementById(options.leftPanelId);

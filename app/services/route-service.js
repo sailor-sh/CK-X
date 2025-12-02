@@ -20,8 +20,9 @@ class RouteService {
         // Catch-all route to serve index.html for any other requests
         app.get('*', (req, res) => {
             // Special handling for exam page
-            if (req.path === '/exam') {
-                res.sendFile(path.join(this.publicService.getPublicDir(), 'exam.html'));
+            if (req.path === '/exam' || req.path === '/exam.html') {
+                // Use a single entry point; index.html bootstraps exam UI
+                res.sendFile(path.join(this.publicService.getPublicDir(), 'index.html'));
             } 
             // Special handling for results page
             else if (req.path === '/results') {

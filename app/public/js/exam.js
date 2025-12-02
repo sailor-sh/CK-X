@@ -12,6 +12,7 @@ import * as TimerService from './components/timer-service.js';
 import * as UiUtils from './components/ui-utils.js';
 import * as WakeLockService from './components/wake-lock-service.js';
 import * as ClipboardService from './components/clipboard-service.js';
+import { PanelResizer } from './panel-resizer.js';
 
 document.addEventListener('DOMContentLoaded', function() {
     // DOM Elements

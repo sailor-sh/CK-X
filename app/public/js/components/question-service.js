@@ -20,37 +20,37 @@ function processQuestionContent(content) {
 
     // 3) Style absolute file paths like /opt/course/exam3/q01/namespaces (avoid matching inside tags)
     processedContent = processedContent.replace(/(^|\s)(\/(?:opt|etc|var|home|tmp|root|usr)(?:\/[A-Za-z0-9._-]+)+)/g,
-        (m, ws, path) => `${ws}<span class=\"inline-code\">${path}</span>`
+        (m, ws, path) => `${ws}<span class="inline-code">${path}</span>`
     );
 
     // 4) Style kubectl commands inline (from the verb onward, until line break)
     processedContent = processedContent.replace(/(^|\n)(\s*)(kubectl[^\n<]+)/g,
-        (m, br, sp, cmd) => `${br}${sp}<span class=\"inline-code\">${cmd}</span>`
+        (m, br, sp, cmd) => `${br}${sp}<span class="inline-code">${cmd}</span>`
     );
 
     // 4a) Also style other common CLI commands
     processedContent = processedContent.replace(/(^|\n)(\s*)((?:helm|docker|podman)\s+[^\n<]+)/g,
-        (m, br, sp, cmd) => `${br}${sp}<span class=\"inline-code\">${cmd}</span>`
+        (m, br, sp, cmd) => `${br}${sp}<span class="inline-code">${cmd}</span>`
     );
 
     // 5) Style resource names following common keywords in prose (Pod/Deployment/etc.)
     processedContent = processedContent.replace(/\b(Pod|Deployment|Service|ConfigMap|Secret|StorageClass|PersistentVolumeClaim|PersistentVolume|PVC|PV|Job|CronJob|ServiceAccount)\s+(?:named|called)?\s*([A-Za-z0-9._-]+)/gi,
-        (m, kind, name) => `${kind} <span class=\"inline-code\">${name}</span>`
+        (m, kind, name) => `${kind} <span class="inline-code">${name}</span>`
     );
 
     // 6) Style image references (image: nginx:1.17.3-alpine)
     processedContent = processedContent.replace(/\b(Image|image)\s*[:=]\s*([A-Za-z0-9._\/-]+:[A-Za-z0-9._-]+)/g,
-        (m, key, img) => `${key}: <span class=\"inline-code\">${img}</span>`
+        (m, key, img) => `${key}: <span class="inline-code">${img}</span>`
     );
 
     // 7) Style file names with common extensions
     processedContent = processedContent.replace(/(^|\s)([A-Za-z0-9._-]+\.(?:ya?ml|json|sh|txt|log))\b/g,
-        (m, ws, file) => `${ws}<span class=\"inline-code\">${file}</span>`
+        (m, ws, file) => `${ws}<span class="inline-code">${file}</span>`
     );
 
     // 8) Style any token that looks like a path (contains a slash), erring on inclusion
     processedContent = processedContent.replace(/(^|\s)([A-Za-z0-9._-]+(?:\/[A-Za-z0-9._-]+)+)\b/g,
-        (m, ws, p) => `${ws}<span class=\"inline-code\">${p}</span>`
+        (m, ws, p) => `${ws}<span class="inline-code">${p}</span>`
     );
 
     // 9) Style IP addresses
@@ -58,7 +58,7 @@ function processQuestionContent(content) {
 
     // 10) Style port references (port: 30100, nodePort: 30100)
     processedContent = processedContent.replace(/\b(node)?[Pp]ort\s*[:=]\s*(\d{2,5})/g,
-        (m, np, port) => `${np ? 'nodePort' : 'port'}: <span class=\"inline-code\">${port}</span>`
+        (m, np, port) => `${np ? 'nodePort' : 'port'}: <span class="inline-code">${port}</span>`
     );
 
     // 5) Style bold text

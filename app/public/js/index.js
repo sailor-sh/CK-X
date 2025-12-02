@@ -258,7 +258,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 return response.json();
             })
             .then(data => {
-                labs = data.sort((a, b) => a.id.localeCompare(b.id)); // Sort labs by id
+                // Sort labs by numeric id when possible; fallback to string compare
+                labs = data.sort((a, b) => {
+                    const numA = parseInt(a.id, 10);
+                    const numB = parseInt(b.id, 10);
+                    return (Number.isNaN(numA) || Number.isNaN(numB))
+                        ? String(a.id).localeCompare(String(b.id))
+                        : numA - numB;
+                });
                 console.log('Labs loaded successfully, count:', labs.length);
                 if (showLoader) {
                     pageLoader.style.display = 'none';
