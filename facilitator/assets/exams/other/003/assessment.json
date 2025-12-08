@@ -1,0 +1,119 @@
+{
+  "questions": [
+    {
+      "id": "1",
+      "namespace": "microservices-demo",
+      "machineHostname": "ckad9999",
+      "question": "Deploy a complete microservices architecture in the `microservices-demo` namespace:\n\n1. **Frontend Service**:\n   - Deployment: `frontend` with 2 replicas\n   - Image: `nginx:1.21`\n   - Service: ClusterIP on port 80\n   - ConfigMap: `frontend-config` with `api.endpoint=http://backend-service:8080`\n\n2. **Backend Service**:\n   - Deployment: `backend` with 3 replicas\n   - Image: `node:16-alpine`\n   - Service: ClusterIP on port 8080\n   - Environment variable from Secret: `DB_PASSWORD`\n   - Resource limits: CPU 200m, Memory 256Mi\n\n3. **Database Service**:\n   - StatefulSet: `database` with 1 replica\n   - Image: `postgres:13`\n   - PVC: 1Gi storage for `/var/lib/postgresql/data`\n   - Service: Headless service on port 5432\n   - Secret: `db-secret` with `DB_PASSWORD=mysecretpass`\n\n4. **Service Mesh** (simulate with proper labeling and services):\n   - All services should have proper labels for service discovery\n   - Implement health checks for all components",
+      "concepts": ["microservices", "service-discovery", "statefulsets", "configmaps", "secrets"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "All microservices are deployed and running",
+          "verificationScriptFile": "q1_s1_validate_microservices.sh",
+          "expectedOutput": "0",
+          "weightage": 4
+        },
+        {
+          "id": "2",
+          "description": "Service communication is configured correctly",
+          "verificationScriptFile": "q1_s2_validate_service_communication.sh",
+          "expectedOutput": "0",
+          "weightage": 1
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "namespace": "ingress-demo",
+      "machineHostname": "ckad9999",
+      "question": "Set up advanced ingress routing in the `ingress-demo` namespace:\n\n1. **Multiple backend services**:\n   - `api-v1`: Deployment with 2 replicas using `httpd:2.4`\n   - `api-v2`: Deployment with 2 replicas using `nginx:1.21`\n   - `web-ui`: Deployment with 3 replicas using `nginx:alpine`\n\n2. **Ingress Controller** configuration with:\n   - Path-based routing: `/api/v1/*` → `api-v1-service`\n   - Path-based routing: `/api/v2/*` → `api-v2-service`\n   - Host-based routing: `webapp.local` → `web-ui-service`\n   - Default backend: `web-ui-service`\n\n3. **TLS termination**:\n   - Create self-signed certificate\n   - Configure TLS for `webapp.local`\n   - Secret: `webapp-tls`\n\n4. **Rate limiting and load balancing**:\n   - Configure session affinity\n   - Set appropriate timeouts\n   - Add health check annotations",
+      "concepts": ["ingress", "tls", "path-routing", "host-routing", "load-balancing"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "Ingress resources are configured correctly",
+          "verificationScriptFile": "q2_s1_validate_ingress.sh",
+          "expectedOutput": "0",
+          "weightage": 3
+        },
+        {
+          "id": "2",
+          "description": "TLS and routing work correctly",
+          "verificationScriptFile": "q2_s2_validate_tls_routing.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "namespace": "monitoring-stack",
+      "machineHostname": "ckad9999",
+      "question": "Deploy a monitoring and observability stack in the `monitoring-stack` namespace:\n\n1. **Prometheus** deployment:\n   - StatefulSet with 1 replica\n   - Image: `prom/prometheus:v2.40.0`\n   - ConfigMap: `prometheus-config` with scrape configs\n   - PVC: 10Gi for data persistence\n   - Service: ClusterIP on port 9090\n\n2. **Grafana** deployment:\n   - Deployment with 1 replica\n   - Image: `grafana/grafana:9.3.0`\n   - Secret: `grafana-secret` with admin credentials\n   - PVC: 1Gi for dashboard storage\n   - Service: NodePort on port 3000\n\n3. **Application metrics** setup:\n   - Deploy sample app with metrics endpoint\n   - ServiceMonitor or equivalent for Prometheus scraping\n   - Configure service discovery\n\n4. **Alerting**:\n   - AlertManager deployment\n   - Basic alerting rules for CPU/Memory\n   - Notification configuration (simulate with ConfigMap)",
+      "concepts": ["monitoring", "prometheus", "grafana", "metrics", "alerting"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "Monitoring stack is deployed and running",
+          "verificationScriptFile": "q3_s1_validate_monitoring_stack.sh",
+          "expectedOutput": "0",
+          "weightage": 3
+        },
+        {
+          "id": "2",
+          "description": "Metrics collection is working",
+          "verificationScriptFile": "q3_s2_validate_metrics_collection.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        }
+      ]
+    },
+    {
+      "id": "4",
+      "namespace": "ci-cd-pipeline",
+      "machineHostname": "ckad9999",
+      "question": "Implement CI/CD pipeline components in the `ci-cd-pipeline` namespace:\n\n1. **GitOps setup**:\n   - Create ConfigMap with Git repository configuration\n   - Deploy ArgoCD or similar (simulate with custom app)\n   - Configure automated deployments\n\n2. **Build pipeline**:\n   - Job: `image-builder` that simulates building container images\n   - Secret: `registry-credentials` for image registry access\n   - ConfigMap: `build-config` with build parameters\n\n3. **Deployment pipeline**:\n   - CronJob: `deployment-sync` that runs every 5 minutes\n   - Job: `smoke-tests` for post-deployment testing\n   - Rolling deployment strategy configuration\n\n4. **Quality gates**:\n   - Pre-deployment validation jobs\n   - Security scanning simulation\n   - Integration test jobs\n\n5. **Rollback mechanism**:\n   - Configure deployment history\n   - Implement blue-green deployment pattern\n   - Set up canary deployment configuration",
+      "concepts": ["ci-cd", "gitops", "blue-green-deployment", "canary-deployment", "automation"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "CI/CD components are deployed",
+          "verificationScriptFile": "q4_s1_validate_cicd_components.sh",
+          "expectedOutput": "0",
+          "weightage": 3
+        },
+        {
+          "id": "2",
+          "description": "Pipeline automation is configured",
+          "verificationScriptFile": "q4_s2_validate_pipeline_automation.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        }
+      ]
+    },
+    {
+      "id": "5",
+      "namespace": "data-pipeline",
+      "machineHostname": "ckad9999",
+      "question": "Create a data processing pipeline in the `data-pipeline` namespace:\n\n1. **Message Queue**:\n   - StatefulSet: `rabbitmq` with 1 replica\n   - Image: `rabbitmq:3.11-management`\n   - Service: ClusterIP for AMQP (5672) and Management UI (15672)\n   - PVC: 2Gi for message persistence\n\n2. **Data Ingestion**:\n   - Deployment: `data-collector` with 2 replicas\n   - Image: `python:3.9-slim`\n   - ConfigMap: `collector-config` with ingestion parameters\n   - Environment variables from Secret for API keys\n\n3. **Data Processing**:\n   - Job: `batch-processor` for batch processing\n   - CronJob: `hourly-aggregation` running every hour\n   - Image: `apache/spark:3.3.0`\n   - Resource requests: CPU 500m, Memory 1Gi\n\n4. **Data Storage**:\n   - StatefulSet: `postgresql` with persistent storage\n   - StatefulSet: `redis` for caching\n   - Both with appropriate backup strategies\n\n5. **Data Access Layer**:\n   - Deployment: `api-gateway` for data access\n   - Service mesh integration (simulate with proper networking)\n   - Read/write splitting configuration",
+      "concepts": ["data-processing", "message-queues", "batch-processing", "data-storage", "api-gateway"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "Data pipeline components are running",
+          "verificationScriptFile": "q5_s1_validate_data_pipeline.sh",
+          "expectedOutput": "0",
+          "weightage": 4
+        },
+        {
+          "id": "2",
+          "description": "Data flow is configured correctly",
+          "verificationScriptFile": "q5_s2_validate_data_flow.sh",
+          "expectedOutput": "0",
+          "weightage": 1
+        }
+      ]
+    }
+  ]
+}
