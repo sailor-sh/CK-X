@@ -274,7 +274,7 @@
             "id": "10",
             "namespace": "workloads",
             "machineHostname": "ckad9999",
-            "question": "The database team needs to securely deploy a MySQL instance with proper credential management. \n\nCreate a Secret named `db-credentials` in namespace `workloads` containing two sensitive values: `username=admin` and `password=securepass`. \n\nThen create a Pod named `secure-pod` using the `mysql:5.7` image that uses these credentials. \n\nConfigure the pod to access the Secret values as environment variables named `DB_USER` and `DB_PASSWORD` respectively. \n\nThis pattern demonstrates secure handling of sensitive information in Kubernetes without hardcoding credentials in the pod specification. Ensure the MySQL container is properly configured to use these environment variables for authentication.",
+            "question": "The database team needs to securely deploy a MySQL instance with proper credential management. \n\nCreate a Secret named `db-credentials` in namespace `workloads` containing three sensitive values: `username=admin`, `random=true` and `password=securepass`. \n\nThen create a Pod named `secure-pod` using the `mysql:9.5.0` image that uses these credentials. \n\nConfigure the pod to access the Secret values as environment variables named `DB_USER`, `MYSQL_RANDOM_ROOT_PASSWORD` and `DB_PASSWORD` respectively. \n\nThis pattern demonstrates secure handling of sensitive information in Kubernetes without hardcoding credentials in the pod specification. Ensure the MySQL container is properly configured to use these environment variables for authentication.",
             "concepts": ["secrets", "pods", "environment-variables", "mysql"],
             "verification": [
                 {

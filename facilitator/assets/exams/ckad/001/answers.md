@@ -249,11 +249,11 @@ Save as `config-pod.yaml` and apply:
 kubectl apply -f config-pod.yaml
 ```
 
-## Question 10: Create a Secret named 'db-credentials' in namespace 'workloads' containing username=admin and password=securepass. Then create a Pod named 'secure-pod' using 'mysql:5.7' image with these credentials set as environment variables DB_USER and DB_PASSWORD
+## Question 10: Create a Secret named 'db-credentials' in namespace 'workloads' containing username=admin, random=true and password=securepass. Then create a Pod named 'secure-pod' using 'mysql:9.5.0' image with these credentials set as environment variables DB_USER, MYSQL_RANDOM_ROOT_PASSWORD and DB_PASSWORD
 
 ```bash
 # Create the Secret
-kubectl create secret generic db-credentials -n workloads --from-literal=username=admin --from-literal=password=securepass
+kubectl create secret generic db-credentials -n workloads --from-literal=username=admin --from-literal=password=securepass --from-literal=random=true
 ```
 
 Create the Pod with Secret environment variables:
@@ -278,11 +278,11 @@ spec:
         secretKeyRef:
           name: db-credentials
           key: password
-    - name: MYSQL_ROOT_PASSWORD
+    - name: MYSQL_RANDOM_ROOT_PASSWORD
       valueFrom:
         secretKeyRef:
           name: db-credentials
-          key: password
+          key: random
   restartPolicy: Always
 ```
 
