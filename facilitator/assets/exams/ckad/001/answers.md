@@ -266,7 +266,7 @@ metadata:
 spec:
   containers:
   - name: mysql
-    image: mysql:latest
+    image: mysql:9.5.0
     env:
     - name: DB_USER
       valueFrom:
