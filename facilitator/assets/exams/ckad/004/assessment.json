@@ -13,10 +13,34 @@
         "setup": "scripts/setup/q1_setup.sh"
       },
       "verification": [
-        { "id": "1", "description": "Namespace ckad-ns-a exists", "verificationScriptFile": "q1_s01_validate_ns_exists.sh", "expectedOutput": "0", "weightage": 2 },
-        { "id": "2", "description": "Pod web-core exists in namespace", "verificationScriptFile": "q1_s02_validate_pod_exists.sh", "expectedOutput": "0", "weightage": 2 },
-        { "id": "3", "description": "Pod uses nginx:alpine image", "verificationScriptFile": "q1_s03_validate_pod_image.sh", "expectedOutput": "0", "weightage": 2 },
-        { "id": "4", "description": "Pod is in Running state", "verificationScriptFile": "q1_s04_validate_pod_running.sh", "expectedOutput": "0", "weightage": 2 }
+        {
+          "id": "1",
+          "description": "Namespace ckad-ns-a exists",
+          "verificationScriptFile": "q1_s1_validate_ns_exists.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "2",
+          "description": "Pod web-core exists in namespace",
+          "verificationScriptFile": "q1_s2_validate_pod_exists.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "3",
+          "description": "Pod uses nginx:alpine image",
+          "verificationScriptFile": "q1_s3_validate_pod_image.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "4",
+          "description": "Pod is in Running state",
+          "verificationScriptFile": "q1_s4_validate_pod_running.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        }
       ]
     },
     {
@@ -32,10 +56,34 @@
         "setup": "scripts/setup/q2_setup.sh"
       },
       "verification": [
-        { "id": "1", "description": "Output file exists", "verificationScriptFile": "q2_s1_validate_file_exists.sh", "expectedOutput": "0", "weightage": 2 },
-        { "id": "2", "description": "File is not empty", "verificationScriptFile": "q2_s2_validate_content_not_empty.sh", "expectedOutput": "0", "weightage": 2 },
-        { "id": "3", "description": "Two columns present (name, timestamp)", "verificationScriptFile": "q2_s3_validate_correct_columns.sh", "expectedOutput": "0", "weightage": 3 },
-        { "id": "4", "description": "Contains pods from kube-system", "verificationScriptFile": "q2_s4_validate_kube_system_pods.sh", "expectedOutput": "0", "weightage": 3 }
+        {
+          "id": "1",
+          "description": "Output file exists",
+          "verificationScriptFile": "q2_s1_validate_file_exists.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "2",
+          "description": "File is not empty",
+          "verificationScriptFile": "q2_s2_validate_content_not_empty.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "3",
+          "description": "Two columns present (name, timestamp)",
+          "verificationScriptFile": "q2_s3_validate_correct_columns.sh",
+          "expectedOutput": "0",
+          "weightage": 3
+        },
+        {
+          "id": "4",
+          "description": "Contains pods from kube-system",
+          "verificationScriptFile": "q2_s4_validate_kube_system_pods.sh",
+          "expectedOutput": "0",
+          "weightage": 3
+        }
       ]
     },
     {
@@ -51,11 +99,41 @@
         "setup": "scripts/setup/q3_setup.sh"
       },
       "verification": [
-        { "id": "1", "description": "Pod multi-box exists", "verificationScriptFile": "q3_s1_validate_pod_exists.sh", "expectedOutput": "0", "weightage": 2 },
-        { "id": "2", "description": "Pod has 2 containers", "verificationScriptFile": "q3_s2_validate_containers_count.sh", "expectedOutput": "0", "weightage": 2 },
-        { "id": "3", "description": "Container c1 uses nginx", "verificationScriptFile": "q03_03_c1_image.sh", "expectedOutput": "0", "weightage": 2 },
-        { "id": "4", "description": "Container c2 uses busybox", "verificationScriptFile": "q03_04_c2_image.sh", "expectedOutput": "0", "weightage": 2 },
-        { "id": "5", "description": "Container c2 has correct command", "verificationScriptFile": "q03_05_c2_command.sh", "expectedOutput": "0", "weightage": 2 }
+        {
+          "id": "1",
+          "description": "Pod multi-box exists",
+          "verificationScriptFile": "q3_s1_validate_pod_exists.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "2",
+          "description": "Pod has 2 containers",
+          "verificationScriptFile": "q3_s2_validate_containers_count.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "3",
+          "description": "Container c1 uses nginx",
+          "verificationScriptFile": "q3_s3_validate_c1_image.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "4",
+          "description": "Container c2 uses busybox",
+          "verificationScriptFile": "q3_s4_validate_c2_image.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "5",
+          "description": "Container c2 has correct command",
+          "verificationScriptFile": "q3_s5_validate_c2_command.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        }
       ]
     },
     {
@@ -71,11 +149,41 @@
         "setup": "scripts/setup/q4_setup.sh"
       },
       "verification": [
-        { "id": "1", "description": "Pod logger-pod exists", "verificationScriptFile": "q4_s1_validate_pod_exists.sh", "expectedOutput": "0", "weightage": 2 },
-        { "id": "2", "description": "Shared volume defined", "verificationScriptFile": "q4_s2_validate_volume_defined.sh", "expectedOutput": "0", "weightage": 2 },
-        { "id": "3", "description": "App container mounts volume", "verificationScriptFile": "q4_s3_validate_app_mount.sh", "expectedOutput": "0", "weightage": 2 },
-        { "id": "4", "description": "Sidecar container mounts volume", "verificationScriptFile": "q4_s4_validate_sidecar_mount.sh", "expectedOutput": "0", "weightage": 2 },
-        { "id": "5", "description": "App writes to log file", "verificationScriptFile": "q4_s5_validate_logs_written.sh", "expectedOutput": "0", "weightage": 2 }
+        {
+          "id": "1",
+          "description": "Pod logger-pod exists",
+          "verificationScriptFile": "q4_s1_validate_cm_exists.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "2",
+          "description": "Shared volume defined",
+          "verificationScriptFile": "q4_s2_validate_cm_key_exists.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "3",
+          "description": "App container mounts volume",
+          "verificationScriptFile": "q4_s3_validate_secret_exists.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "4",
+          "description": "Sidecar container mounts volume",
+          "verificationScriptFile": "q4_s4_validate_secret_username.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "5",
+          "description": "App writes to log file",
+          "verificationScriptFile": "q4_s5_validate_secret_password.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        }
       ]
     },
     {
@@ -91,10 +199,34 @@
         "setup": "scripts/setup/q5_setup.sh"
       },
       "verification": [
-        { "id": "1", "description": "All 3 pods exist", "verificationScriptFile": "q5_s1_validate_pods_exist.sh", "expectedOutput": "0", "weightage": 2 },
-        { "id": "2", "description": "Pod-a has env=prod", "verificationScriptFile": "q5_s2_validate_pod_a_label.sh", "expectedOutput": "0", "weightage": 2 },
-        { "id": "3", "description": "Pod-b has env=prod", "verificationScriptFile": "q5_s3_validate_pod_b_label.sh", "expectedOutput": "0", "weightage": 2 },
-        { "id": "4", "description": "Pod-c does not have env=prod", "verificationScriptFile": "q5_s4_validate_pod_c_no_label.sh", "expectedOutput": "0", "weightage": 2 }
+        {
+          "id": "1",
+          "description": "All 3 pods exist",
+          "verificationScriptFile": "q5_s1_validate_pod_exists.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "2",
+          "description": "Pod-a has env=prod",
+          "verificationScriptFile": "q5_s2_validate_init_container_present.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "3",
+          "description": "Pod-b has env=prod",
+          "verificationScriptFile": "q5_s3_validate_init_image.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "4",
+          "description": "Pod-c does not have env=prod",
+          "verificationScriptFile": "q5_s4_validate_main_image.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        }
       ]
     },
     {
@@ -110,10 +242,34 @@
         "setup": "scripts/setup/q6_setup.sh"
       },
       "verification": [
-        { "id": "1", "description": "Deployment exists", "verificationScriptFile": "q6_s1_validate_deploy_exists.sh", "expectedOutput": "0", "weightage": 2 },
-        { "id": "2", "description": "Image is nginx:1.16", "verificationScriptFile": "q6_s2_validate_image_check.sh", "expectedOutput": "0", "weightage": 2 },
-        { "id": "3", "description": "Scaled to 5 replicas", "verificationScriptFile": "q6_s3_validate_replica_count.sh", "expectedOutput": "0", "weightage": 4 },
-        { "id": "4", "description": "5 pods running", "verificationScriptFile": "q6_s4_validate_pods_running.sh", "expectedOutput": "0", "weightage": 2 }
+        {
+          "id": "1",
+          "description": "Deployment exists",
+          "verificationScriptFile": "q6_s1_validate_pod_exists.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "2",
+          "description": "Image is nginx:1.16",
+          "verificationScriptFile": "q6_s2_validate_containers_count.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "3",
+          "description": "Scaled to 5 replicas",
+          "verificationScriptFile": "q6_s3_validate_main_image.sh",
+          "expectedOutput": "0",
+          "weightage": 4
+        },
+        {
+          "id": "4",
+          "description": "5 pods running",
+          "verificationScriptFile": "q6_s4_validate_sidecar_exists.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        }
       ]
     },
     {
@@ -129,9 +285,27 @@
         "setup": "scripts/setup/q7_setup.sh"
       },
       "verification": [
-        { "id": "1", "description": "Strategy is RollingUpdate", "verificationScriptFile": "q7_s1_validate_strategy.sh", "expectedOutput": "0", "weightage": 2 },
-        { "id": "2", "description": "Image updated to 1.17", "verificationScriptFile": "q7_s2_validate_image_updated.sh", "expectedOutput": "0", "weightage": 4 },
-        { "id": "3", "description": "Rollout history present", "verificationScriptFile": "q7_s3_validate_history_exists.sh", "expectedOutput": "0", "weightage": 4 }
+        {
+          "id": "1",
+          "description": "Strategy is RollingUpdate",
+          "verificationScriptFile": "q7_s1_validate_pv_exists.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "2",
+          "description": "Image updated to 1.17",
+          "verificationScriptFile": "q7_s2_validate_pv_storage.sh",
+          "expectedOutput": "0",
+          "weightage": 4
+        },
+        {
+          "id": "3",
+          "description": "Rollout history present",
+          "verificationScriptFile": "q7_s3_validate_pvc_exists.sh",
+          "expectedOutput": "0",
+          "weightage": 4
+        }
       ]
     },
     {
@@ -147,8 +321,20 @@
         "setup": "scripts/setup/q8_setup.sh"
       },
       "verification": [
-        { "id": "1", "description": "Image reverted to 1.16", "verificationScriptFile": "q8_s1_validate_image_reverted.sh", "expectedOutput": "0", "weightage": 5 },
-        { "id": "2", "description": "Rollout is complete", "verificationScriptFile": "q8_s2_validate_rollout_complete.sh", "expectedOutput": "0", "weightage": 3 }
+        {
+          "id": "1",
+          "description": "Image reverted to 1.16",
+          "verificationScriptFile": "q8_s1_validate_prod_pods.sh",
+          "expectedOutput": "0",
+          "weightage": 5
+        },
+        {
+          "id": "2",
+          "description": "Rollout is complete",
+          "verificationScriptFile": "q8_s2_validate_dev_pods.sh",
+          "expectedOutput": "0",
+          "weightage": 3
+        }
       ]
     },
     {
@@ -164,9 +350,27 @@
         "setup": "scripts/setup/q9_setup.sh"
       },
       "verification": [
-        { "id": "1", "description": "Job exists", "verificationScriptFile": "q9_s1_validate_job_exists.sh", "expectedOutput": "0", "weightage": 2 },
-        { "id": "2", "description": "Job succeeded", "verificationScriptFile": "q9_s2_validate_succeeded.sh", "expectedOutput": "0", "weightage": 3 },
-        { "id": "3", "description": "Logs contain output", "verificationScriptFile": "q9_s3_validate_logs_check.sh", "expectedOutput": "0", "weightage": 3 }
+        {
+          "id": "1",
+          "description": "Job exists",
+          "verificationScriptFile": "q9_s1_validate_quota_exists.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "2",
+          "description": "Job succeeded",
+          "verificationScriptFile": "q9_s2_validate_cpu_quota.sh",
+          "expectedOutput": "0",
+          "weightage": 3
+        },
+        {
+          "id": "3",
+          "description": "Logs contain output",
+          "verificationScriptFile": "q9_s3_validate_memory_quota.sh",
+          "expectedOutput": "0",
+          "weightage": 3
+        }
       ]
     },
     {
@@ -182,9 +386,27 @@
         "setup": "scripts/setup/q10_setup.sh"
       },
       "verification": [
-        { "id": "1", "description": "CronJob exists", "verificationScriptFile": "q10_s1_validate_cronjob_exists.sh", "expectedOutput": "0", "weightage": 2 },
-        { "id": "2", "description": "Schedule is */1 * * * *", "verificationScriptFile": "q10_s2_validate_schedule_check.sh", "expectedOutput": "0", "weightage": 3 },
-        { "id": "3", "description": "Job created from schedule", "verificationScriptFile": "q10_s3_validate_job_created.sh", "expectedOutput": "0", "weightage": 3 }
+        {
+          "id": "1",
+          "description": "CronJob exists",
+          "verificationScriptFile": "q10_s1_validate_deploy_exists.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "2",
+          "description": "Schedule is */1 * * * *",
+          "verificationScriptFile": "q10_s2_validate_readiness_defined.sh",
+          "expectedOutput": "0",
+          "weightage": 3
+        },
+        {
+          "id": "3",
+          "description": "Job created from schedule",
+          "verificationScriptFile": "q10_s3_validate_http_probe.sh",
+          "expectedOutput": "0",
+          "weightage": 3
+        }
       ]
     },
     {
@@ -200,9 +422,27 @@
         "setup": "scripts/setup/q11_setup.sh"
       },
       "verification": [
-        { "id": "1", "description": "ConfigMap exists", "verificationScriptFile": "q11_s1_validate_cm_exists.sh", "expectedOutput": "0", "weightage": 2 },
-        { "id": "2", "description": "Pod has correct env var from CM", "verificationScriptFile": "q11_s2_validate_pod_env.sh", "expectedOutput": "0", "weightage": 4 },
-        { "id": "3", "description": "Pod is running", "verificationScriptFile": "q11_s3_validate_pod_running.sh", "expectedOutput": "0", "weightage": 2 }
+        {
+          "id": "1",
+          "description": "ConfigMap exists",
+          "verificationScriptFile": "q11_s1_validate_deploy_exists.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "2",
+          "description": "Pod has correct env var from CM",
+          "verificationScriptFile": "q11_s2_validate_liveness_defined.sh",
+          "expectedOutput": "0",
+          "weightage": 4
+        },
+        {
+          "id": "3",
+          "description": "Pod is running",
+          "verificationScriptFile": "q11_s3_validate_probe_type.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        }
       ]
     },
     {
@@ -218,9 +458,27 @@
         "setup": "scripts/setup/q12_setup.sh"
       },
       "verification": [
-        { "id": "1", "description": "Secret exists", "verificationScriptFile": "q12_s1_validate_secret_exists.sh", "expectedOutput": "0", "weightage": 2 },
-        { "id": "2", "description": "Volume mounted correctly", "verificationScriptFile": "q12_s2_validate_mount_check.sh", "expectedOutput": "0", "weightage": 3 },
-        { "id": "3", "description": "File contains decoded secret", "verificationScriptFile": "q12_s3_validate_file_content.sh", "expectedOutput": "0", "weightage": 3 }
+        {
+          "id": "1",
+          "description": "Secret exists",
+          "verificationScriptFile": "q12_s1_validate_logs_accessible.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "2",
+          "description": "Volume mounted correctly",
+          "verificationScriptFile": "q12_s2_validate_log_content.sh",
+          "expectedOutput": "0",
+          "weightage": 3
+        },
+        {
+          "id": "3",
+          "description": "File contains decoded secret",
+          "verificationScriptFile": "q12_s3_validate_pod_running.sh",
+          "expectedOutput": "0",
+          "weightage": 3
+        }
       ]
     },
     {
@@ -236,9 +494,27 @@
         "setup": "scripts/setup/q13_setup.sh"
       },
       "verification": [
-        { "id": "1", "description": "Pod exists", "verificationScriptFile": "q13_s1_validate_pod_exists.sh", "expectedOutput": "0", "weightage": 2 },
-        { "id": "2", "description": "Runs as user 2000", "verificationScriptFile": "q13_s2_validate_user_id.sh", "expectedOutput": "0", "weightage": 3 },
-        { "id": "3", "description": "Filesystem is read-only", "verificationScriptFile": "q13_s3_validate_readonly_fs.sh", "expectedOutput": "0", "weightage": 3 }
+        {
+          "id": "1",
+          "description": "Pod exists",
+          "verificationScriptFile": "q13_s1_validate_pod_exists.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "2",
+          "description": "Runs as user 2000",
+          "verificationScriptFile": "q13_s2_validate_env_from_cm.sh",
+          "expectedOutput": "0",
+          "weightage": 3
+        },
+        {
+          "id": "3",
+          "description": "Filesystem is read-only",
+          "verificationScriptFile": "q13_s3_validate_env_vars_set.sh",
+          "expectedOutput": "0",
+          "weightage": 3
+        }
       ]
     },
     {
@@ -254,8 +530,20 @@
         "setup": "scripts/setup/q14_setup.sh"
       },
       "verification": [
-        { "id": "1", "description": "ServiceAccount exists", "verificationScriptFile": "q14_s1_validate_sa_exists.sh", "expectedOutput": "0", "weightage": 2 },
-        { "id": "2", "description": "Pod uses correct ServiceAccount", "verificationScriptFile": "q14_s2_validate_pod_uses_sa.sh", "expectedOutput": "0", "weightage": 4 }
+        {
+          "id": "1",
+          "description": "ServiceAccount exists",
+          "verificationScriptFile": "q14_s1_validate_sa_exists.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "2",
+          "description": "Pod uses correct ServiceAccount",
+          "verificationScriptFile": "q14_s2_validate_role_exists.sh",
+          "expectedOutput": "0",
+          "weightage": 4
+        }
       ]
     },
     {
@@ -271,9 +559,27 @@
         "setup": "scripts/setup/q15_setup.sh"
       },
       "verification": [
-        { "id": "1", "description": "Namespace exists", "verificationScriptFile": "q15_s1_validate_ns_exists.sh", "expectedOutput": "0", "weightage": 2 },
-        { "id": "2", "description": "Quota exists", "verificationScriptFile": "q15_s2_validate_quota_exists.sh", "expectedOutput": "0", "weightage": 2 },
-        { "id": "3", "description": "Quota limits pods to 5", "verificationScriptFile": "q15_s3_validate_quota_limit.sh", "expectedOutput": "0", "weightage": 4 }
+        {
+          "id": "1",
+          "description": "Namespace exists",
+          "verificationScriptFile": "q15_s1_validate_frontend_exists.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "2",
+          "description": "Quota exists",
+          "verificationScriptFile": "q15_s2_validate_backend_exists.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "3",
+          "description": "Quota limits pods to 5",
+          "verificationScriptFile": "q15_s3_validate_netpol_exists.sh",
+          "expectedOutput": "0",
+          "weightage": 4
+        }
       ]
     },
     {
@@ -289,9 +595,27 @@
         "setup": "scripts/setup/q16_setup.sh"
       },
       "verification": [
-        { "id": "1", "description": "Pod exists", "verificationScriptFile": "q16_s1_validate_pod_exists.sh", "expectedOutput": "0", "weightage": 2 },
-        { "id": "2", "description": "Liveness probe configured correct", "verificationScriptFile": "q16_s2_validate_probe_config.sh", "expectedOutput": "0", "weightage": 4 },
-        { "id": "3", "description": "Pod restarts on failure", "verificationScriptFile": "q16_s3_validate_restarts.sh", "expectedOutput": "0", "weightage": 2 }
+        {
+          "id": "1",
+          "description": "Pod exists",
+          "verificationScriptFile": "q16_s1_validate_sts_exists.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "2",
+          "description": "Liveness probe configured correct",
+          "verificationScriptFile": "q16_s2_validate_service_exists.sh",
+          "expectedOutput": "0",
+          "weightage": 4
+        },
+        {
+          "id": "3",
+          "description": "Pod restarts on failure",
+          "verificationScriptFile": "q16_s3_validate_headless_service.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        }
       ]
     },
     {
@@ -307,9 +631,27 @@
         "setup": "scripts/setup/q17_setup.sh"
       },
       "verification": [
-        { "id": "1", "description": "Pod exists", "verificationScriptFile": "q17_s1_validate_pod_exists.sh", "expectedOutput": "0", "weightage": 2 },
-        { "id": "2", "description": "Readiness probe configured correctly", "verificationScriptFile": "q17_s2_validate_probe_config.sh", "expectedOutput": "0", "weightage": 4 },
-        { "id": "3", "description": "Pod becomes ready", "verificationScriptFile": "q17_s3_validate_pod_ready.sh", "expectedOutput": "0", "weightage": 2 }
+        {
+          "id": "1",
+          "description": "Pod exists",
+          "verificationScriptFile": "q17_s1_validate_job_exists.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "2",
+          "description": "Readiness probe configured correctly",
+          "verificationScriptFile": "q17_s2_validate_job_succeeded.sh",
+          "expectedOutput": "0",
+          "weightage": 4
+        },
+        {
+          "id": "3",
+          "description": "Pod becomes ready",
+          "verificationScriptFile": "q17_s3_validate_cronjob_exists.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        }
       ]
     },
     {
@@ -325,9 +667,27 @@
         "setup": "scripts/setup/q18_setup.sh"
       },
       "verification": [
-        { "id": "1", "description": "Service exists", "verificationScriptFile": "q18_s1_validate_svc_exists.sh", "expectedOutput": "0", "weightage": 2 },
-        { "id": "2", "description": "Type is ClusterIP", "verificationScriptFile": "q18_s2_validate_svc_type.sh", "expectedOutput": "0", "weightage": 2 },
-        { "id": "3", "description": "Endpoints are populated", "verificationScriptFile": "q18_s3_validate_endpoints.sh", "expectedOutput": "0", "weightage": 4 }
+        {
+          "id": "1",
+          "description": "Service exists",
+          "verificationScriptFile": "q18_s1_validate_deploy_exists.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "2",
+          "description": "Type is ClusterIP",
+          "verificationScriptFile": "q18_s2_validate_pdb_exists.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "3",
+          "description": "Endpoints are populated",
+          "verificationScriptFile": "q18_s3_validate_pdb_minavail.sh",
+          "expectedOutput": "0",
+          "weightage": 4
+        }
       ]
     },
     {
@@ -343,9 +703,27 @@
         "setup": "scripts/setup/q19_setup.sh"
       },
       "verification": [
-        { "id": "1", "description": "NetPol exists", "verificationScriptFile": "q19_s1_validate_netpol_exists.sh", "expectedOutput": "0", "weightage": 3 },
-        { "id": "2", "description": "Policy denies ingress correctly", "verificationScriptFile": "q19_s2_validate_policy_config.sh", "expectedOutput": "0", "weightage": 4 },
-        { "id": "3", "description": "Traffic is actually blocked", "verificationScriptFile": "q19_s3_validate_traffic_blocked.sh", "expectedOutput": "0", "weightage": 3 }
+        {
+          "id": "1",
+          "description": "NetPol exists",
+          "verificationScriptFile": "q19_s1_validate_ds_exists.sh",
+          "expectedOutput": "0",
+          "weightage": 3
+        },
+        {
+          "id": "2",
+          "description": "Policy denies ingress correctly",
+          "verificationScriptFile": "q19_s2_validate_ds_scheduled.sh",
+          "expectedOutput": "0",
+          "weightage": 4
+        },
+        {
+          "id": "3",
+          "description": "Traffic is actually blocked",
+          "verificationScriptFile": "q19_s3_validate_pods_running.sh",
+          "expectedOutput": "0",
+          "weightage": 3
+        }
       ]
     },
     {
@@ -361,9 +739,27 @@
         "setup": "scripts/setup/q20_setup.sh"
       },
       "verification": [
-        { "id": "1", "description": "PVC exists and Bound", "verificationScriptFile": "q20_s1_validate_pvc_exists.sh", "expectedOutput": "0", "weightage": 3 },
-        { "id": "2", "description": "Mounted in pod", "verificationScriptFile": "q20_s2_validate_mount_check.sh", "expectedOutput": "0", "weightage": 3 },
-        { "id": "3", "description": "Volume is writable", "verificationScriptFile": "q20_s3_validate_write_check.sh", "expectedOutput": "0", "weightage": 4 }
+        {
+          "id": "1",
+          "description": "PVC exists and Bound",
+          "verificationScriptFile": "q20_s1_validate_deploy_exists.sh",
+          "expectedOutput": "0",
+          "weightage": 3
+        },
+        {
+          "id": "2",
+          "description": "Mounted in pod",
+          "verificationScriptFile": "q20_s2_validate_hpa_exists.sh",
+          "expectedOutput": "0",
+          "weightage": 3
+        },
+        {
+          "id": "3",
+          "description": "Volume is writable",
+          "verificationScriptFile": "q20_s3_validate_hpa_target.sh",
+          "expectedOutput": "0",
+          "weightage": 4
+        }
       ]
     },
     {
@@ -379,9 +775,27 @@
         "setup": "scripts/setup/q21_setup.sh"
       },
       "verification": [
-        { "id": "1", "description": "Namespace helm-ns exists", "verificationScriptFile": "q21_s1_validate_namespace_exists.sh", "expectedOutput": "0", "weightage": 2 },
-        { "id": "2", "description": "Helm release installed", "verificationScriptFile": "q21_s2_validate_release_exists.sh", "expectedOutput": "0", "weightage": 4 },
-        { "id": "3", "description": "Pods/Service created by Helm", "verificationScriptFile": "q21_s3_validate_resources_check.sh", "expectedOutput": "0", "weightage": 4 }
+        {
+          "id": "1",
+          "description": "Namespace helm-ns exists",
+          "verificationScriptFile": "q21_s1_validate_pod_exists.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "2",
+          "description": "Helm release installed",
+          "verificationScriptFile": "q21_s2_validate_affinity_defined.sh",
+          "expectedOutput": "0",
+          "weightage": 4
+        },
+        {
+          "id": "3",
+          "description": "Pods/Service created by Helm",
+          "verificationScriptFile": "q21_s3_validate_affinity_rule.sh",
+          "expectedOutput": "0",
+          "weightage": 4
+        }
       ]
     },
     {
@@ -397,9 +811,27 @@
         "setup": "scripts/setup/q22_setup.sh"
       },
       "verification": [
-        { "id": "1", "description": "CRD definition is correct", "verificationScriptFile": "q22_s1_validate_crd_exists.sh", "expectedOutput": "0", "weightage": 4 },
-        { "id": "2", "description": "Custom Resource instance exists", "verificationScriptFile": "q22_s2_validate_cr_exists.sh", "expectedOutput": "0", "weightage": 4 },
-        { "id": "3", "description": "CR spec matches requirements", "verificationScriptFile": "q22_s3_validate_cr_spec.sh", "expectedOutput": "0", "weightage": 2 }
+        {
+          "id": "1",
+          "description": "CRD definition is correct",
+          "verificationScriptFile": "q22_s1_validate_web_deploy_exists.sh",
+          "expectedOutput": "0",
+          "weightage": 4
+        },
+        {
+          "id": "2",
+          "description": "Custom Resource instance exists",
+          "verificationScriptFile": "q22_s2_validate_cache_pod_exists.sh",
+          "expectedOutput": "0",
+          "weightage": 4
+        },
+        {
+          "id": "3",
+          "description": "CR spec matches requirements",
+          "verificationScriptFile": "q22_s3_validate_affinity_defined.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        }
       ]
     }
   ]
