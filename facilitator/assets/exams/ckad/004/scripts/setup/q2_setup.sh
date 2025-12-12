@@ -3,6 +3,10 @@ set -e
 
 NAMESPACE="q02"
 
+# Create the required directory structure for the question
+mkdir -p /opt/course/1
+chmod -R 777 /opt/course/1
+
 kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
 
 # Create deployment for rollout testing
@@ -29,4 +33,4 @@ spec:
         - containerPort: 80
 EOF
 
-echo "✓ Q2 setup complete: Deployment created in namespace $NAMESPACE"
+echo "✓ Q2 setup complete: Deployment created in namespace $NAMESPACE and directory /opt/course/1 created"
