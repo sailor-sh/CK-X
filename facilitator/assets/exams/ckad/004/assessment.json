@@ -1,361 +1,405 @@
 {
   "questions": [
     {
-      "id": "q01",
+      "id": "1",
       "title": "Namespace Management",
       "slug": "01-namespace-management",
-      "description": "Create a namespace named `ckad-ns-a`. Inside this namespace, run a pod named `web-core` using the image `nginx:alpine`.",
+      "question": "Create a namespace named `ckad-ns-a`. Inside this namespace, run a pod named `web-core` using the image `nginx:alpine`.",
+      "namespace": "default",
+      "machineHostname": "ckad9999",
+      "concepts": [],
       "difficulty": "easy",
       "scripts": {
-        "setup": "scripts/setup/q001.sh",
-        "cleanup": "scripts/cleanup/q001_cleanup.sh"
+        "setup": "scripts/setup/q001.sh"
       },
-      "validation": [
-        { "script": "scripts/validation/q01_01_ns_exists.sh", "points": 2, "description": "Namespace ckad-ns-a exists" },
-        { "script": "scripts/validation/q01_02_pod_exists.sh", "points": 2, "description": "Pod web-core exists in namespace" },
-        { "script": "scripts/validation/q01_03_pod_image.sh", "points": 2, "description": "Pod uses nginx:alpine image" },
-        { "script": "scripts/validation/q01_04_pod_running.sh", "points": 2, "description": "Pod is in Running state" }
+      "verification": [
+        { "id": "1", "description": "Namespace ckad-ns-a exists", "verificationScriptFile": "q01_01_ns_exists.sh", "expectedOutput": "0", "weightage": 2 },
+        { "id": "2", "description": "Pod web-core exists in namespace", "verificationScriptFile": "q01_02_pod_exists.sh", "expectedOutput": "0", "weightage": 2 },
+        { "id": "3", "description": "Pod uses nginx:alpine image", "verificationScriptFile": "q01_03_pod_image.sh", "expectedOutput": "0", "weightage": 2 },
+        { "id": "4", "description": "Pod is in Running state", "verificationScriptFile": "q01_04_pod_running.sh", "expectedOutput": "0", "weightage": 2 }
       ]
     },
     {
-      "id": "q02",
+      "id": "2",
       "title": "Pod & JSONPath Extraction",
       "slug": "02-pod-jsonpath",
-      "description": "List pods in `kube-system`. Extract names and creation timestamps to `/opt/course/1/pod-data.txt`.",
+      "question": "List pods in `kube-system`. Extract names and creation timestamps to `/opt/course/1/pod-data.txt`.",
+      "namespace": "default",
+      "machineHostname": "ckad9999",
+      "concepts": [],
       "difficulty": "medium",
       "scripts": {
-        "setup": "scripts/setup/q002.sh",
-        "cleanup": "scripts/cleanup/q002_cleanup.sh"
+        "setup": "scripts/setup/q002.sh"
       },
-      "validation": [
-        { "script": "scripts/validation/q02_01_file_exists.sh", "points": 2, "description": "Output file exists" },
-        { "script": "scripts/validation/q02_02_content_not_empty.sh", "points": 2, "description": "File is not empty" },
-        { "script": "scripts/validation/q02_03_correct_columns.sh", "points": 3, "description": "Two columns present (name, timestamp)" },
-        { "script": "scripts/validation/q02_04_kube_system_pods.sh", "points": 3, "description": "Contains pods from kube-system" }
+      "verification": [
+        { "id": "1", "description": "Output file exists", "verificationScriptFile": "q02_01_file_exists.sh", "expectedOutput": "0", "weightage": 2 },
+        { "id": "2", "description": "File is not empty", "verificationScriptFile": "q02_02_content_not_empty.sh", "expectedOutput": "0", "weightage": 2 },
+        { "id": "3", "description": "Two columns present (name, timestamp)", "verificationScriptFile": "q02_03_correct_columns.sh", "expectedOutput": "0", "weightage": 3 },
+        { "id": "4", "description": "Contains pods from kube-system", "verificationScriptFile": "q02_04_kube_system_pods.sh", "expectedOutput": "0", "weightage": 3 }
       ]
     },
     {
-      "id": "q03",
+      "id": "3",
       "title": "Multi-Container Pod Setup",
       "slug": "03-multi-container",
-      "description": "Create pod `multi-box` with container `c1` (nginx) and `c2` (busybox, loop command).",
+      "question": "Create a pod named `multi-box` in the `default` namespace with two containers:\n- Container 1: name `c1`, image `nginx`\n- Container 2: name `c2`, image `busybox`, command `[\"/bin/sh\", \"-c\", \"while true; do echo hello; sleep 10; done\"]`.",
+      "namespace": "default",
+      "machineHostname": "ckad9999",
+      "concepts": [],
       "difficulty": "medium",
       "scripts": {
-        "setup": "scripts/setup/q003.sh",
-        "cleanup": "scripts/cleanup/q003_cleanup.sh"
+        "setup": "scripts/setup/q003.sh"
       },
-      "validation": [
-        { "script": "scripts/validation/q03_01_pod_exists.sh", "points": 2, "description": "Pod multi-box exists" },
-        { "script": "scripts/validation/q03_02_containers_count.sh", "points": 2, "description": "Pod has 2 containers" },
-        { "script": "scripts/validation/q03_03_c1_image.sh", "points": 2, "description": "Container c1 uses nginx" },
-        { "script": "scripts/validation/q03_04_c2_image.sh", "points": 2, "description": "Container c2 uses busybox" },
-        { "script": "scripts/validation/q03_05_c2_command.sh", "points": 2, "description": "Container c2 has correct command" }
+      "verification": [
+        { "id": "1", "description": "Pod multi-box exists", "verificationScriptFile": "q03_01_pod_exists.sh", "expectedOutput": "0", "weightage": 2 },
+        { "id": "2", "description": "Pod has 2 containers", "verificationScriptFile": "q03_02_containers_count.sh", "expectedOutput": "0", "weightage": 2 },
+        { "id": "3", "description": "Container c1 uses nginx", "verificationScriptFile": "q03_03_c1_image.sh", "expectedOutput": "0", "weightage": 2 },
+        { "id": "4", "description": "Container c2 uses busybox", "verificationScriptFile": "q03_04_c2_image.sh", "expectedOutput": "0", "weightage": 2 },
+        { "id": "5", "description": "Container c2 has correct command", "verificationScriptFile": "q03_05_c2_command.sh", "expectedOutput": "0", "weightage": 2 }
       ]
     },
     {
-      "id": "q04",
+      "id": "4",
       "title": "Shared Volume (Sidecar Pattern)",
       "slug": "04-sidecar-volume",
-      "description": "Create pod `logger-pod` with `app` (writes logs) and `sidecar` (tails logs) sharing a volume.",
+      "question": "Create a pod named `logger-pod` that uses an `emptyDir` volume.\n- Container 1 (`app`): image `busybox`, writes 'logging info' to `/var/log/app.log` every 5 seconds.\n- Container 2 (`sidecar`): image `busybox`, tails `/var/log/app.log` from the shared volume and sends it to stdout.",
+      "namespace": "default",
+      "machineHostname": "ckad9999",
+      "concepts": [],
       "difficulty": "medium",
       "scripts": {
-        "setup": "scripts/setup/q004.sh",
-        "cleanup": "scripts/cleanup/q004_cleanup.sh"
+        "setup": "scripts/setup/q004.sh"
       },
-      "validation": [
-        { "script": "scripts/validation/q04_01_pod_exists.sh", "points": 2, "description": "Pod logger-pod exists" },
-        { "script": "scripts/validation/q04_02_volume_defined.sh", "points": 2, "description": "Shared volume defined" },
-        { "script": "scripts/validation/q04_03_app_mount.sh", "points": 2, "description": "App container mounts volume" },
-        { "script": "scripts/validation/q04_04_sidecar_mount.sh", "points": 2, "description": "Sidecar container mounts volume" },
-        { "script": "scripts/validation/q04_05_logs_written.sh", "points": 2, "description": "App writes to log file" }
+      "verification": [
+        { "id": "1", "description": "Pod logger-pod exists", "verificationScriptFile": "q04_01_pod_exists.sh", "expectedOutput": "0", "weightage": 2 },
+        { "id": "2", "description": "Shared volume defined", "verificationScriptFile": "q04_02_volume_defined.sh", "expectedOutput": "0", "weightage": 2 },
+        { "id": "3", "description": "App container mounts volume", "verificationScriptFile": "q04_03_app_mount.sh", "expectedOutput": "0", "weightage": 2 },
+        { "id": "4", "description": "Sidecar container mounts volume", "verificationScriptFile": "q04_04_sidecar_mount.sh", "expectedOutput": "0", "weightage": 2 },
+        { "id": "5", "description": "App writes to log file", "verificationScriptFile": "q04_05_logs_written.sh", "expectedOutput": "0", "weightage": 2 }
       ]
     },
     {
-      "id": "q05",
+      "id": "5",
       "title": "Labels and Selectors",
       "slug": "05-labels",
-      "description": "Create pods `pod-a`, `pod-b`, `pod-c`. Label a and b with `env=prod`. List only these.",
+      "question": "Create pods `pod-a`, `pod-b`, `pod-c`. Label a and b with `env=prod`. List only these.",
+      "namespace": "default",
+      "machineHostname": "ckad9999",
+      "concepts": [],
       "difficulty": "easy",
       "scripts": {
-        "setup": "scripts/setup/q005.sh",
-        "cleanup": "scripts/cleanup/q005_cleanup.sh"
+        "setup": "scripts/setup/q005.sh"
       },
-      "validation": [
-        { "script": "scripts/validation/q05_01_pods_exist.sh", "points": 2, "description": "All 3 pods exist" },
-        { "script": "scripts/validation/q05_02_pod_a_label.sh", "points": 2, "description": "Pod-a has env=prod" },
-        { "script": "scripts/validation/q05_03_pod_b_label.sh", "points": 2, "description": "Pod-b has env=prod" },
-        { "script": "scripts/validation/q05_04_pod_c_no_label.sh", "points": 2, "description": "Pod-c does not have env=prod" }
+      "verification": [
+        { "id": "1", "description": "All 3 pods exist", "verificationScriptFile": "q05_01_pods_exist.sh", "expectedOutput": "0", "weightage": 2 },
+        { "id": "2", "description": "Pod-a has env=prod", "verificationScriptFile": "q05_02_pod_a_label.sh", "expectedOutput": "0", "weightage": 2 },
+        { "id": "3", "description": "Pod-b has env=prod", "verificationScriptFile": "q05_03_pod_b_label.sh", "expectedOutput": "0", "weightage": 2 },
+        { "id": "4", "description": "Pod-c does not have env=prod", "verificationScriptFile": "q05_04_pod_c_no_label.sh", "expectedOutput": "0", "weightage": 2 }
       ]
     },
     {
-      "id": "q06",
+      "id": "6",
       "title": "Deployment & Scaling",
       "slug": "06-deploy-scale",
-      "description": "Create `web-deploy` (nginx:1.16, 2 replicas). Scale to 5.",
+      "question": "Create a deployment named `web-deploy` using image `nginx:1.16` with 2 replicas. After it is running, scale the deployment to 5 replicas.",
+      "namespace": "default",
+      "machineHostname": "ckad9999",
+      "concepts": [],
       "difficulty": "easy",
       "scripts": {
-        "setup": "scripts/setup/q006.sh",
-        "cleanup": "scripts/cleanup/q006_cleanup.sh"
+        "setup": "scripts/setup/q006.sh"
       },
-      "validation": [
-        { "script": "scripts/validation/q06_01_deploy_exists.sh", "points": 2, "description": "Deployment exists" },
-        { "script": "scripts/validation/q06_02_image_check.sh", "points": 2, "description": "Image is nginx:1.16" },
-        { "script": "scripts/validation/q06_03_replica_count.sh", "points": 4, "description": "Scaled to 5 replicas" },
-        { "script": "scripts/validation/q06_04_pods_running.sh", "points": 2, "description": "5 pods running" }
+      "verification": [
+        { "id": "1", "description": "Deployment exists", "verificationScriptFile": "q06_01_deploy_exists.sh", "expectedOutput": "0", "weightage": 2 },
+        { "id": "2", "description": "Image is nginx:1.16", "verificationScriptFile": "q06_02_image_check.sh", "expectedOutput": "0", "weightage": 2 },
+        { "id": "3", "description": "Scaled to 5 replicas", "verificationScriptFile": "q06_03_replica_count.sh", "expectedOutput": "0", "weightage": 4 },
+        { "id": "4", "description": "5 pods running", "verificationScriptFile": "q06_04_pods_running.sh", "expectedOutput": "0", "weightage": 2 }
       ]
     },
     {
-      "id": "q07",
+      "id": "7",
       "title": "Rolling Updates & History",
       "slug": "07-rolling-update",
-      "description": "Update `web-deploy` to `nginx:1.17`. Verify RollingUpdate strategy.",
+      "question": "Update the `web-deploy` deployment to use image `nginx:1.17`. Verify the update strategy is `RollingUpdate` and record the rollout history.",
+      "namespace": "default",
+      "machineHostname": "ckad9999",
+      "concepts": [],
       "difficulty": "medium",
       "scripts": {
-        "setup": "scripts/setup/q007.sh",
-        "cleanup": "scripts/cleanup/q007_cleanup.sh"
+        "setup": "scripts/setup/q007.sh"
       },
-      "validation": [
-        { "script": "scripts/validation/q07_01_strategy.sh", "points": 2, "description": "Strategy is RollingUpdate" },
-        { "script": "scripts/validation/q07_02_image_updated.sh", "points": 4, "description": "Image updated to 1.17" },
-        { "script": "scripts/validation/q07_03_history_exists.sh", "points": 4, "description": "Rollout history present" }
+      "verification": [
+        { "id": "1", "description": "Strategy is RollingUpdate", "verificationScriptFile": "q07_01_strategy.sh", "expectedOutput": "0", "weightage": 2 },
+        { "id": "2", "description": "Image updated to 1.17", "verificationScriptFile": "q07_02_image_updated.sh", "expectedOutput": "0", "weightage": 4 },
+        { "id": "3", "description": "Rollout history present", "verificationScriptFile": "q07_03_history_exists.sh", "expectedOutput": "0", "weightage": 4 }
       ]
     },
     {
-      "id": "q08",
+      "id": "8",
       "title": "Rollbacks",
       "slug": "08-rollback",
-      "description": "Rollback `web-deploy` to `nginx:1.16`.",
+      "question": "Undo the latest update to `web-deploy`, reverting it back to the previous revision (`nginx:1.16`).",
+      "namespace": "default",
+      "machineHostname": "ckad9999",
+      "concepts": [],
       "difficulty": "medium",
       "scripts": {
-        "setup": "scripts/setup/q008.sh",
-        "cleanup": "scripts/cleanup/q008_cleanup.sh"
+        "setup": "scripts/setup/q008.sh"
       },
-      "validation": [
-        { "script": "scripts/validation/q08_01_image_reverted.sh", "points": 5, "description": "Image reverted to 1.16" },
-        { "script": "scripts/validation/q08_02_rollout_complete.sh", "points": 3, "description": "Rollout is complete" }
+      "verification": [
+        { "id": "1", "description": "Image reverted to 1.16", "verificationScriptFile": "q08_01_image_reverted.sh", "expectedOutput": "0", "weightage": 5 },
+        { "id": "2", "description": "Rollout is complete", "verificationScriptFile": "q08_02_rollout_complete.sh", "expectedOutput": "0", "weightage": 3 }
       ]
     },
     {
-      "id": "q09",
+      "id": "9",
       "title": "Jobs",
       "slug": "09-jobs",
-      "description": "Create Job `batch-job` (busybox, echoes message). Terminate after success.",
+      "question": "Create a Job named `batch-job` with image `busybox` that runs the command `echo 'Task Complete'; sleep 5`. Ensure the job terminates successfully after completion.",
+      "namespace": "default",
+      "machineHostname": "ckad9999",
+      "concepts": [],
       "difficulty": "medium",
       "scripts": {
-        "setup": "scripts/setup/q009.sh",
-        "cleanup": "scripts/cleanup/q009_cleanup.sh"
+        "setup": "scripts/setup/q009.sh"
       },
-      "validation": [
-        { "script": "scripts/validation/q09_01_job_exists.sh", "points": 2, "description": "Job exists" },
-        { "script": "scripts/validation/q09_02_succeeded.sh", "points": 3, "description": "Job succeeded" },
-        { "script": "scripts/validation/q09_03_logs_check.sh", "points": 3, "description": "Logs contain output" }
+      "verification": [
+        { "id": "1", "description": "Job exists", "verificationScriptFile": "q09_01_job_exists.sh", "expectedOutput": "0", "weightage": 2 },
+        { "id": "2", "description": "Job succeeded", "verificationScriptFile": "q09_02_succeeded.sh", "expectedOutput": "0", "weightage": 3 },
+        { "id": "3", "description": "Logs contain output", "verificationScriptFile": "q09_03_logs_check.sh", "expectedOutput": "0", "weightage": 3 }
       ]
     },
     {
-      "id": "q10",
+      "id": "10",
       "title": "CronJobs",
       "slug": "10-cronjobs",
-      "description": "Create CronJob `periodic-task` (every minute, prints date).",
+      "question": "Create a CronJob named `periodic-task` that runs every minute (`*/1 * * * *`). It should print the current date using the `busybox` image.",
+      "namespace": "default",
+      "machineHostname": "ckad9999",
+      "concepts": [],
       "difficulty": "medium",
       "scripts": {
-        "setup": "scripts/setup/q010.sh",
-        "cleanup": "scripts/cleanup/q010_cleanup.sh"
+        "setup": "scripts/setup/q010.sh"
       },
-      "validation": [
-        { "script": "scripts/validation/q10_01_cronjob_exists.sh", "points": 2, "description": "CronJob exists" },
-        { "script": "scripts/validation/q10_02_schedule_check.sh", "points": 3, "description": "Schedule is */1 * * * *" },
-        { "script": "scripts/validation/q10_03_job_created.sh", "points": 3, "description": "Job created from schedule" }
+      "verification": [
+        { "id": "1", "description": "CronJob exists", "verificationScriptFile": "q10_01_cronjob_exists.sh", "expectedOutput": "0", "weightage": 2 },
+        { "id": "2", "description": "Schedule is */1 * * * *", "verificationScriptFile": "q10_02_schedule_check.sh", "expectedOutput": "0", "weightage": 3 },
+        { "id": "3", "description": "Job created from schedule", "verificationScriptFile": "q10_03_job_created.sh", "expectedOutput": "0", "weightage": 3 }
       ]
     },
     {
-      "id": "q11",
+      "id": "11",
       "title": "ConfigMaps (Env Vars)",
       "slug": "11-configmaps",
-      "description": "Create ConfigMap `app-config` (APP_MODE=production). Use in pod `cm-pod` as env var `MODE`.",
+      "question": "Create a ConfigMap named `app-config` with the key-value `APP_MODE=production`. Create a pod named `cm-pod` (image `nginx`) that consumes this ConfigMap key as an environment variable named `MODE`.",
+      "namespace": "default",
+      "machineHostname": "ckad9999",
+      "concepts": [],
       "difficulty": "medium",
       "scripts": {
-        "setup": "scripts/setup/q011.sh",
-        "cleanup": "scripts/cleanup/q011_cleanup.sh"
+        "setup": "scripts/setup/q011.sh"
       },
-      "validation": [
-        { "script": "scripts/validation/q11_01_cm_exists.sh", "points": 2, "description": "ConfigMap exists" },
-        { "script": "scripts/validation/q11_02_pod_env.sh", "points": 4, "description": "Pod has correct env var from CM" },
-        { "script": "scripts/validation/q11_03_pod_running.sh", "points": 2, "description": "Pod is running" }
+      "verification": [
+        { "id": "1", "description": "ConfigMap exists", "verificationScriptFile": "q11_01_cm_exists.sh", "expectedOutput": "0", "weightage": 2 },
+        { "id": "2", "description": "Pod has correct env var from CM", "verificationScriptFile": "q11_02_pod_env.sh", "expectedOutput": "0", "weightage": 4 },
+        { "id": "3", "description": "Pod is running", "verificationScriptFile": "q11_03_pod_running.sh", "expectedOutput": "0", "weightage": 2 }
       ]
     },
     {
-      "id": "q12",
+      "id": "12",
       "title": "Secrets (Volumes)",
       "slug": "12-secrets",
-      "description": "Create Secret `app-secret` (api-key=123456). Mount in `sec-pod` at `/etc/app-secret`.",
+      "question": "Create a Secret named `app-secret` containing `api-key=123456`. Create a pod named `sec-pod` (image `nginx`) and mount this secret as a volume at `/etc/app-secret` so the key is available as a file.",
+      "namespace": "default",
+      "machineHostname": "ckad9999",
+      "concepts": [],
       "difficulty": "medium",
       "scripts": {
-        "setup": "scripts/setup/q012.sh",
-        "cleanup": "scripts/cleanup/q012_cleanup.sh"
+        "setup": "scripts/setup/q012.sh"
       },
-      "validation": [
-        { "script": "scripts/validation/q12_01_secret_exists.sh", "points": 2, "description": "Secret exists" },
-        { "script": "scripts/validation/q12_02_mount_check.sh", "points": 3, "description": "Volume mounted correctly" },
-        { "script": "scripts/validation/q12_03_file_content.sh", "points": 3, "description": "File contains decoded secret" }
+      "verification": [
+        { "id": "1", "description": "Secret exists", "verificationScriptFile": "q12_01_secret_exists.sh", "expectedOutput": "0", "weightage": 2 },
+        { "id": "2", "description": "Volume mounted correctly", "verificationScriptFile": "q12_02_mount_check.sh", "expectedOutput": "0", "weightage": 3 },
+        { "id": "3", "description": "File contains decoded secret", "verificationScriptFile": "q12_03_file_content.sh", "expectedOutput": "0", "weightage": 3 }
       ]
     },
     {
-      "id": "q13",
+      "id": "13",
       "title": "Security Contexts",
       "slug": "13-security-contexts",
-      "description": "Pod `secure-pod` (runAsUser: 2000, readOnlyRootFilesystem: true).",
+      "question": "Create a pod named `secure-pod` with image `busybox`. Configure Security Context so the container runs with User ID `2000` (`runAsUser: 2000`) and the filesystem is read-only (`readOnlyRootFilesystem: true`).",
+      "namespace": "default",
+      "machineHostname": "ckad9999",
+      "concepts": [],
       "difficulty": "medium",
       "scripts": {
-        "setup": "scripts/setup/q013.sh",
-        "cleanup": "scripts/cleanup/q013_cleanup.sh"
+        "setup": "scripts/setup/q013.sh"
       },
-      "validation": [
-        { "script": "scripts/validation/q13_01_pod_exists.sh", "points": 2, "description": "Pod exists" },
-        { "script": "scripts/validation/q13_02_user_id.sh", "points": 3, "description": "Runs as user 2000" },
-        { "script": "scripts/validation/q13_03_readonly_fs.sh", "points": 3, "description": "Filesystem is read-only" }
+      "verification": [
+        { "id": "1", "description": "Pod exists", "verificationScriptFile": "q13_01_pod_exists.sh", "expectedOutput": "0", "weightage": 2 },
+        { "id": "2", "description": "Runs as user 2000", "verificationScriptFile": "q13_02_user_id.sh", "expectedOutput": "0", "weightage": 3 },
+        { "id": "3", "description": "Filesystem is read-only", "verificationScriptFile": "q13_03_readonly_fs.sh", "expectedOutput": "0", "weightage": 3 }
       ]
     },
     {
-      "id": "q14",
+      "id": "14",
       "title": "Service Accounts",
       "slug": "14-service-accounts",
-      "description": "Create SA `backend-sa`. Use in `backend-pod`.",
+      "question": "Create a ServiceAccount named `backend-sa`. Create a pod named `backend-pod` (image `nginx`) that uses this ServiceAccount.",
+      "namespace": "default",
+      "machineHostname": "ckad9999",
+      "concepts": [],
       "difficulty": "easy",
       "scripts": {
-        "setup": "scripts/setup/q014.sh",
-        "cleanup": "scripts/cleanup/q014_cleanup.sh"
+        "setup": "scripts/setup/q014.sh"
       },
-      "validation": [
-        { "script": "scripts/validation/q14_01_sa_exists.sh", "points": 2, "description": "ServiceAccount exists" },
-        { "script": "scripts/validation/q14_02_pod_uses_sa.sh", "points": 4, "description": "Pod uses correct ServiceAccount" }
+      "verification": [
+        { "id": "1", "description": "ServiceAccount exists", "verificationScriptFile": "q14_01_sa_exists.sh", "expectedOutput": "0", "weightage": 2 },
+        { "id": "2", "description": "Pod uses correct ServiceAccount", "verificationScriptFile": "q14_02_pod_uses_sa.sh", "expectedOutput": "0", "weightage": 4 }
       ]
     },
     {
-      "id": "q15",
+      "id": "15",
       "title": "Resource Quotas",
       "slug": "15-resource-quotas",
-      "description": "Create quota `ns-quota` in `quota-ns` (max 5 pods).",
+      "question": "Create a ResourceQuota named `ns-quota` in a new namespace `quota-ns` that limits the total number of pods allowed in the namespace to 5.",
+      "namespace": "default",
+      "machineHostname": "ckad9999",
+      "concepts": [],
       "difficulty": "medium",
       "scripts": {
-        "setup": "scripts/setup/q015.sh",
-        "cleanup": "scripts/cleanup/q015_cleanup.sh"
+        "setup": "scripts/setup/q015.sh"
       },
-      "validation": [
-        { "script": "scripts/validation/q15_01_ns_exists.sh", "points": 2, "description": "Namespace exists" },
-        { "script": "scripts/validation/q15_02_quota_exists.sh", "points": 2, "description": "Quota exists" },
-        { "script": "scripts/validation/q15_03_quota_limit.sh", "points": 4, "description": "Quota limits pods to 5" }
+      "verification": [
+        { "id": "1", "description": "Namespace exists", "verificationScriptFile": "q15_01_ns_exists.sh", "expectedOutput": "0", "weightage": 2 },
+        { "id": "2", "description": "Quota exists", "verificationScriptFile": "q15_02_quota_exists.sh", "expectedOutput": "0", "weightage": 2 },
+        { "id": "3", "description": "Quota limits pods to 5", "verificationScriptFile": "q15_03_quota_limit.sh", "expectedOutput": "0", "weightage": 4 }
       ]
     },
     {
-      "id": "q16",
+      "id": "16",
       "title": "Liveness Probes",
       "slug": "16-liveness",
-      "description": "Pod `live-check` with liveness probe (cat /tmp/healthy).",
+      "question": "Create a pod named `live-check` with image `busybox`. Configure a Liveness Probe that runs the command `cat /tmp/healthy`. Configure the container start command to create this file, sleep 30 seconds, then delete it (to simulate failure).",
+      "namespace": "default",
+      "machineHostname": "ckad9999",
+      "concepts": [],
       "difficulty": "medium",
       "scripts": {
-        "setup": "scripts/setup/q016.sh",
-        "cleanup": "scripts/cleanup/q016_cleanup.sh"
+        "setup": "scripts/setup/q016.sh"
       },
-      "validation": [
-        { "script": "scripts/validation/q16_01_pod_exists.sh", "points": 2, "description": "Pod exists" },
-        { "script": "scripts/validation/q16_02_probe_config.sh", "points": 4, "description": "Liveness probe configured correct" },
-        { "script": "scripts/validation/q16_03_restarts.sh", "points": 2, "description": "Pod restarts on failure" }
+      "verification": [
+        { "id": "1", "description": "Pod exists", "verificationScriptFile": "q16_01_pod_exists.sh", "expectedOutput": "0", "weightage": 2 },
+        { "id": "2", "description": "Liveness probe configured correct", "verificationScriptFile": "q16_02_probe_config.sh", "expectedOutput": "0", "weightage": 4 },
+        { "id": "3", "description": "Pod restarts on failure", "verificationScriptFile": "q16_03_restarts.sh", "expectedOutput": "0", "weightage": 2 }
       ]
     },
     {
-      "id": "q17",
+      "id": "17",
       "title": "Readiness Probes",
       "slug": "17-readiness",
-      "description": "Pod `ready-web` with readiness probe (httpGet port 80).",
+      "question": "Create a pod named `ready-web` with image `nginx`. Configure a Readiness Probe that checks an HTTP GET on path `/` at port `80`.",
+      "namespace": "default",
+      "machineHostname": "ckad9999",
+      "concepts": [],
       "difficulty": "medium",
       "scripts": {
-        "setup": "scripts/setup/q017.sh",
-        "cleanup": "scripts/cleanup/q017_cleanup.sh"
+        "setup": "scripts/setup/q017.sh"
       },
-      "validation": [
-        { "script": "scripts/validation/q17_01_pod_exists.sh", "points": 2, "description": "Pod exists" },
-        { "script": "scripts/validation/q17_02_probe_config.sh", "points": 4, "description": "Readiness probe configured correctly" },
-        { "script": "scripts/validation/q17_03_pod_ready.sh", "points": 2, "description": "Pod becomes ready" }
+      "verification": [
+        { "id": "1", "description": "Pod exists", "verificationScriptFile": "q17_01_pod_exists.sh", "expectedOutput": "0", "weightage": 2 },
+        { "id": "2", "description": "Readiness probe configured correctly", "verificationScriptFile": "q17_02_probe_config.sh", "expectedOutput": "0", "weightage": 4 },
+        { "id": "3", "description": "Pod becomes ready", "verificationScriptFile": "q17_03_pod_ready.sh", "expectedOutput": "0", "weightage": 2 }
       ]
     },
     {
-      "id": "q18",
+      "id": "18",
       "title": "Service Exposure",
       "slug": "18-service",
-      "description": "Expose `web-deploy` as `web-svc` (ClusterIP, port 80).",
+      "question": "Expose the `web-deploy` deployment as a Service named `web-svc` on port 80. The service type should be `ClusterIP`.",
+      "namespace": "default",
+      "machineHostname": "ckad9999",
+      "concepts": [],
       "difficulty": "medium",
       "scripts": {
-        "setup": "scripts/setup/q018.sh",
-        "cleanup": "scripts/cleanup/q018_cleanup.sh"
+        "setup": "scripts/setup/q018.sh"
       },
-      "validation": [
-        { "script": "scripts/validation/q18_01_svc_exists.sh", "points": 2, "description": "Service exists" },
-        { "script": "scripts/validation/q18_02_svc_type.sh", "points": 2, "description": "Type is ClusterIP" },
-        { "script": "scripts/validation/q18_03_endpoints.sh", "points": 4, "description": "Endpoints are populated" }
+      "verification": [
+        { "id": "1", "description": "Service exists", "verificationScriptFile": "q18_01_svc_exists.sh", "expectedOutput": "0", "weightage": 2 },
+        { "id": "2", "description": "Type is ClusterIP", "verificationScriptFile": "q18_02_svc_type.sh", "expectedOutput": "0", "weightage": 2 },
+        { "id": "3", "description": "Endpoints are populated", "verificationScriptFile": "q18_03_endpoints.sh", "expectedOutput": "0", "weightage": 4 }
       ]
     },
     {
-      "id": "q19",
+      "id": "19",
       "title": "Network Policies",
       "slug": "19-netpol",
-      "description": "Create `default-deny` NetPol (deny all ingress in default ns).",
+      "question": "Create a NetworkPolicy named `default-deny` in the `default` namespace that denies all ingress traffic to all pods in that namespace.",
+      "namespace": "default",
+      "machineHostname": "ckad9999",
+      "concepts": [],
       "difficulty": "hard",
       "scripts": {
-        "setup": "scripts/setup/q019.sh",
-        "cleanup": "scripts/cleanup/q019_cleanup.sh"
+        "setup": "scripts/setup/q019.sh"
       },
-      "validation": [
-        { "script": "scripts/validation/q19_01_netpol_exists.sh", "points": 3, "description": "NetPol exists" },
-        { "script": "scripts/validation/q19_02_policy_config.sh", "points": 4, "description": "Policy denies ingress correctly" },
-        { "script": "scripts/validation/q19_03_traffic_blocked.sh", "points": 3, "description": "Traffic is actually blocked" }
+      "verification": [
+        { "id": "1", "description": "NetPol exists", "verificationScriptFile": "q19_01_netpol_exists.sh", "expectedOutput": "0", "weightage": 3 },
+        { "id": "2", "description": "Policy denies ingress correctly", "verificationScriptFile": "q19_02_policy_config.sh", "expectedOutput": "0", "weightage": 4 },
+        { "id": "3", "description": "Traffic is actually blocked", "verificationScriptFile": "q19_03_traffic_blocked.sh", "expectedOutput": "0", "weightage": 3 }
       ]
     },
     {
-      "id": "q20",
+      "id": "20",
       "title": "Persistent Volumes",
       "slug": "20-pvc",
-      "description": "Create PVC `data-pvc` (100Mi, RWO). Mount in `storage-pod` at `/data`.",
+      "question": "Create a PersistentVolumeClaim named `data-pvc` requesting `100Mi` of storage with access mode `ReadWriteOnce`. Mount this PVC to a pod named `storage-pod` at path `/data`.",
+      "namespace": "default",
+      "machineHostname": "ckad9999",
+      "concepts": [],
       "difficulty": "hard",
       "scripts": {
-        "setup": "scripts/setup/q020.sh",
-        "cleanup": "scripts/cleanup/q020_cleanup.sh"
+        "setup": "scripts/setup/q020.sh"
       },
-      "validation": [
-        { "script": "scripts/validation/q20_01_pvc_exists.sh", "points": 3, "description": "PVC exists and Bound" },
-        { "script": "scripts/validation/q20_02_mount_check.sh", "points": 3, "description": "Mounted in pod" },
-        { "script": "scripts/validation/q20_03_write_check.sh", "points": 4, "description": "Volume is writable" }
+      "verification": [
+        { "id": "1", "description": "PVC exists and Bound", "verificationScriptFile": "q20_01_pvc_exists.sh", "expectedOutput": "0", "weightage": 3 },
+        { "id": "2", "description": "Mounted in pod", "verificationScriptFile": "q20_02_mount_check.sh", "expectedOutput": "0", "weightage": 3 },
+        { "id": "3", "description": "Volume is writable", "verificationScriptFile": "q20_03_write_check.sh", "expectedOutput": "0", "weightage": 4 }
       ]
     },
     {
-      "id": "q21",
+      "id": "21",
       "title": "Helm Operations",
       "slug": "21-helm",
-      "description": "Install `bitnami/nginx` as `my-web` in `helm-ns`.",
+      "question": "Add the `bitnami` helm repository (`https://charts.bitnami.com/bitnami`). Search for the `nginx` chart, and install it into a new namespace `helm-ns` with the release name `my-web`.",
+      "namespace": "default",
+      "machineHostname": "ckad9999",
+      "concepts": [],
       "difficulty": "hard",
       "scripts": {
-        "setup": "scripts/setup/q021.sh",
-        "cleanup": "scripts/cleanup/q021_cleanup.sh"
+        "setup": "scripts/setup/q021.sh"
       },
-      "validation": [
-        { "script": "scripts/validation/q21_01_namespace_exists.sh", "points": 2, "description": "Namespace helm-ns exists" },
-        { "script": "scripts/validation/q21_02_release_exists.sh", "points": 4, "description": "Helm release installed" },
-        { "script": "scripts/validation/q21_03_resources_check.sh", "points": 4, "description": "Pods/Service created by Helm" }
+      "verification": [
+        { "id": "1", "description": "Namespace helm-ns exists", "verificationScriptFile": "q21_01_namespace_exists.sh", "expectedOutput": "0", "weightage": 2 },
+        { "id": "2", "description": "Helm release installed", "verificationScriptFile": "q21_02_release_exists.sh", "expectedOutput": "0", "weightage": 4 },
+        { "id": "3", "description": "Pods/Service created by Helm", "verificationScriptFile": "q21_03_resources_check.sh", "expectedOutput": "0", "weightage": 4 }
       ]
     },
     {
-      "id": "q22",
+      "id": "22",
       "title": "CRDs",
       "slug": "22-crd",
-      "description": "Create CRD `backups.stable.example.com` and a resource `my-backup`.",
+      "question": "Create a CustomResourceDefinition (CRD) named `backups.stable.example.com` with:\n- Group: `stable.example.com`\n- Version: `v1`\n- Scope: `Namespaced`\n- Names: `plural=backups`, `singular=backup`, `kind=Backup`, `shortNames=[\"bk\"]`\n\nAfter creating the CRD, create one instance of it named `my-backup`.",
+      "namespace": "default",
+      "machineHostname": "ckad9999",
+      "concepts": [],
       "difficulty": "hard",
       "scripts": {
-        "setup": "scripts/setup/q022.sh",
-        "cleanup": "scripts/cleanup/q022_cleanup.sh"
+        "setup": "scripts/setup/q022.sh"
       },
-      "validation": [
-        { "script": "scripts/validation/q22_01_crd_exists.sh", "points": 4, "description": "CRD definition is correct" },
-        { "script": "scripts/validation/q22_02_cr_exists.sh", "points": 4, "description": "Custom Resource instance exists" },
-        { "script": "scripts/validation/q22_03_cr_spec.sh", "points": 2, "description": "CR spec matches requirements" }
+      "verification": [
+        { "id": "1", "description": "CRD definition is correct", "verificationScriptFile": "q22_01_crd_exists.sh", "expectedOutput": "0", "weightage": 4 },
+        { "id": "2", "description": "Custom Resource instance exists", "verificationScriptFile": "q22_02_cr_exists.sh", "expectedOutput": "0", "weightage": 4 },
+        { "id": "3", "description": "CR spec matches requirements", "verificationScriptFile": "q22_03_cr_spec.sh", "expectedOutput": "0", "weightage": 2 }
       ]
     }
   ]
