@@ -3,22 +3,11 @@ set -e
 
 NAMESPACE="ckad-ns-a"
 
-# Create namespace
-kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
+# Q1 asks the candidate to create the namespace.
+# Ensure setup does NOT create it; instead, ensure a clean slate.
+if kubectl get namespace "$NAMESPACE" >/dev/null 2>&1; then
+  echo "Namespace $NAMESPACE exists; deleting to reset state..."
+  kubectl delete namespace "$NAMESPACE" --wait=true
+fi
 
-# Create a basic pod for pod creation testing
-cat <<EOF | kubectl apply -f -
-apiVersion: v1
-kind: Pod
-metadata:
-  name: test-pod
-  namespace: $NAMESPACE
-spec:
-  containers:
-  - name: app
-    image: nginx:latest
-    ports:
-    - containerPort: 80
-EOF
-
-echo "✓ Q1 setup complete: Basic pod created in namespace $NAMESPACE"
+echo "✓ Q1 setup complete: Namespace $NAMESPACE is absent (candidate must create it)"
