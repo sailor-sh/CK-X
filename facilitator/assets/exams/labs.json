@@ -21,6 +21,16 @@
         "examDurationInMinutes": 120
       },
       {
+        "id": "ckad-004",
+        "assetPath": "assets/exams/ckad/004",
+        "name": "CKAD Comprehensive Lab - 4",
+        "category": "CKAD",
+        "description": "Hands-on exercises covering Kubernetes application design, multi-container pods, volumes, labels/selectors, and core troubleshooting tasks from https://github.com/dgkanatsios/CKAD-exercises",
+        "warmUpTimeInSeconds": 260,
+        "difficulty": "High",
+        "examDurationInMinutes": 120
+      },
+      {
         "id": "cks-001",
         "assetPath": "assets/exams/cks/001",
         "name": "CKS Practice Lab - Kubernetes Security Essentials",
