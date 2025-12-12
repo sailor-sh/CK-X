@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-NAMESPACE="q001"
+NAMESPACE="ckad-ns-a"
 
 # Create namespace
 kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
