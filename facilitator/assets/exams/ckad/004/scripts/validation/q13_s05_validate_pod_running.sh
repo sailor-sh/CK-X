@@ -2,7 +2,7 @@
 # Q13.05 - Pod is running
 # Points: 2
 
-PHASE=$(kubectl get pod env-pod -n q13 -o jsonpath='{.status.phase}' 2>/dev/null)
+PHASE=$(kubectl get pod env-pod -n security-contexts -o jsonpath='{.status.phase}' 2>/dev/null)
 [[ "$PHASE" == "Running" ]] && {
   echo "✓ Pod running"
   exit 0

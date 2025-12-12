@@ -2,7 +2,7 @@
 # Q03.03 - Container c1 uses nginx
 # Points: 2
 
-IMAGE=$(kubectl get pod multi-box -n q03 -o jsonpath='{.spec.containers[0].image}' 2>/dev/null)
+IMAGE=$(kubectl get pod multi-box -n multi-container -o jsonpath='{.spec.containers[0].image}' 2>/dev/null)
 [[ "$IMAGE" =~ nginx ]] && {
   echo "✓ Container c1 uses nginx"
   exit 0

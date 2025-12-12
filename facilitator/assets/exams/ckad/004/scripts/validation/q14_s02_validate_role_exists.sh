@@ -2,7 +2,7 @@
 # Q14.02 - Role exists
 # Points: 2
 
-kubectl get role app-role -n q14 >/dev/null 2>&1 && {
+kubectl get role app-role -n service-accounts >/dev/null 2>&1 && {
   echo "✓ Role app-role exists"
   exit 0
 } || {

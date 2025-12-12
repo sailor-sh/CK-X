@@ -2,7 +2,7 @@
 # Q16.06 - PVCs created
 # Points: 2
 
-PVC=$(kubectl get pvc -n q16 --no-headers 2>/dev/null | wc -l)
+PVC=$(kubectl get pvc -n liveness-probes --no-headers 2>/dev/null | wc -l)
 [[ $PVC -gt 0 ]] && {
   echo "✓ PVCs created"
   exit 0

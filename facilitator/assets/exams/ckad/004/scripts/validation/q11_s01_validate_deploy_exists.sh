@@ -2,7 +2,7 @@
 # Q11.01 - Deployment exists
 # Points: 2
 
-kubectl get deployment no-liveness -n q11 >/dev/null 2>&1 && {
+kubectl get deployment no-liveness -n configmaps-env >/dev/null 2>&1 && {
   echo "✓ Deployment no-liveness exists"
   exit 0
 } || {

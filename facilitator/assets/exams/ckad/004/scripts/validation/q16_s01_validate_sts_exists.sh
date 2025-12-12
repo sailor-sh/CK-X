@@ -2,7 +2,7 @@
 # Q16.01 - StatefulSet exists
 # Points: 2
 
-kubectl get statefulset mysql -n q16 >/dev/null 2>&1 && {
+kubectl get statefulset mysql -n liveness-probes >/dev/null 2>&1 && {
   echo "✓ StatefulSet mysql exists"
   exit 0
 } || {

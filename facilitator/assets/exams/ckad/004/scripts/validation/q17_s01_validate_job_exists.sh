@@ -2,7 +2,7 @@
 # Q17.01 - Job exists
 # Points: 2
 
-kubectl get job compute-job -n q17 >/dev/null 2>&1 && {
+kubectl get job compute-job -n readiness-probes >/dev/null 2>&1 && {
   echo "✓ Job compute-job exists"
   exit 0
 } || {

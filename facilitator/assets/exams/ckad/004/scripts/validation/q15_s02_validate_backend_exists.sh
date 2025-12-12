@@ -2,7 +2,7 @@
 # Q15.02 - Backend deployment exists
 # Points: 2
 
-kubectl get deployment backend -n q15 >/dev/null 2>&1 && {
+kubectl get deployment backend -n resource-quotas >/dev/null 2>&1 && {
   echo "✓ Backend deployment exists"
   exit 0
 } || {

@@ -2,7 +2,7 @@
 # Q20.04 - Min replicas set
 # Points: 2
 
-MIN=$(kubectl get hpa app-hpa -n q20 -o jsonpath='{.spec.minReplicas}' 2>/dev/null)
+MIN=$(kubectl get hpa app-hpa -n persistent-storage -o jsonpath='{.spec.minReplicas}' 2>/dev/null)
 [[ -n "$MIN" ]] && {
   echo "✓ Min replicas: $MIN"
   exit 0

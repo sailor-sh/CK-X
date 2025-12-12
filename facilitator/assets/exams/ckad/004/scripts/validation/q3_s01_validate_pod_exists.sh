@@ -2,7 +2,7 @@
 # Q03.01 - Pod multi-box exists
 # Points: 2
 
-kubectl get pod multi-box -n q03 >/dev/null 2>&1 && {
+kubectl get pod multi-box -n multi-container >/dev/null 2>&1 && {
   echo "✓ Pod multi-box exists"
   exit 0
 } || {

@@ -2,7 +2,7 @@
 # Q18.01 - Deployment exists
 # Points: 2
 
-kubectl get deployment app-deploy -n q18 >/dev/null 2>&1 && {
+kubectl get deployment app-deploy -n services-clusterip >/dev/null 2>&1 && {
   echo "✓ Deployment app-deploy exists"
   exit 0
 } || {

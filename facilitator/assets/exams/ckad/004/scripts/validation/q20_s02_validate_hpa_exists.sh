@@ -2,7 +2,7 @@
 # Q20.02 - HPA exists
 # Points: 2
 
-kubectl get hpa app-hpa -n q20 >/dev/null 2>&1 && {
+kubectl get hpa app-hpa -n persistent-storage >/dev/null 2>&1 && {
   echo "✓ HPA app-hpa exists"
   exit 0
 } || {

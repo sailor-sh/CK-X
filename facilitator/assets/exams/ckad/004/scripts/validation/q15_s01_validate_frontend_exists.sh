@@ -2,7 +2,7 @@
 # Q15.01 - Frontend deployment exists
 # Points: 2
 
-kubectl get deployment frontend -n q15 >/dev/null 2>&1 && {
+kubectl get deployment frontend -n resource-quotas >/dev/null 2>&1 && {
   echo "✓ Frontend deployment exists"
   exit 0
 } || {

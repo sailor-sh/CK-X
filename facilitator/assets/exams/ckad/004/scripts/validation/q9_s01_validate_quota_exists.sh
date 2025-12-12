@@ -2,7 +2,7 @@
 # Q09.01 - ResourceQuota exists
 # Points: 2
 
-kubectl get resourcequota -n q09 >/dev/null 2>&1 && {
+kubectl get resourcequota -n batch-jobs >/dev/null 2>&1 && {
   echo "✓ ResourceQuota exists"
   exit 0
 } || {

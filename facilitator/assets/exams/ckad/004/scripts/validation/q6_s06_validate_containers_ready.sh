@@ -2,7 +2,7 @@
 # Q06.06 - Both containers ready
 # Points: 2
 
-READY=$(kubectl get pod multi-container -n q06 -o jsonpath='{.status.containerStatuses[0].ready}' 2>/dev/null)
+READY=$(kubectl get pod multi-container -n deployments-scaling -o jsonpath='{.status.containerStatuses[0].ready}' 2>/dev/null)
 [[ "$READY" == "true" ]] && {
   echo "✓ Containers ready"
   exit 0
