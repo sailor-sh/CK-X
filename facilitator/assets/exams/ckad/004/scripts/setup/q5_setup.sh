@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-NAMESPACE="q005"
+NAMESPACE="labels-selectors"
 
 kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
 

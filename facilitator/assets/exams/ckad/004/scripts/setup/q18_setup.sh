@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-NAMESPACE="q018"
+NAMESPACE="services-clusterip"
 
 kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
 

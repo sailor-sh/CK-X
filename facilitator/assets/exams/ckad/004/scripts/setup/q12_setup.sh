@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-NAMESPACE="q012"
+NAMESPACE="secrets-volume"
 
 kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
 

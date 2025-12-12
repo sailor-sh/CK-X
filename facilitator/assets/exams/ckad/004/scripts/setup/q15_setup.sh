@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-NAMESPACE="q015"
+NAMESPACE="resource-quotas"
 
 kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
 

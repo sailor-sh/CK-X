@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-NAMESPACE="q021"
+NAMESPACE="helm-operations"
 
 kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
 

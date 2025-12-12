@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-NAMESPACE="q013"
+NAMESPACE="security-contexts"
 
 kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
 

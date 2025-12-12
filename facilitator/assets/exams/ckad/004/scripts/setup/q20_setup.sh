@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-NAMESPACE="q020"
+NAMESPACE="persistent-storage"
 
 kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
 

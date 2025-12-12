@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-NAMESPACE="q014"
+NAMESPACE="service-accounts"
 
 kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
 

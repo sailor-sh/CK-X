@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-NAMESPACE="q004"
+NAMESPACE="sidecar-logging"
 
 kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-NAMESPACE="q007"
+NAMESPACE="rolling-updates"
 
 kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
 

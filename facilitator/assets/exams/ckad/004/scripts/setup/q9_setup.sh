@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-NAMESPACE="q009"
+NAMESPACE="batch-jobs"
 
 kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
 

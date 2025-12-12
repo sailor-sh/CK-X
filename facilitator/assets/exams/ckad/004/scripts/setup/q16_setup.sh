@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-NAMESPACE="q016"
+NAMESPACE="liveness-probes"
 
 kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
 

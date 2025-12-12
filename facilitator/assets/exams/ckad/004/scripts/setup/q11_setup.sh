@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-NAMESPACE="q011"
+NAMESPACE="configmaps-env"
 
 kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
 

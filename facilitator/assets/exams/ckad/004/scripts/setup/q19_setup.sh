@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-NAMESPACE="q019"
+NAMESPACE="network-policies"
 
 kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
 

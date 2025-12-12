@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-NAMESPACE="q006"
+NAMESPACE="deployments-scaling"
 
 kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
 
