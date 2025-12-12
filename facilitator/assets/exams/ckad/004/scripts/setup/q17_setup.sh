@@ -42,4 +42,4 @@ spec:
           restartPolicy: OnFailure
 EOF
 
-echo "✓ Q017 setup complete: Job and CronJob created in namespace $NAMESPACE"
+echo "✓ Q17 setup complete: Job and CronJob created in namespace $NAMESPACE"

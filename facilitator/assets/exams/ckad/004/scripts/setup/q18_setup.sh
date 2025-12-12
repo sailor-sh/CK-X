@@ -43,4 +43,4 @@ spec:
       app: test
 EOF
 
-echo "✓ Q018 setup complete: Deployment with PodDisruptionBudget created in namespace $NAMESPACE"
+echo "✓ Q18 setup complete: Deployment with PodDisruptionBudget created in namespace $NAMESPACE"

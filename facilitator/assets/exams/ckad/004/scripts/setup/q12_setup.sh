@@ -19,4 +19,4 @@ spec:
     command: ['sh', '-c', 'while true; do echo "$(date): Application running"; sleep 5; done']
 EOF
 
-echo "✓ Q012 setup complete: Pod with logging capability created in namespace $NAMESPACE"
+echo "✓ Q12 setup complete: Pod with logging capability created in namespace $NAMESPACE"

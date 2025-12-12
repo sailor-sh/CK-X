@@ -33,4 +33,4 @@ spec:
     emptyDir: {}
 EOF
 
-echo "✓ Q005 setup complete: Pod with init container created in namespace $NAMESPACE"
+echo "✓ Q5 setup complete: Pod with init container created in namespace $NAMESPACE"

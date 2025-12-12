@@ -47,4 +47,4 @@ spec:
           name: mysql
 EOF
 
-echo "✓ Q016 setup complete: StatefulSet with headless service created in namespace $NAMESPACE"
+echo "✓ Q16 setup complete: StatefulSet with headless service created in namespace $NAMESPACE"

@@ -44,4 +44,4 @@ subjects:
   namespace: $NAMESPACE
 EOF
 
-echo "✓ Q014 setup complete: ServiceAccount, Role, and RoleBinding created in namespace $NAMESPACE"
+echo "✓ Q14 setup complete: ServiceAccount, Role, and RoleBinding created in namespace $NAMESPACE"

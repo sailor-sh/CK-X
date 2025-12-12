@@ -35,4 +35,4 @@ spec:
     - containerPort: 80
 EOF
 
-echo "✓ Q009 setup complete: ResourceQuota and pod without limits created in namespace $NAMESPACE"
+echo "✓ Q9 setup complete: ResourceQuota and pod without limits created in namespace $NAMESPACE"

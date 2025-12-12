@@ -47,4 +47,4 @@ spec:
     image: nginx:latest
 EOF
 
-echo "✓ Q008 setup complete: Resources with labels created in namespace $NAMESPACE"
+echo "✓ Q8 setup complete: Resources with labels created in namespace $NAMESPACE"

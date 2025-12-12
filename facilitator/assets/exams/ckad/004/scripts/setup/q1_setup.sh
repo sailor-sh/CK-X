@@ -21,4 +21,4 @@ spec:
     - containerPort: 80
 EOF
 
-echo "✓ Q001 setup complete: Basic pod created in namespace $NAMESPACE"
+echo "✓ Q1 setup complete: Basic pod created in namespace $NAMESPACE"

@@ -50,4 +50,4 @@ spec:
         - containerPort: 80
 EOF
 
-echo "✓ Q015 setup complete: Frontend and backend deployments created in namespace $NAMESPACE"
+echo "✓ Q15 setup complete: Frontend and backend deployments created in namespace $NAMESPACE"

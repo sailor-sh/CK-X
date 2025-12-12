@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-NAMESPACE="q002"
+NAMESPACE="q02"
 
 kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
 
@@ -29,4 +29,4 @@ spec:
         - containerPort: 80
 EOF
 
-echo "✓ Q002 setup complete: Deployment created in namespace $NAMESPACE"
+echo "✓ Q2 setup complete: Deployment created in namespace $NAMESPACE"

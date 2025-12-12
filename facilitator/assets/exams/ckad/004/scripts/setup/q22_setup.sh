@@ -55,4 +55,4 @@ spec:
     - containerPort: 6379
 EOF
 
-echo "✓ Q022 setup complete: Web deployment and cache pod with pod affinity created in namespace $NAMESPACE"
+echo "✓ Q22 setup complete: Web deployment and cache pod with pod affinity created in namespace $NAMESPACE"

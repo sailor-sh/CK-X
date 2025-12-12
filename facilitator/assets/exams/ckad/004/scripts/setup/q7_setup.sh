@@ -55,4 +55,4 @@ spec:
       claimName: test-pvc
 EOF
 
-echo "✓ Q007 setup complete: PV, PVC and pod with volume mount created in namespace $NAMESPACE"
+echo "✓ Q7 setup complete: PV, PVC and pod with volume mount created in namespace $NAMESPACE"

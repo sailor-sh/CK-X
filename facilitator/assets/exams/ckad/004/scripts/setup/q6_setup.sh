@@ -32,4 +32,4 @@ spec:
     emptyDir: {}
 EOF
 
-echo "✓ Q006 setup complete: Multi-container pod with sidecar created in namespace $NAMESPACE"
+echo "✓ Q6 setup complete: Multi-container pod with sidecar created in namespace $NAMESPACE"

@@ -28,4 +28,4 @@ spec:
       hostNetwork: true
 EOF
 
-echo "✓ Q019 setup complete: DaemonSet created in namespace $NAMESPACE"
+echo "✓ Q19 setup complete: DaemonSet created in namespace $NAMESPACE"

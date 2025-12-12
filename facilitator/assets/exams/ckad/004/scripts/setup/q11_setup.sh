@@ -29,4 +29,4 @@ spec:
         - containerPort: 80
 EOF
 
-echo "✓ Q011 setup complete: Deployment without liveness probes created in namespace $NAMESPACE"
+echo "✓ Q11 setup complete: Deployment without liveness probes created in namespace $NAMESPACE"

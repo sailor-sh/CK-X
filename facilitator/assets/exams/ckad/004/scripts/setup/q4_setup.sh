@@ -31,4 +31,4 @@ data:
   password: cGFzc3dvcmQxMjM=
 EOF
 
-echo "✓ Q004 setup complete: ConfigMap and Secret created in namespace $NAMESPACE"
+echo "✓ Q4 setup complete: ConfigMap and Secret created in namespace $NAMESPACE"

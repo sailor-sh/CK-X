@@ -20,4 +20,4 @@ spec:
     - containerPort: 80
 EOF
 
-echo "✓ Q013 setup complete: Pod without environment variables created in namespace $NAMESPACE"
+echo "✓ Q13 setup complete: Pod without environment variables created in namespace $NAMESPACE"

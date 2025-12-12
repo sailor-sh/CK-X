@@ -59,4 +59,4 @@ spec:
         averageUtilization: 70
 EOF
 
-echo "✓ Q020 setup complete: Deployment with HPA created in namespace $NAMESPACE"
+echo "✓ Q20 setup complete: Deployment with HPA created in namespace $NAMESPACE"

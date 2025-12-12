@@ -45,4 +45,4 @@ spec:
     targetPort: 80
 EOF
 
-echo "✓ Q003 setup complete: Service and backend deployment created in namespace $NAMESPACE"
+echo "✓ Q3 setup complete: Service and backend deployment created in namespace $NAMESPACE"

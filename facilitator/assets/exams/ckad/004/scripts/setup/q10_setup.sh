@@ -29,4 +29,4 @@ spec:
         - containerPort: 80
 EOF
 
-echo "✓ Q010 setup complete: Deployment without readiness probes created in namespace $NAMESPACE"
+echo "✓ Q10 setup complete: Deployment without readiness probes created in namespace $NAMESPACE"

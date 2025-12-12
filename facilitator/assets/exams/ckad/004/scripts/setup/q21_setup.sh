@@ -32,4 +32,4 @@ spec:
     - containerPort: 80
 EOF
 
-echo "✓ Q021 setup complete: Pod with node affinity created in namespace $NAMESPACE"
+echo "✓ Q21 setup complete: Pod with node affinity created in namespace $NAMESPACE"
