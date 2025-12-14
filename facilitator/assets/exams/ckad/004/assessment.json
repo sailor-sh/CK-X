@@ -41,7 +41,7 @@
       "id": "2",
       "namespace": "kube-system",
       "machineHostname": "ckad9999",
-      "question": "List all pods in the `kube-system` namespace. Extract the pod names and their creation timestamps, writing the output to a file `/opt/course/1/pod-data.txt` in the format `pod_name creation_timestamp` (tab-separated columns).",
+      "question": "List pods in `kube-system`. Extract names and creation timestamps to `/opt/course/1/pod-data.txt`.",
       "concepts": ["kubectl-commands", "jsonpath"],
       "verification": [
         {
@@ -122,7 +122,7 @@
       "id": "4",
       
       
-      "question": "Create a pod named `logger-pod` in the `sidecar-logging` namespace that uses an `emptyDir` volume.\n- Container 1 (`app`): image `busybox`, writes 'logging info' to `/var/log/app.log` every 5 seconds.\n- Container 2 (`sidecar`): image `busybox`, tails `/var/log/app.log` from the shared volume and sends it to stdout.",
+      "question": "Create a pod named `logger-pod` that uses an `emptyDir` volume.\n- Container 1 (`app`): image `busybox`, writes 'logging info' to `/var/log/app.log` every 5 seconds.\n- Container 2 (`sidecar`): image `busybox`, tails `/var/log/app.log` from the shared volume and sends it to stdout.",
       "namespace": "sidecar-logging",
       "machineHostname": "ckad9999",
       "concepts": ["volumes", "sidecar-pattern", "multi-container-pods"],
@@ -374,7 +374,7 @@
       "id": "11",
       
       
-      "question": "Create a ConfigMap named `app-config` with the key-value `APP_MODE=production`. Create a pod named `cm-pod` (image `nginx`) in the `configmaps-env` namespace that consumes this ConfigMap key as an environment variable named `MODE`.",
+      "question": "Create a ConfigMap named `app-config` with the key-value `APP_MODE=production`. Create a pod named `cm-pod` (image `nginx`) that consumes this ConfigMap key as an environment variable named `MODE`.",
       "namespace": "configmaps-env",
       "machineHostname": "ckad9999",
       "concepts": ["configmaps", "environment-variables"],
@@ -407,7 +407,7 @@
       "id": "12",
       
       
-      "question": "Create a Secret named `app-secret` containing `api-key=123456`. Create a pod named `sec-pod` (image `nginx`) in the `secrets-volume` namespace and mount this secret as a volume at `/etc/app-secret` so the key is available as a file.",
+      "question": "Create a Secret named `app-secret` containing `api-key=123456`. Create a pod named `sec-pod` (image `nginx`) and mount this secret as a volume at `/etc/app-secret` so the key is available as a file.",
       "namespace": "secrets-volume",
       "machineHostname": "ckad9999",
       "concepts": ["secrets", "volumes"],
@@ -440,7 +440,7 @@
       "id": "13",
       
       
-      "question": "Create a pod named `secure-pod` with image `busybox` in the `security-contexts` namespace. Configure Security Context so the container runs with User ID `2000` (`runAsUser: 2000`) and the filesystem is read-only (`readOnlyRootFilesystem: true`).",
+      "question": "Create a pod named `secure-pod` with image `busybox`. Configure Security Context so the container runs with User ID `2000` (`runAsUser: 2000`) and the filesystem is read-only (`readOnlyRootFilesystem: true`).",
       "namespace": "security-contexts",
       "machineHostname": "ckad9999",
       "concepts": ["security-contexts", "pods"],
@@ -473,7 +473,7 @@
       "id": "14",
       
       
-      "question": "Create a ServiceAccount named `backend-sa`. Create a pod named `backend-pod` (image `nginx`) in the `service-accounts` namespace that uses this ServiceAccount.",
+      "question": "Create a ServiceAccount named `backend-sa`. Create a pod named `backend-pod` (image `nginx`) that uses this ServiceAccount.",
       "namespace": "service-accounts",
       "machineHostname": "ckad9999",
       "concepts": ["service-accounts", "pods"],
@@ -532,7 +532,7 @@
       "id": "16",
       
       
-      "question": "Create a pod named `live-check` with image `busybox` in the `liveness-probes` namespace. Configure a Liveness Probe that runs the command `cat /tmp/healthy`. Configure the container start command to create this file, sleep 30 seconds, then delete it (to simulate failure).",
+      "question": "Create a pod named `live-check` with image `busybox`. Configure a Liveness Probe that runs the command `cat /tmp/healthy`. Configure the container start command to create this file, sleep 30 seconds, then delete it (to simulate failure).",
       "namespace": "liveness-probes",
       "machineHostname": "ckad9999",
       "concepts": ["liveness-probes", "pods"],
@@ -565,7 +565,7 @@
       "id": "17",
       
       
-      "question": "Create a pod named `ready-web` with image `nginx` in the `readiness-probes` namespace. Configure a Readiness Probe that checks an HTTP GET on path `/` at port `80`.",
+      "question": "Create a pod named `ready-web` with image `nginx`. Configure a Readiness Probe that checks an HTTP GET on path `/` at port `80`.",
       "namespace": "readiness-probes",
       "machineHostname": "ckad9999",
       "concepts": ["readiness-probes", "pods"],
@@ -664,7 +664,7 @@
       "id": "20",
       
       
-      "question": "Create a PersistentVolumeClaim named `data-pvc` requesting `100Mi` of storage with access mode `ReadWriteOnce`. Mount this PVC to a pod named `storage-pod` at path `/data` in the `persistent-storage` namespace.",
+      "question": "Create a PersistentVolumeClaim named `data-pvc` requesting `100Mi` of storage with access mode `ReadWriteOnce`. Mount this PVC to a pod named `storage-pod` at path `/data`.",
       "namespace": "persistent-storage",
       "machineHostname": "ckad9999",
       "concepts": ["persistent-volume-claims", "volumes"],
