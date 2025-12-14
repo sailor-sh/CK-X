@@ -196,7 +196,7 @@ services:
 
   # Facilitator Service
   facilitator:
-    image: nishanb/ck-x-simulator-facilitator:latest
+    image: ${CKX_FACILITATOR_IMAGE:-nishanb/ck-x-simulator-facilitator:latest}
     build:
       context: ./facilitator
       dockerfile: Dockerfile

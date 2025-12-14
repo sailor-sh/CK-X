@@ -73,7 +73,7 @@ kubectl logs multi-box -c c2
 ---
 
 ### Question 4: Shared Volume (Sidecar Pattern)
-Create a pod named `logger-pod` that uses a `emptyDir` volume.
+Create a pod named `logger-pod` in the `sidecar-logging` namespace that uses a `emptyDir` volume.
 - Container 1 (app): Image `busybox`, writes "logging info" to `/var/log/app.log` every 5 seconds.
 - Container 2 (sidecar): Image `busybox`, tails/reads the `/var/log/app.log` file from the shared volume and sends it to stdout.
 
@@ -83,6 +83,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: logger-pod
+  namespace: sidecar-logging
 spec:
   containers:
   - name: app
@@ -302,6 +303,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: cm-pod
+  namespace: configmaps-env
 spec:
   containers:
   - name: nginx-container
@@ -343,6 +345,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: sec-pod
+  namespace: secrets-volume
 spec:
   containers:
   - name: nginx-container
@@ -378,6 +381,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: secure-pod
+  namespace: security-contexts
 spec:
   securityContext:
     runAsUser: 2000
@@ -433,6 +437,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: backend-pod
+  namespace: service-accounts
 spec:
   serviceAccountName: backend-sa
   containers:
@@ -503,6 +508,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: live-check
+  namespace: liveness-probes
 spec:
   containers:
   - name: busybox-container
@@ -543,6 +549,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: ready-web
+  namespace: readiness-probes
 spec:
   containers:
   - name: nginx-container
