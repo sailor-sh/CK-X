@@ -1,12 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Q15.02 - ResourceQuota ns-quota exists in quota-ns
 # Points: 2
 
-kubectl get resourcequota ns-quota -n quota-ns >/dev/null 2>&1 && {
-  echo "✓ ResourceQuota ns-quota exists in quota-ns"
-  exit 0
-} || {
-  echo "✗ ResourceQuota ns-quota not found in quota-ns"
-  exit 1
-}
-
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. "$SCRIPT_DIR/../lib/common.sh"
+if k_exists resourcequota ns-quota quota-ns; then
+  ok "ResourceQuota ns-quota exists in quota-ns"
+else
+  fail "ResourceQuota ns-quota not found in quota-ns"
+fi
