@@ -61,3 +61,5 @@ coverage/
 terraform.tfstate
 terraform.tfstate.backup
 .terragrunt-cache/ 
+/scripts/dev
+/scripts/release
