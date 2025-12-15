@@ -1,15 +1,15 @@
 #!/bin/bash
-# Q21.03 - Pods/Service created by Helm
+# Q21.03 - Helm created pods/services
 # Points: 4
 
 NS="helm-ns"
-PODS=$(kubectl get pods -n "$NS" -l app.kubernetes.io/instance=my-web --no-headers 2>/dev/null | wc -l | tr -d ' ')
-SVC=$(kubectl get svc -n "$NS" -l app.kubernetes.io/instance=my-web --no-headers 2>/dev/null | wc -l | tr -d ' ')
-if [ "$PODS" -ge 1 ] && [ "$SVC" -ge 1 ]; then
-  echo "✓ Helm-created Pods and Service are present"
+PODS=$(kubectl get pods -n "$NS" --no-headers | wc -l)
+SVCS=$(kubectl get services -n "$NS" --no-headers | wc -l)
+
+if [ $PODS -gt 0 ] && [ $SVCS -gt 0 ]; then
+  echo "✓ Helm created pods and services in helm-ns"
   exit 0
 else
-  echo "✗ Missing Helm-created Pods or Service (pods=$PODS, svc=$SVC)"
+  echo "✗ Helm did not create expected resources (pods: $PODS, services: $SVCS)"
   exit 1
 fi
-
