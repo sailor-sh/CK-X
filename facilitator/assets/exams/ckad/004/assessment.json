@@ -5,7 +5,10 @@
       "namespace": "ckad-ns-a",
       "machineHostname": "ckad9999",
       "question": "Create a namespace named `ckad-ns-a`. Inside this namespace, run a pod named `web-core` using the image `nginx:alpine`.",
-      "concepts": ["namespaces", "pods"],
+      "concepts": [
+        "namespaces",
+        "pods"
+      ],
       "verification": [
         {
           "id": "1",
@@ -42,7 +45,10 @@
       "namespace": "kube-system",
       "machineHostname": "ckad9999",
       "question": "List pods in `kube-system`. Extract names and creation timestamps to `/opt/course/1/pod-data.txt`.",
-      "concepts": ["kubectl-commands", "jsonpath"],
+      "concepts": [
+        "kubectl-commands",
+        "jsonpath"
+      ],
       "verification": [
         {
           "id": "1",
@@ -79,7 +85,10 @@
       "namespace": "multi-container",
       "machineHostname": "ckad9999",
       "question": "Create a pod named `multi-box` in the `multi-container` namespace with two containers:\n- Container 1: name `c1`, image `nginx`\n- Container 2: name `c2`, image `busybox`, command `[\"/bin/sh\", \"-c\", \"while true; do echo hello; sleep 10; done\"]`.",
-      "concepts": ["multi-container-pods", "pods"],
+      "concepts": [
+        "multi-container-pods",
+        "pods"
+      ],
       "verification": [
         {
           "id": "1",
@@ -120,13 +129,14 @@
     },
     {
       "id": "4",
-      
-      
       "question": "In the `sidecar-logging` namespace, create a pod named `logger-pod` that uses an `emptyDir` volume.\n- Container 1 (`app`): image `busybox`, writes 'logging info' to `/var/log/app.log` every 5 seconds.\n- Container 2 (`sidecar`): image `busybox`, tails `/var/log/app.log` from the shared volume and sends it to stdout.",
       "namespace": "sidecar-logging",
       "machineHostname": "ckad9999",
-      "concepts": ["volumes", "sidecar-pattern", "multi-container-pods"],
-      
+      "concepts": [
+        "volumes",
+        "sidecar-pattern",
+        "multi-container-pods"
+      ],
       "verification": [
         {
           "id": "1",
@@ -167,13 +177,14 @@
     },
     {
       "id": "5",
-      
-      
-      "question": "Create pods `pod-a`, `pod-b`, `pod-c`. Label a and b with `env=prod`. List only these.",
+      "question": "In the `labels-selectors` namespace, create pods `pod-a`, `pod-b`, `pod-c`. Label a and b with `env=prod`. List only these.",
       "namespace": "labels-selectors",
       "machineHostname": "ckad9999",
-      "concepts": ["labels", "selectors", "pods"],
-      
+      "concepts": [
+        "labels",
+        "selectors",
+        "pods"
+      ],
       "verification": [
         {
           "id": "1",
@@ -207,13 +218,14 @@
     },
     {
       "id": "6",
-      
-      
-      "question": "Create a deployment named `web-deploy` using image `nginx:1.16` with 2 replicas. After it is running, scale the deployment to 5 replicas.",
+      "question": "In the `deployments-scaling` namespace, Create a deployment named `web-deploy` using image `nginx:1.16` with 2 replicas. After it is running, scale the deployment to 5 replicas.",
       "namespace": "deployments-scaling",
       "machineHostname": "ckad9999",
-      "concepts": ["deployments", "scaling", "replicas"],
-      
+      "concepts": [
+        "deployments",
+        "scaling",
+        "replicas"
+      ],
       "verification": [
         {
           "id": "1",
@@ -247,13 +259,14 @@
     },
     {
       "id": "7",
-      
-      
-      "question": "Update the `web-deploy` deployment to use image `nginx:1.17`. Verify the update strategy is `RollingUpdate` and record the rollout history.",
+      "question": "In the `rolling-updates` namespace, Update the `web-deploy` deployment to use image `nginx:1.17`. Verify the update strategy is `RollingUpdate` and record the rollout history.",
       "namespace": "rolling-updates",
       "machineHostname": "ckad9999",
-      "concepts": ["deployments", "rolling-updates", "rollout-history"],
-      
+      "concepts": [
+        "deployments",
+        "rolling-updates",
+        "rollout-history"
+      ],
       "verification": [
         {
           "id": "1",
@@ -280,13 +293,13 @@
     },
     {
       "id": "8",
-      
-      
-      "question": "Undo the latest update to `web-deploy`, reverting it back to the previous revision (`nginx:1.16`).",
+      "question": "In the `rollbacks` namespace, Undo the latest update to `web-deploy`, reverting it back to the previous revision (`nginx:1.16`).",
       "namespace": "rollbacks",
       "machineHostname": "ckad9999",
-      "concepts": ["deployments", "rollbacks"],
-      
+      "concepts": [
+        "deployments",
+        "rollbacks"
+      ],
       "verification": [
         {
           "id": "1",
@@ -306,13 +319,12 @@
     },
     {
       "id": "9",
-      
-      
-      "question": "Create a Job named `batch-job` with image `busybox` that runs the command `echo 'Task Complete'; sleep 5`. Ensure the job terminates successfully after completion.",
+      "question": "In the `batch-jobs` namespace, Create a Job named `batch-job` with image `busybox` that runs the command `echo 'Task Complete'; sleep 5`. Ensure the job terminates successfully after completion.",
       "namespace": "batch-jobs",
       "machineHostname": "ckad9999",
-      "concepts": ["jobs"],
-      
+      "concepts": [
+        "jobs"
+      ],
       "verification": [
         {
           "id": "1",
@@ -339,13 +351,12 @@
     },
     {
       "id": "10",
-      
-      
-      "question": "Create a CronJob named `periodic-task` that runs every minute (`*/1 * * * *`). It should print the current date using the `busybox` image.",
+      "question": "In the `cronjobs` namespace, Create a CronJob named `periodic-task` that runs every minute (`*/1 * * * *`). It should print the current date using the `busybox` image.",
       "namespace": "cronjobs",
       "machineHostname": "ckad9999",
-      "concepts": ["cronjobs"],
-      
+      "concepts": [
+        "cronjobs"
+      ],
       "verification": [
         {
           "id": "1",
@@ -372,13 +383,13 @@
     },
     {
       "id": "11",
-      
-      
-      "question": "Create a ConfigMap named `app-config` with the key-value `APP_MODE=production`. Create a pod named `cm-pod` (image `nginx`) that consumes this ConfigMap key as an environment variable named `MODE`.",
+      "question": "In the `configmaps-env` namespace, Create a ConfigMap named `app-config` with the key-value `APP_MODE=production`. Create a pod named `cm-pod` (image `nginx`) that consumes this ConfigMap key as an environment variable named `MODE`.",
       "namespace": "configmaps-env",
       "machineHostname": "ckad9999",
-      "concepts": ["configmaps", "environment-variables"],
-      
+      "concepts": [
+        "configmaps",
+        "environment-variables"
+      ],
       "verification": [
         {
           "id": "1",
@@ -405,13 +416,13 @@
     },
     {
       "id": "12",
-      
-      
-      "question": "Create a Secret named `app-secret` containing `api-key=123456`. Create a pod named `sec-pod` (image `nginx`) and mount this secret as a volume at `/etc/app-secret` so the key is available as a file.",
+      "question": "In the `secrets-volume` namespace, Create a Secret named `app-secret` containing `api-key=123456`. Create a pod named `sec-pod` (image `nginx`) and mount this secret as a volume at `/etc/app-secret` so the key is available as a file.",
       "namespace": "secrets-volume",
       "machineHostname": "ckad9999",
-      "concepts": ["secrets", "volumes"],
-      
+      "concepts": [
+        "secrets",
+        "volumes"
+      ],
       "verification": [
         {
           "id": "1",
@@ -438,13 +449,13 @@
     },
     {
       "id": "13",
-      
-      
-      "question": "Create a pod named `secure-pod` with image `busybox`. Configure Security Context so the container runs with User ID `2000` (`runAsUser: 2000`) and the filesystem is read-only (`readOnlyRootFilesystem: true`).",
+      "question": "In the `security-contexts` namespace, Create a pod named `secure-pod` with image `busybox`. Configure Security Context so the container runs with User ID `2000` (`runAsUser: 2000`) and the filesystem is read-only (`readOnlyRootFilesystem: true`).",
       "namespace": "security-contexts",
       "machineHostname": "ckad9999",
-      "concepts": ["security-contexts", "pods"],
-      
+      "concepts": [
+        "security-contexts",
+        "pods"
+      ],
       "verification": [
         {
           "id": "1",
@@ -471,13 +482,13 @@
     },
     {
       "id": "14",
-      
-      
-      "question": "Create a ServiceAccount named `backend-sa`. Create a pod named `backend-pod` (image `nginx`) that uses this ServiceAccount.",
+      "question": "In the `service-accounts` namespace, Create a ServiceAccount named `backend-sa`. Create a pod named `backend-pod` (image `nginx`) that uses this ServiceAccount.",
       "namespace": "service-accounts",
       "machineHostname": "ckad9999",
-      "concepts": ["service-accounts", "pods"],
-      
+      "concepts": [
+        "service-accounts",
+        "pods"
+      ],
       "verification": [
         {
           "id": "1",
@@ -497,13 +508,13 @@
     },
     {
       "id": "15",
-      
-      
-      "question": "Create a ResourceQuota named `ns-quota` in a new namespace `quota-ns` that limits the total number of pods allowed in the namespace to 5.",
+      "question": "In the `resource-quotas` namespace, Create a ResourceQuota named `ns-quota` in a new namespace `quota-ns` that limits the total number of pods allowed in the namespace to 5.",
       "namespace": "resource-quotas",
       "machineHostname": "ckad9999",
-      "concepts": ["resource-quotas", "namespaces"],
-      
+      "concepts": [
+        "resource-quotas",
+        "namespaces"
+      ],
       "verification": [
         {
           "id": "1",
@@ -530,13 +541,13 @@
     },
     {
       "id": "16",
-      
-      
-      "question": "Create a pod named `live-check` with image `busybox`. Configure a Liveness Probe that runs the command `cat /tmp/healthy`. Configure the container start command to create this file, sleep 30 seconds, then delete it (to simulate failure).",
+      "question": "In the `liveness-probes` namespace, Create a pod named `live-check` with image `busybox`. Configure a Liveness Probe that runs the command `cat /tmp/healthy`. Configure the container start command to create this file, sleep 30 seconds, then delete it (to simulate failure).",
       "namespace": "liveness-probes",
       "machineHostname": "ckad9999",
-      "concepts": ["liveness-probes", "pods"],
-      
+      "concepts": [
+        "liveness-probes",
+        "pods"
+      ],
       "verification": [
         {
           "id": "1",
@@ -563,13 +574,13 @@
     },
     {
       "id": "17",
-      
-      
-      "question": "Create a pod named `ready-web` with image `nginx`. Configure a Readiness Probe that checks an HTTP GET on path `/` at port `80`.",
+      "question": "In the `readiness-probes` namespace, Create a pod named `ready-web` with image `nginx`. Configure a Readiness Probe that checks an HTTP GET on path `/` at port `80`.",
       "namespace": "readiness-probes",
       "machineHostname": "ckad9999",
-      "concepts": ["readiness-probes", "pods"],
-      
+      "concepts": [
+        "readiness-probes",
+        "pods"
+      ],
       "verification": [
         {
           "id": "1",
@@ -596,13 +607,13 @@
     },
     {
       "id": "18",
-      
-      
-      "question": "Expose the `web-deploy` deployment as a Service named `web-svc` on port 80. The service type should be `ClusterIP`.",
+      "question": "In the `services-clusterip` namespace, Expose the `web-deploy` deployment as a Service named `web-svc` on port 80. The service type should be `ClusterIP`.",
       "namespace": "services-clusterip",
       "machineHostname": "ckad9999",
-      "concepts": ["services", "clusterip"],
-      
+      "concepts": [
+        "services",
+        "clusterip"
+      ],
       "verification": [
         {
           "id": "1",
@@ -629,13 +640,12 @@
     },
     {
       "id": "19",
-      
-      
-      "question": "Create a NetworkPolicy named `default-deny` in the `default` namespace that denies all ingress traffic to all pods in that namespace.",
+      "question": "In the `network-policies` namespace, Create a NetworkPolicy named `default-deny` in the `default` namespace that denies all ingress traffic to all pods in that namespace.",
       "namespace": "network-policies",
       "machineHostname": "ckad9999",
-      "concepts": ["network-policies"],
-      
+      "concepts": [
+        "network-policies"
+      ],
       "verification": [
         {
           "id": "1",
@@ -662,13 +672,13 @@
     },
     {
       "id": "20",
-      
-      
-      "question": "Create a PersistentVolumeClaim named `data-pvc` requesting `100Mi` of storage with access mode `ReadWriteOnce`. Mount this PVC to a pod named `storage-pod` at path `/data`.",
+      "question": "In the `persistent-storage` namespace, Create a PersistentVolumeClaim named `data-pvc` requesting `100Mi` of storage with access mode `ReadWriteOnce`. Mount this PVC to a pod named `storage-pod` at path `/data`.",
       "namespace": "persistent-storage",
       "machineHostname": "ckad9999",
-      "concepts": ["persistent-volume-claims", "volumes"],
-      
+      "concepts": [
+        "persistent-volume-claims",
+        "volumes"
+      ],
       "verification": [
         {
           "id": "1",
@@ -695,13 +705,12 @@
     },
     {
       "id": "21",
-      
-      
-      "question": "Add the `bitnami` helm repository (`https://charts.bitnami.com/bitnami`). Search for the `nginx` chart, and install it into a new namespace `helm-ns` with the release name `my-web`.",
+      "question": "In the `helm-operations` namespace, Add the `bitnami` helm repository (`https://charts.bitnami.com/bitnami`). Search for the `nginx` chart, and install it into a new namespace `helm-ns` with the release name `my-web`.",
       "namespace": "helm-operations",
       "machineHostname": "ckad9999",
-      "concepts": ["helm"],
-      
+      "concepts": [
+        "helm"
+      ],
       "verification": [
         {
           "id": "1",
@@ -728,13 +737,12 @@
     },
     {
       "id": "22",
-      
-      
-      "question": "Create a CustomResourceDefinition (CRD) named `backups.stable.example.com` with:\n- Group: `stable.example.com`\n- Version: `v1`\n- Scope: `Namespaced`\n- Names: `plural=backups`, `singular=backup`, `kind=Backup`, `shortNames=[\"bk\"]`\n\nAfter creating the CRD, create one instance of it named `my-backup`.",
+      "question": "In the `crds` namespace, Create a CustomResourceDefinition (CRD) named `backups.stable.example.com` with:\n- Group: `stable.example.com`\n- Version: `v1`\n- Scope: `Namespaced`\n- Names: `plural=backups`, `singular=backup`, `kind=Backup`, `shortNames=[\"bk\"]`\n\nAfter creating the CRD, create one instance of it named `my-backup`.",
       "namespace": "crds",
       "machineHostname": "ckad9999",
-      "concepts": ["custom-resource-definitions"],
-      
+      "concepts": [
+        "custom-resource-definitions"
+      ],
       "verification": [
         {
           "id": "1",
