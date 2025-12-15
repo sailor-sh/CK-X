@@ -1,14 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Q18.02 - Service type is ClusterIP
 # Points: 2
 
 NS="services-clusterip"
-TYPE=$(kubectl get svc web-svc -n "$NS" -o jsonpath='{.spec.type}' 2>/dev/null)
-if [ "$TYPE" = "ClusterIP" ]; then
-  echo "✓ Service type is ClusterIP"
-  exit 0
-else
-  echo "✗ Service type is '$TYPE', expected 'ClusterIP'"
-  exit 1
-fi
-
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. "$SCRIPT_DIR/../lib/common.sh"
+TYPE=$(jp svc web-svc "$NS" .spec.type)
+expect_equals "$TYPE" "ClusterIP" \
+  "Service type is ClusterIP" \
+  "Service type is '$TYPE', expected 'ClusterIP'"
