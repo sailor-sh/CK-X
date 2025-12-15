@@ -63,3 +63,4 @@ terraform.tfstate.backup
 .terragrunt-cache/ 
 /scripts/dev
 /scripts/release
+docker-compose.yaml
