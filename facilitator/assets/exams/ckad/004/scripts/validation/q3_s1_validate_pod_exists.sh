@@ -2,10 +2,10 @@
 # Q03.01 - Pod multi-box exists
 # Points: 2
 
-kubectl get pod multi-box -n multi-container >/dev/null 2>&1 && {
-  echo "✓ Pod multi-box exists"
+../common/validate_resource_exists.sh pod multi-box multi-container && {
+  echo "✓ Pod multi-box exists in multi-container"
   exit 0
 } || {
-  echo "✗ Pod multi-box not found"
+  echo "✗ Pod multi-box not found in multi-container"
   exit 1
 }
