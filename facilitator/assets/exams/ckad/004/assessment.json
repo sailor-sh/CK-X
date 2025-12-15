@@ -172,6 +172,20 @@
           "verificationScriptFile": "q4_s5_validate_log_file_written.sh",
           "expectedOutput": "0",
           "weightage": 2
+        },
+        {
+          "id": "6",
+          "description": "Log file contains expected content",
+          "verificationScriptFile": "q4_s6_validate_log_content.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "7",
+          "description": "Sidecar is properly logging",
+          "verificationScriptFile": "q4_s7_validate_sidecar_logs.sh",
+          "expectedOutput": "0",
+          "weightage": 2
         }
       ]
     },
@@ -211,6 +225,20 @@
           "id": "4",
           "description": "Pod-c does not have env=prod",
           "verificationScriptFile": "q5_s4_validate_pod_c_no_label.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "5",
+          "description": "Label selectors work correctly",
+          "verificationScriptFile": "q5_s5_validate_label_selector.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "6",
+          "description": "Pods can be selected by labels",
+          "verificationScriptFile": "q5_s6_validate_pod_selection.sh",
           "expectedOutput": "0",
           "weightage": 2
         }
@@ -378,6 +406,20 @@
           "verificationScriptFile": "q10_s3_validate_cronjob_creates_jobs.sh",
           "expectedOutput": "0",
           "weightage": 3
+        },
+        {
+          "id": "4",
+          "description": "CronJob creates completed jobs",
+          "verificationScriptFile": "q10_s4_validate_job_completion.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "5",
+          "description": "Job logs contain expected output",
+          "verificationScriptFile": "q10_s5_validate_job_logs.sh",
+          "expectedOutput": "0",
+          "weightage": 2
         }
       ]
     },
