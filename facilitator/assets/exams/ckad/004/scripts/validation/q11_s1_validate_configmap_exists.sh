@@ -1,13 +1,12 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Q11.01 - ConfigMap app-config exists
 # Points: 2
 
 NS="configmaps-env"
-kubectl get configmap app-config -n "$NS" >/dev/null 2>&1 && {
-  echo "✓ ConfigMap app-config exists in $NS"
-  exit 0
-} || {
-  echo "✗ ConfigMap app-config not found in $NS"
-  exit 1
-}
-
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. "$SCRIPT_DIR/../lib/common.sh"
+if k_exists configmap app-config "$NS"; then
+  ok "ConfigMap app-config exists in $NS"
+else
+  fail "ConfigMap app-config not found in $NS"
+fi
