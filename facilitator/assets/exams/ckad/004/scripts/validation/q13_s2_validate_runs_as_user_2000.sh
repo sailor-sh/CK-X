@@ -1,17 +1,14 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Q13.02 - Runs as user 2000
 # Points: 3
 
 NS="security-contexts"
-USER=$(kubectl get pod secure-pod -n "$NS" -o jsonpath='{.spec.securityContext.runAsUser}' 2>/dev/null)
-if [ -z "$USER" ]; then
-  USER=$(kubectl get pod secure-pod -n "$NS" -o jsonpath='{.spec.containers[0].securityContext.runAsUser}' 2>/dev/null)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. "$SCRIPT_DIR/../lib/common.sh"
+USER=$(jp pod secure-pod "$NS" .spec.securityContext.runAsUser)
+if [[ -z "$USER" ]]; then
+  USER=$(jp pod secure-pod "$NS" .spec.containers[0].securityContext.runAsUser)
 fi
-if [ "$USER" = "2000" ]; then
-  echo "✓ Pod/container runs as user 2000"
-  exit 0
-else
-  echo "✗ runAsUser is '$USER', expected '2000'"
-  exit 1
-fi
-
+expect_equals "$USER" "2000" \
+  "Pod/container runs as user 2000" \
+  "runAsUser is '$USER', expected '2000'"
