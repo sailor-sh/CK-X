@@ -78,7 +78,7 @@
       "id": "3",
       "namespace": "multi-container",
       "machineHostname": "ckad9999",
-      "question": "Create a pod named `multi-box` in the `default` namespace with two containers:\n- Container 1: name `c1`, image `nginx`\n- Container 2: name `c2`, image `busybox`, command `[\"/bin/sh\", \"-c\", \"while true; do echo hello; sleep 10; done\"]`.",
+      "question": "Create a pod named `multi-box` in the `multi-container` namespace with two containers:\n- Container 1: name `c1`, image `nginx`\n- Container 2: name `c2`, image `busybox`, command `[\"/bin/sh\", \"-c\", \"while true; do echo hello; sleep 10; done\"]`.",
       "concepts": ["multi-container-pods", "pods"],
       "verification": [
         {
