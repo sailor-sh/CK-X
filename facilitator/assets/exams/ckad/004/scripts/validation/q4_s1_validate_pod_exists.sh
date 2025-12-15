@@ -2,7 +2,10 @@
 # Q04.01 - Pod logger-pod exists
 # Points: 2
 
-# Source the shared validation library
-source "$(dirname "$0")/../validation_lib.sh"
-
-validate_resource_exists "pod" "logger-pod" "logging" "2" "Pod logger-pod exists" "Pod logger-pod not found"
+kubectl get pod logger-pod -n logging >/dev/null 2>&1 && {
+  echo "✓ Pod logger-pod exists"
+  exit 0
+} || {
+  echo "✗ Pod logger-pod not found"
+  exit 1
+}
