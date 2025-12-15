@@ -1,15 +1,15 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Q12.02 - Secret mounted at /etc/app-secret
 # Points: 3
 
-NS="secrets-volume"
-MP=$(kubectl get pod sec-pod -n "$NS" -o jsonpath='{range .spec.volumes[?(@.secret.secretName=="app-secret")]}{.name}{"\n"}{end}' 2>/dev/null)
-MOUNT=$(kubectl get pod sec-pod -n "$NS" -o jsonpath='{range .spec.containers[0].volumeMounts[?(@.mountPath=="/etc/app-secret")]}{.name}{end}' 2>/dev/null)
-if [ -n "$MP" ] && [ -n "$MOUNT" ]; then
-  echo "✓ Secret app-secret mounted at /etc/app-secret"
-  exit 0
-else
-  echo "✗ Secret app-secret not mounted at /etc/app-secret"
-  exit 1
-fi
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. "$SCRIPT_DIR/../lib/common.sh"
 
+NS="secrets-volume"
+VOL_NAME=$(jp pod sec-pod "$NS" '.spec.volumes[?(@.secret.secretName=="app-secret")].name')
+MOUNT_NAME=$(jp pod sec-pod "$NS" '.spec.containers[0].volumeMounts[?(@.mountPath=="/etc/app-secret")].name')
+if [[ -n "$VOL_NAME" && -n "$MOUNT_NAME" ]]; then
+  ok "Secret app-secret mounted at /etc/app-secret"
+else
+  fail "Secret app-secret not mounted at /etc/app-secret"
+fi

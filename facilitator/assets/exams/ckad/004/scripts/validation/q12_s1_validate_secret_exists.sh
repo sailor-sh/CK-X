@@ -1,13 +1,12 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Q12.01 - Secret app-secret exists
 # Points: 2
 
 NS="secrets-volume"
-kubectl get secret app-secret -n "$NS" >/dev/null 2>&1 && {
-  echo "✓ Secret app-secret exists in $NS"
-  exit 0
-} || {
-  echo "✗ Secret app-secret not found in $NS"
-  exit 1
-}
-
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. "$SCRIPT_DIR/../lib/common.sh"
+if k_exists secret app-secret "$NS"; then
+  ok "Secret app-secret exists in $NS"
+else
+  fail "Secret app-secret not found in $NS"
+fi
