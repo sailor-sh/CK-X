@@ -1,15 +1,15 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Q21.03 - Helm created pods/services
 # Points: 4
 
 NS="helm-ns"
-PODS=$(kubectl get pods -n "$NS" --no-headers | wc -l)
-SVCS=$(kubectl get services -n "$NS" --no-headers | wc -l)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. "$SCRIPT_DIR/../lib/common.sh"
+PODS=$(kubectl get pods -n "$NS" --no-headers 2>/dev/null | wc -l | tr -d ' ')
+SVCS=$(kubectl get services -n "$NS" --no-headers 2>/dev/null | wc -l | tr -d ' ')
 
-if [ $PODS -gt 0 ] && [ $SVCS -gt 0 ]; then
-  echo "✓ Helm created pods and services in helm-ns"
-  exit 0
+if [[ "$PODS" -gt 0 && "$SVCS" -gt 0 ]]; then
+  ok "Helm created pods and services in helm-ns"
 else
-  echo "✗ Helm did not create expected resources (pods: $PODS, services: $SVCS)"
-  exit 1
+  fail "Helm did not create expected resources (pods: $PODS, services: $SVCS)"
 fi
