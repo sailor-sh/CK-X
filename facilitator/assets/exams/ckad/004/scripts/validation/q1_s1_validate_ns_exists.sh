@@ -2,7 +2,10 @@
 # Q01.01 - Namespace ckad-ns-a exists
 # Points: 2
 
-# Source the shared validation library
-source "$(dirname "$0")/../validation_lib.sh"
-
-validate_resource_exists "namespace" "ckad-ns-a" "" "2" "Namespace ckad-ns-a exists" "Namespace ckad-ns-a not found"
+kubectl get namespace ckad-ns-a >/dev/null 2>&1 && {
+  echo "✓ Namespace ckad-ns-a exists"
+  exit 0
+} || {
+  echo "✗ Namespace ckad-ns-a not found"
+  exit 1
+}
