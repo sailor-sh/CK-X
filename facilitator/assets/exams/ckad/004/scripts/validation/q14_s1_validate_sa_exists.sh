@@ -1,11 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Q14.01 - ServiceAccount exists
 # Points: 2
 
-kubectl get serviceaccount app-sa -n service-accounts >/dev/null 2>&1 && {
-  echo "✓ ServiceAccount app-sa exists"
-  exit 0
-} || {
-  echo "✗ ServiceAccount not found"
-  exit 1
-}
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. "$SCRIPT_DIR/../lib/common.sh"
+if k_exists serviceaccount app-sa service-accounts; then
+  ok "ServiceAccount app-sa exists in service-accounts"
+else
+  fail "ServiceAccount app-sa not found in service-accounts"
+fi
