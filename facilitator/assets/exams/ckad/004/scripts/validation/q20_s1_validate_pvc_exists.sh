@@ -1,14 +1,11 @@
-#!/bin/bash
-# Q20.01 - PVC data-pvc exists and Bound
+#!/usr/bin/env bash
+# Q20.01 - PVC data-pvc exists and is Bound
 # Points: 3
 
 NS="persistent-storage"
-PHASE=$(kubectl get pvc data-pvc -n "$NS" -o jsonpath='{.status.phase}' 2>/dev/null)
-if [ "$PHASE" = "Bound" ]; then
-  echo "✓ PVC data-pvc is Bound"
-  exit 0
-else
-  echo "✗ PVC data-pvc phase is '$PHASE', expected 'Bound'"
-  exit 1
-fi
-
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. "$SCRIPT_DIR/../lib/common.sh"
+STATUS=$(jp pvc data-pvc "$NS" .status.phase)
+expect_equals "$STATUS" "Bound" \
+  "PVC data-pvc exists and is Bound" \
+  "PVC data-pvc not Bound (status: $STATUS)"
