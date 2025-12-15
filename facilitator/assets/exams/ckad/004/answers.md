@@ -83,6 +83,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: logger-pod
+  namespace: sidecar-logging
 spec:
   containers:
   - name: app
@@ -827,4 +828,3 @@ kubectl describe backup my-backup
 # You can also use the shortname
 kubectl get bk my-backup
 ```
-
