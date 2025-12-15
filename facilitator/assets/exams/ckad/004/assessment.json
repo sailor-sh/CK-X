@@ -37,6 +37,27 @@
           "verificationScriptFile": "q1_s4_validate_pod_running.sh",
           "expectedOutput": "0",
           "weightage": 2
+        },
+        {
+          "id": "5",
+          "description": "Pod has correct resources",
+          "verificationScriptFile": "q1_s5_pod_has_correct_resources.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "6",
+          "description": "Pod has node selector",
+          "verificationScriptFile": "q1_s6_pod_has_node_selector.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "7",
+          "description": "Namespace has labels",
+          "verificationScriptFile": "q1_s7_namespace_has_labels.sh",
+          "expectedOutput": "0",
+          "weightage": 2
         }
       ]
     },
@@ -77,6 +98,27 @@
           "verificationScriptFile": "q2_s4_validate_kube_system_pods.sh",
           "expectedOutput": "0",
           "weightage": 3
+        },
+        {
+          "id": "5",
+          "description": "File has correct format",
+          "verificationScriptFile": "q2_s5_file_has_correct_format.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "6",
+          "description": "File contains timestamps",
+          "verificationScriptFile": "q2_s6_file_contains_timestamps.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "7",
+          "description": "File has reasonable size",
+          "verificationScriptFile": "q2_s7_file_has_reasonable_size.sh",
+          "expectedOutput": "0",
+          "weightage": 2
         }
       ]
     },
@@ -122,6 +164,27 @@
           "id": "5",
           "description": "Container c2 has correct command",
           "verificationScriptFile": "q3_s5_validate_c2_command.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "6",
+          "description": "Both containers are ready",
+          "verificationScriptFile": "q3_s6_both_containers_are_ready.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "7",
+          "description": "Containers have minimal restarts",
+          "verificationScriptFile": "q3_s7_containers_have_minimal_restarts.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "8",
+          "description": "Container commands are correct",
+          "verificationScriptFile": "q3_s8_container_commands_are_correct.sh",
           "expectedOutput": "0",
           "weightage": 2
         }
@@ -186,6 +249,13 @@
           "verificationScriptFile": "q4_s7_validate_sidecar_logs.sh",
           "expectedOutput": "0",
           "weightage": 2
+        },
+        {
+          "id": "8",
+          "description": "Volume mounts are correct",
+          "verificationScriptFile": "q4_s8_volume_mounts_are_correct.sh",
+          "expectedOutput": "0",
+          "weightage": 2
         }
       ]
     },
@@ -241,6 +311,13 @@
           "verificationScriptFile": "q5_s6_validate_pod_selection.sh",
           "expectedOutput": "0",
           "weightage": 2
+        },
+        {
+          "id": "7",
+          "description": "Labels are consistent",
+          "verificationScriptFile": "q5_s7_labels_are_consistent.sh",
+          "expectedOutput": "0",
+          "weightage": 2
         }
       ]
     },
@@ -282,6 +359,27 @@
           "verificationScriptFile": "q6_s4_validate_pods_ready.sh",
           "expectedOutput": "0",
           "weightage": 2
+        },
+        {
+          "id": "5",
+          "description": "Deployment has rolling update strategy",
+          "verificationScriptFile": "q6_s5_deployment_has_rolling_update_strategy.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "6",
+          "description": "Deployment has revision history",
+          "verificationScriptFile": "q6_s6_deployment_has_revision_history.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "7",
+          "description": "Deployment selector matches template",
+          "verificationScriptFile": "q6_s7_deployment_selector_matches_template.sh",
+          "expectedOutput": "0",
+          "weightage": 2
         }
       ]
     },
@@ -316,6 +414,20 @@
           "verificationScriptFile": "q7_s3_validate_rollout_history.sh",
           "expectedOutput": "0",
           "weightage": 4
+        },
+        {
+          "id": "4",
+          "description": "Rollout is complete",
+          "verificationScriptFile": "q7_s4_rollout_is_complete.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "5",
+          "description": "Image updated to 1.17",
+          "verificationScriptFile": "q7_s5_image_updated_to_1.17.sh",
+          "expectedOutput": "0",
+          "weightage": 2
         }
       ]
     },
@@ -342,6 +454,20 @@
           "verificationScriptFile": "q8_s2_validate_rollback_complete.sh",
           "expectedOutput": "0",
           "weightage": 3
+        },
+        {
+          "id": "3",
+          "description": "Rollback history available",
+          "verificationScriptFile": "q8_s3_rollback_history_available.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "4",
+          "description": "Rollback completed successfully",
+          "verificationScriptFile": "q8_s4_rollback_completed_successfully.sh",
+          "expectedOutput": "0",
+          "weightage": 2
         }
       ]
     },
@@ -374,6 +500,20 @@
           "verificationScriptFile": "q9_s3_validate_job_logs.sh",
           "expectedOutput": "0",
           "weightage": 3
+        },
+        {
+          "id": "4",
+          "description": "Job completed successfully",
+          "verificationScriptFile": "q9_s4_job_completed_successfully.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "5",
+          "description": "Job created pod successfully",
+          "verificationScriptFile": "q9_s5_job_created_pod_successfully.sh",
+          "expectedOutput": "0",
+          "weightage": 2
         }
       ]
     },
@@ -453,6 +593,20 @@
           "verificationScriptFile": "q11_s3_validate_pod_running.sh",
           "expectedOutput": "0",
           "weightage": 2
+        },
+        {
+          "id": "4",
+          "description": "ConfigMap has correct data",
+          "verificationScriptFile": "q11_s4_configmap_has_correct_data.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "5",
+          "description": "Pod uses ConfigMap values",
+          "verificationScriptFile": "q11_s5_pod_uses_configmap_values.sh",
+          "expectedOutput": "0",
+          "weightage": 2
         }
       ]
     },
@@ -486,6 +640,20 @@
           "verificationScriptFile": "q12_s3_validate_secret_content.sh",
           "expectedOutput": "0",
           "weightage": 3
+        },
+        {
+          "id": "4",
+          "description": "Secret has correct type",
+          "verificationScriptFile": "q12_s4_secret_has_correct_type.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "5",
+          "description": "Secret contains required keys",
+          "verificationScriptFile": "q12_s5_secret_contains_required_keys.sh",
+          "expectedOutput": "0",
+          "weightage": 2
         }
       ]
     },
@@ -519,6 +687,20 @@
           "verificationScriptFile": "q13_s3_validate_readonly_filesystem.sh",
           "expectedOutput": "0",
           "weightage": 3
+        },
+        {
+          "id": "4",
+          "description": "Pod has security context",
+          "verificationScriptFile": "q13_s4_pod_has_security_context.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "5",
+          "description": "Container has security settings",
+          "verificationScriptFile": "q13_s5_container_has_security_settings.sh",
+          "expectedOutput": "0",
+          "weightage": 2
         }
       ]
     },
@@ -545,6 +727,13 @@
           "verificationScriptFile": "q14_s2_validate_pod_uses_sa.sh",
           "expectedOutput": "0",
           "weightage": 4
+        },
+        {
+          "id": "3",
+          "description": "ServiceAccount has token",
+          "verificationScriptFile": "q14_s3_serviceaccount_has_token.sh",
+          "expectedOutput": "0",
+          "weightage": 2
         }
       ]
     },
@@ -578,6 +767,20 @@
           "verificationScriptFile": "q15_s3_validate_quota_limits_pods.sh",
           "expectedOutput": "0",
           "weightage": 4
+        },
+        {
+          "id": "4",
+          "description": "Quota usage is tracked",
+          "verificationScriptFile": "q15_s4_quota_usage_is_tracked.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "5",
+          "description": "Quota limits are enforced",
+          "verificationScriptFile": "q15_s5_quota_limits_are_enforced.sh",
+          "expectedOutput": "0",
+          "weightage": 2
         }
       ]
     },
@@ -609,6 +812,13 @@
           "id": "3",
           "description": "Pod restarts on failure",
           "verificationScriptFile": "q16_s3_validate_pod_restarts.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "4",
+          "description": "Liveness probe is configured",
+          "verificationScriptFile": "q16_s4_liveness_probe_is_configured.sh",
           "expectedOutput": "0",
           "weightage": 2
         }
@@ -644,6 +854,13 @@
           "verificationScriptFile": "q17_s3_validate_pod_becomes_ready.sh",
           "expectedOutput": "0",
           "weightage": 2
+        },
+        {
+          "id": "4",
+          "description": "Readiness probe is configured",
+          "verificationScriptFile": "q17_s4_readiness_probe_is_configured.sh",
+          "expectedOutput": "0",
+          "weightage": 2
         }
       ]
     },
@@ -677,6 +894,13 @@
           "verificationScriptFile": "q18_s3_validate_endpoints_populated.sh",
           "expectedOutput": "0",
           "weightage": 4
+        },
+        {
+          "id": "4",
+          "description": "Service has endpoints",
+          "verificationScriptFile": "q18_s4_service_has_endpoints.sh",
+          "expectedOutput": "0",
+          "weightage": 2
         }
       ]
     },
@@ -709,6 +933,13 @@
           "verificationScriptFile": "q19_s3_validate_traffic_blocked.sh",
           "expectedOutput": "0",
           "weightage": 3
+        },
+        {
+          "id": "4",
+          "description": "Network policy is enforced",
+          "verificationScriptFile": "q19_s4_network_policy_is_enforced.sh",
+          "expectedOutput": "0",
+          "weightage": 2
         }
       ]
     },
@@ -742,6 +973,13 @@
           "verificationScriptFile": "q20_s3_validate_volume_writable.sh",
           "expectedOutput": "0",
           "weightage": 4
+        },
+        {
+          "id": "4",
+          "description": "PVC is bound",
+          "verificationScriptFile": "q20_s4_pvc_is_bound.sh",
+          "expectedOutput": "0",
+          "weightage": 2
         }
       ]
     },
@@ -774,6 +1012,13 @@
           "verificationScriptFile": "q21_s3_validate_helm_resources_created.sh",
           "expectedOutput": "0",
           "weightage": 4
+        },
+        {
+          "id": "4",
+          "description": "Helm release is deployed",
+          "verificationScriptFile": "q21_s4_helm_release_is_deployed.sh",
+          "expectedOutput": "0",
+          "weightage": 2
         }
       ]
     },
@@ -804,6 +1049,13 @@
           "id": "3",
           "description": "CR spec matches requirements",
           "verificationScriptFile": "q22_s3_validate_cr_spec.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "4",
+          "description": "CRD is properly defined",
+          "verificationScriptFile": "q22_s4_crd_is_properly_defined.sh",
           "expectedOutput": "0",
           "weightage": 2
         }
