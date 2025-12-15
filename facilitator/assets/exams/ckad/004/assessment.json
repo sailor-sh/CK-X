@@ -640,7 +640,7 @@
     },
     {
       "id": "19",
-      "question": "In the `network-policies` namespace, Create a NetworkPolicy named `default-deny` in the `default` namespace that denies all ingress traffic to all pods in that namespace.",
+      "question": "In the `network-policies` namespace, Create a NetworkPolicy named `default-deny` that denies all ingress traffic to all pods in that namespace.",
       "namespace": "network-policies",
       "machineHostname": "ckad9999",
       "concepts": [
