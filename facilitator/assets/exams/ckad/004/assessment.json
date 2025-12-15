@@ -122,7 +122,7 @@
       "id": "4",
       
       
-      "question": "Create a pod named `logger-pod` that uses an `emptyDir` volume.\n- Container 1 (`app`): image `busybox`, writes 'logging info' to `/var/log/app.log` every 5 seconds.\n- Container 2 (`sidecar`): image `busybox`, tails `/var/log/app.log` from the shared volume and sends it to stdout.",
+      "question": "In the `sidecar-logging` namespace, create a pod named `logger-pod` that uses an `emptyDir` volume.\n- Container 1 (`app`): image `busybox`, writes 'logging info' to `/var/log/app.log` every 5 seconds.\n- Container 2 (`sidecar`): image `busybox`, tails `/var/log/app.log` from the shared volume and sends it to stdout.",
       "namespace": "sidecar-logging",
       "machineHostname": "ckad9999",
       "concepts": ["volumes", "sidecar-pattern", "multi-container-pods"],
