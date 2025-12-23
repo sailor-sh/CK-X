@@ -9,6 +9,7 @@ RUN apk add --no-cache openssh-client
 # Install dependencies
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
 COPY package*.json ./
+RUN npm install --package-lock-only
 
 # Install dependencies
 RUN npm ci --only=production
