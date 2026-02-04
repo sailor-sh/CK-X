@@ -8,22 +8,23 @@ let socket;
 let fitAddon;
 let isTerminalInitialized = false;
 let terminalCallbacks = {};
+/** Session ID for this terminal connection (required for per-session isolation) */
+let currentSessionId = null;
 
 // Set up terminal callbacks
 function setCallbacks(callbacks) {
     terminalCallbacks = callbacks || {};
 }
 
-// Function to initialize the terminal
-function initTerminal(containerElement, isActive = false) {
-    // If already initialized, just resize
+// Function to initialize the terminal (sessionId required for per-session SSH)
+function initTerminal(containerElement, isActive = false, sessionId) {
+    currentSessionId = sessionId ?? currentSessionId ?? 'default';
     if (isTerminalInitialized) {
         console.log('Terminal already initialized, just resizing');
         resizeTerminal(containerElement);
         return { terminal, fitAddon };
     }
-    
-    console.log('Initializing terminal for the first time');
+    console.log('Initializing terminal for session:', currentSessionId);
     
     // Create terminal container if it doesn't exist
     let terminalContainer = document.getElementById('terminal');
@@ -65,8 +66,7 @@ function initTerminal(containerElement, isActive = false) {
     terminal.open(terminalContainer);
     fitAddon.fit();
     
-    // Connect to Socket.io server
-    connectToSocketIO();
+    connectToSocketIO(currentSessionId);
     
     // Add window resize listener to keep terminal properly sized
     window.addEventListener('resize', () => {
@@ -127,36 +127,31 @@ function connectToSSH() {
         terminal.clear();
     }
     
-    // Connect to Socket.io server immediately without animation
-    connectToSocketIO();
+    connectToSocketIO(currentSessionId);
 }
 
-// Connect to Socket.io
-function connectToSocketIO() {
-    // Don't reconnect if socket already exists and is connected
+// Connect to Socket.io (sessionId required so server routes to this session's SSH backend)
+function connectToSocketIO(sessionId) {
+    const sid = sessionId ?? currentSessionId ?? 'default';
     if (socket && socket.connected) {
         console.log('Socket already connected, skipping reconnection');
         return;
     }
-    
-    // Disconnect existing socket if it exists
     if (socket) {
-        console.log('Disconnecting existing socket before creating a new one');
         socket.off('data');
         socket.off('connect');
         socket.off('disconnect');
         socket.off('error');
         socket.disconnect();
     }
-    
-    // Connect to Socket.io server
     socket = io('/ssh', {
         forceNew: true,
         reconnectionAttempts: 1000,
         timeout: 1000,
-        transports: ['polling'] // force polling for now to avoid invalid frame error , TODO: fix this
+        transports: ['polling'],
+        query: { sessionId: sid }
     });
-    console.log('Creating new socket connection to SSH server');
+    console.log('Creating new socket connection to SSH for session:', sid);
     
     // Handle connection events
     socket.on('connect', () => {

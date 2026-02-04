@@ -34,8 +34,8 @@ services:
     image: nishanb/ck-x-simulator-webapp:latest
     build:
       context: ./app
-    expose:
-      - "3000" # Only exposed to internal network
+    ports:
+      - "3000:3000" # Only exposed to internal network
     environment:
       - VNC_SERVICE_HOST=remote-desktop
       - VNC_SERVICE_PORT=6901

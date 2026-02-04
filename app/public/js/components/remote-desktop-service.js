@@ -1,40 +1,28 @@
 /**
  * Remote Desktop Service
- * Handles remote desktop connection and management
+ * Handles remote desktop connection and management. Requires sessionId for per-session isolation.
  */
-import { getVncInfo } from './exam-api.js';
+import { getVncInfo, getSessionId } from './exam-api.js';
 
-// Connect to VNC
-function connectToRemoteDesktop(vncFrame, statusCallback) {
+// Connect to VNC for the given session
+function connectToRemoteDesktop(vncFrame, statusCallback, sessionId) {
+    const sid = sessionId ?? getSessionId();
     if (statusCallback) {
         statusCallback('Connecting to Remote Desktop...', 'info');
     }
-    
-    // Get VNC server info from API
-    return getVncInfo()
+    return getVncInfo(sid)
         .then(data => {
-            console.log('Remote Desktop info:', data);
-            
-            // Create the VNC URL with proper parameters
-            const vncUrl = `/vnc-proxy/?autoconnect=true&resize=scale&show_dot=true&reconnect=true&password=${data.defaultPassword}`;
-            
-            // Set the iframe source to the VNC URL
+            const basePath = data.vncProxyPath || `/api/sessions/${encodeURIComponent(sid)}/vnc-proxy`;
+            const vncUrl = `${basePath}/?autoconnect=true&resize=scale&show_dot=true&reconnect=true&password=${encodeURIComponent(data.defaultPassword || '')}`;
             vncFrame.src = vncUrl;
-            if (statusCallback) {
-                statusCallback('Connected to Session', 'success');
-            }
+            if (statusCallback) statusCallback('Connected to Session', 'success');
             return vncUrl;
         })
         .catch(error => {
             console.error('Error connecting to Remote Desktop:', error);
-            if (statusCallback) {
-                statusCallback('Failed to connect to Remote Desktop. Retrying...', 'error');
-            }
-            // Return a promise that will retry
+            if (statusCallback) statusCallback('Failed to connect to Remote Desktop. Retrying...', 'error');
             return new Promise(resolve => {
-                setTimeout(() => {
-                    resolve(connectToRemoteDesktop(vncFrame, statusCallback));
-                }, 5000);
+                setTimeout(() => resolve(connectToRemoteDesktop(vncFrame, statusCallback, sid)), 5000);
             });
         });
 }

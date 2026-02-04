@@ -4,8 +4,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const fullscreenBtn = document.getElementById('fullscreen-btn');
     
     connectBtn.addEventListener('click', function() {
-        // Connect to the VNC server through the service
-        vncFrame.src = `http://${window.location.hostname}:${window.location.port}/vnc-proxy/`;
+        // Session-scoped VNC (default session for index/demo when no exam sessionId in URL)
+        const sessionId = new URLSearchParams(window.location.search).get('sessionId') || 'default';
+        vncFrame.src = `${window.location.origin}/api/sessions/${encodeURIComponent(sessionId)}/vnc-proxy/`;
     });
     
     fullscreenBtn.addEventListener('click', function() {

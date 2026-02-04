@@ -19,6 +19,13 @@ function getExamId() {
     return examId;
 }
 
+// Function to get session ID from URL (injected by Sailor API or use 'default' for single-session dev)
+function getSessionId() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const sessionId = urlParams.get('sessionId');
+    return sessionId && sessionId.trim() ? sessionId.trim() : 'default';
+}
+
 // Function to check exam status
 function checkExamStatus(examId) {
     return fetch(`/facilitator/api/v1/exams/${examId}/status`)
@@ -99,10 +106,14 @@ function terminateSession(examId) {
     });
 }
 
-// Function to get VNC info
-function getVncInfo() {
-    return fetch('/api/vnc-info')
-        .then(response => response.json())
+// Function to get VNC/runtime info for a session (sessionId required for isolation)
+function getVncInfo(sessionId) {
+    const sid = sessionId || getSessionId();
+    return fetch(`/api/sessions/${encodeURIComponent(sid)}/vnc-info`)
+        .then(response => {
+            if (!response.ok) throw new Error(`VNC info failed: ${response.status}`);
+            return response.json();
+        })
         .catch(error => {
             console.error('Error fetching VNC info:', error);
             throw error;
@@ -155,6 +166,7 @@ function submitFeedback(examId, feedbackData) {
 // Export the API functions
 export {
     getExamId,
+    getSessionId,
     checkExamStatus,
     fetchExamData,
     fetchCurrentExamInfo,
