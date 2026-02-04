@@ -10,6 +10,7 @@ const authRoutes = require('./routes/auth');
 const paymentsRoutes = require('./routes/payments');
 const examsRoutes = require('./routes/exams');
 const examSessionsRoutes = require('./routes/exam-sessions');
+const setupCkxProxyRoutes = require('./routes/ckx-proxy');
 
 const app = express();
 app.use(cors());
@@ -23,6 +24,16 @@ app.use('/auth', authRoutes);
 app.use('/payments', paymentsRoutes);
 app.use('/exams', examsRoutes);
 app.use('/exam-sessions', examSessionsRoutes);
+
+// CKX proxy routes (VNC/terminal access - validates session access before proxying)
+setupCkxProxyRoutes(app);
+
+// Debug route to test parameter parsing (remove in production)
+if (config.nodeEnv === 'development') {
+  app.get('/debug/ckx/:ckxSessionId/test', (req, res) => {
+    res.json({ params: req.params, query: req.query, url: req.url });
+  });
+}
 
 app.use((err, req, res, next) => {
   console.error(err);

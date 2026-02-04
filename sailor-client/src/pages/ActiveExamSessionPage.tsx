@@ -25,6 +25,8 @@ export function ActiveExamSessionPage() {
   const [allowed, setAllowed] = useState<boolean | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [now, setNow] = useState<number>(() => Date.now())
+  const [iframeToken, setIframeToken] = useState<string | null>(null)
+  const [iframeTokenError, setIframeTokenError] = useState<string | null>(null)
 
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 1000)
@@ -36,6 +38,7 @@ export function ActiveExamSessionPage() {
     const run = async () => {
       setError(null)
       setAllowed(null)
+      setIframeTokenError(null)
       try {
         const s = await api.get<{ session: ExamSession }>(`/exam-sessions/${encodeURIComponent(examSessionId)}`, {
           token,
@@ -45,6 +48,21 @@ export function ActiveExamSessionPage() {
         // Safe resume: always re-validate access right before connecting
         await api.get(`/exam-sessions/${encodeURIComponent(examSessionId)}/access`, { token })
         setAllowed(true)
+
+        // Fetch iframe token for VNC access
+        if (s.session.ckxSessionId) {
+          try {
+            const tokenResponse = await api.get<{ iframeToken: string; expiresIn: number }>(
+              `/exam-sessions/${encodeURIComponent(examSessionId)}/iframe-token`,
+              { token }
+            )
+            setIframeToken(tokenResponse.iframeToken)
+            setIframeTokenError(null)
+          } catch (e) {
+            setIframeTokenError(e instanceof ApiError ? e.message : 'Failed to get iframe token')
+            console.error('Iframe token fetch failed:', e)
+          }
+        }
       } catch (e) {
         setAllowed(false)
         setError(e instanceof ApiError ? e.message : 'Unexpected error')
@@ -61,10 +79,17 @@ export function ActiveExamSessionPage() {
   const remainingMs = endsAtMs == null ? null : Math.max(0, endsAtMs - now)
 
   const ckxSessionId = session?.ckxSessionId ?? null
-  const vncSrc =
-    ckxSessionId == null
-      ? null
-      : `${API_BASE}/ckx/sessions/${encodeURIComponent(ckxSessionId)}/vnc-proxy/?autoconnect=true&resize=scale&show_dot=true&reconnect=true`
+  const vncSrc = useMemo(() => {
+    if (!ckxSessionId || !iframeToken) return null
+    const params = new URLSearchParams({
+      iframeToken: iframeToken,
+      autoconnect: 'true',
+      resize: 'scale',
+      show_dot: 'true',
+      reconnect: 'true',
+    })
+    return `${API_BASE}/ckx/sessions/${encodeURIComponent(ckxSessionId)}/vnc-proxy/?${params.toString()}`
+  }, [ckxSessionId, iframeToken])
 
   return (
     <div className="container stack">
@@ -126,10 +151,38 @@ export function ActiveExamSessionPage() {
 
         {allowed !== true ? (
           <div className="muted">Validating access…</div>
-        ) : !vncSrc ? (
+        ) : !ckxSessionId ? (
           <div className="muted">
             No CKX session id attached. This usually means provisioning failed or the session is not active.
           </div>
+        ) : iframeTokenError ? (
+          <div className="card" style={{ borderColor: '#fecaca', background: '#fef2f2' }}>
+            <div style={{ color: '#991b1b', fontWeight: 800 }}>Failed to load VNC</div>
+            <div style={{ color: '#991b1b' }}>{iframeTokenError}</div>
+            <button
+              className="btn secondary"
+              style={{ marginTop: 8 }}
+              onClick={async () => {
+                if (!examSessionId) return
+                try {
+                  const tokenResponse = await api.get<{ iframeToken: string }>(
+                    `/exam-sessions/${encodeURIComponent(examSessionId)}/iframe-token`,
+                    { token }
+                  )
+                  setIframeToken(tokenResponse.iframeToken)
+                  setIframeTokenError(null)
+                } catch (e) {
+                  setIframeTokenError(e instanceof ApiError ? e.message : 'Failed to get iframe token')
+                }
+              }}
+            >
+              Retry
+            </button>
+          </div>
+        ) : !iframeToken ? (
+          <div className="muted">Loading VNC access token…</div>
+        ) : !vncSrc ? (
+          <div className="muted">Preparing VNC connection…</div>
         ) : (
           <>
             <div className="muted" style={{ fontSize: 13 }}>

@@ -64,13 +64,34 @@ router.get('/:sessionId', requireAuth, resolveExamSession, (req, res) => {
   });
 });
 
-// POST /exam-sessions/:sessionId/access — validate access (active + within time). For client to check before loading exam.
+// GET /exam-sessions/:sessionId/access — validate access (active + within time). For client to check before loading exam.
 router.get('/:sessionId/access', requireAuth, resolveExamSession, requireActiveExamSession, (req, res) => {
   return res.json({
     allowed: true,
     sessionId: req.examSession.ckxSessionId,
     examSessionId: req.examSession.id,
     endsAt: req.examSession.endsAt,
+  });
+});
+
+// GET /exam-sessions/:sessionId/iframe-token — mint iframe access token for VNC iframe
+router.get('/:sessionId/iframe-token', requireAuth, resolveExamSession, requireActiveExamSession, (req, res) => {
+  const { createIframeToken, IFRAME_TOKEN_EXPIRY_SECONDS } = require('../lib/iframe-token');
+  
+  if (!req.examSession.ckxSessionId) {
+    return res.status(400).json({ error: 'Session has no CKX session ID' });
+  }
+
+  const iframeToken = createIframeToken(
+    req.examSession.ckxSessionId,
+    req.user.id,
+    IFRAME_TOKEN_EXPIRY_SECONDS
+  );
+
+  return res.json({
+    iframeToken,
+    expiresIn: IFRAME_TOKEN_EXPIRY_SECONDS,
+    ckxSessionId: req.examSession.ckxSessionId,
   });
 });
 

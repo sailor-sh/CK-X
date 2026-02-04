@@ -10,8 +10,14 @@ const prisma = new PrismaClient();
 /**
  * Require valid JWT. Sets req.user (User record).
  * 401 if missing or invalid.
+ * Skips validation if req.iframeTokenValid === true (set by validateIframeToken).
  */
 async function requireAuth(req, res, next) {
+  // If iframe token already validated, skip JWT validation
+  if (req.iframeTokenValid === true) {
+    return next();
+  }
+
   const auth = req.headers.authorization;
   const token = auth && auth.startsWith('Bearer ') ? auth.slice(7) : null;
   if (!token) {

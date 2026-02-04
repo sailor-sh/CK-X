@@ -11,9 +11,10 @@ const ckxClient = require('../lib/ckx-client');
  * Sets req.examSession (ExamSession with exam, user) or 404.
  */
 async function resolveExamSession(req, res, next) {
-  const sessionId = req.params.sessionId || req.params.examSessionId;
+  const sessionId = req.params.sessionId || req.params.examSessionId || req.params.ckxSessionId;
   if (!sessionId) {
-    return res.status(400).json({ error: 'sessionId or examSessionId required' });
+    console.error('resolveExamSession: Missing sessionId in params:', Object.keys(req.params), 'URL:', req.url);
+    return res.status(400).json({ error: 'sessionId or examSessionId required', debug: { params: req.params, url: req.url } });
   }
   const examSession = await prisma.examSession.findFirst({
     where: {
