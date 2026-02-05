@@ -11,6 +11,7 @@ const paymentsRoutes = require('./routes/payments');
 const examsRoutes = require('./routes/exams');
 const examSessionsRoutes = require('./routes/exam-sessions');
 const setupCkxProxyRoutes = require('./routes/ckx-proxy');
+const ckxVncInfoRoutes = require('./routes/ckx-vnc-info');
 
 const app = express();
 app.use(cors());
@@ -24,6 +25,7 @@ app.use('/auth', authRoutes);
 app.use('/payments', paymentsRoutes);
 app.use('/exams', examsRoutes);
 app.use('/exam-sessions', examSessionsRoutes);
+app.use('/api', ckxVncInfoRoutes);
 
 // CKX proxy routes (VNC/terminal access - validates session access before proxying)
 setupCkxProxyRoutes(app);

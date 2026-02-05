@@ -21,6 +21,17 @@ RUN apt-get update && apt-get install -y \
     wget \
     xclip
 
+# Disable any browser autostart from base image
+# Remove Chromium/Firefox autostart if they exist
+RUN rm -f /headless/.config/autostart/*.desktop 2>/dev/null || true && \
+    rm -f /headless/Desktop/*.desktop 2>/dev/null || true && \
+    rm -f /etc/xdg/autostart/chromium*.desktop 2>/dev/null || true && \
+    rm -f /etc/xdg/autostart/firefox*.desktop 2>/dev/null || true
+
+# Create autostart directory and add terminal autostart
+RUN mkdir -p /headless/.config/autostart && \
+    printf '[Desktop Entry]\nType=Application\nName=Terminal\nExec=xfce4-terminal --maximize\nStartupNotify=false\nTerminal=false\n' > /headless/.config/autostart/terminal.desktop
+
 #create candidate user
 RUN useradd -m candidate
 

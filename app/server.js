@@ -55,6 +55,41 @@ const routeService = new RouteService(
     requireSession
 );
 
+// ——— Prevent embedding full CKX UI inside iframes ———
+// CKX is a runtime; Sailor (or other hosts) must own the exam UI.
+// We allow embedding of the VNC runtime only (served under /api/sessions/:id/vnc-proxy
+// and proxied by Sailor as /ckx/sessions/:id/vnc-proxy). Direct embedding of CKX
+// UI shells like "/", "/index.html", "/exam.html", "/results" is blocked.
+const UI_EMBED_BLOCKED_PATHS = new Set([
+    '/',
+    '/index.html',
+    '/exam.html',
+    '/results',
+    '/results.html'
+]);
+
+function blockUiEmbedding(req, res, next) {
+    if (!UI_EMBED_BLOCKED_PATHS.has(req.path)) {
+        return next();
+    }
+
+    // Best-effort detection of iframe/embedded requests
+    const dest = req.headers['sec-fetch-dest'];
+    const isFrame = dest === 'iframe' || dest === 'frame';
+
+    if (isFrame) {
+        // Explicitly forbid framing CKX UI shells
+        res.setHeader('X-Frame-Options', 'DENY');
+        res.setHeader('Content-Security-Policy', "frame-ancestors 'none'");
+        return res.status(403).send('Embedding CKX UI is not allowed. Use the VNC endpoint instead.');
+    }
+
+    return next();
+}
+
+// Must run before static file middleware so blocked UI paths never render in iframes
+app.use(blockUiEmbedding);
+
 // Body parser for POST /api/sessions
 app.use(express.json());
 
