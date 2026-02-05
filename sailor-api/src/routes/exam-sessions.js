@@ -129,6 +129,7 @@ router.get('/:sessionId/access', requireAuth, resolveExamSession, requireActiveE
 });
 
 // GET /exam-sessions/:sessionId/iframe-token — mint iframe access token for VNC iframe
+// DEPRECATED: Use /launch-token for new-tab architecture instead
 router.get('/:sessionId/iframe-token', requireAuth, resolveExamSession, requireActiveExamSession, (req, res) => {
   const { createIframeToken, IFRAME_TOKEN_EXPIRY_SECONDS } = require('../lib/iframe-token');
   
@@ -145,6 +146,36 @@ router.get('/:sessionId/iframe-token', requireAuth, resolveExamSession, requireA
   return res.json({
     iframeToken,
     expiresIn: IFRAME_TOKEN_EXPIRY_SECONDS,
+    ckxSessionId: req.examSession.ckxSessionId,
+  });
+});
+
+// POST /exam-sessions/:sessionId/launch-token — create a one-time launch token for new-tab lab opening
+// This is the NEW approach replacing iframe tokens. The token is:
+// - Short-lived (60s) - just enough time to complete the handoff
+// - One-time use - consumed when CKX validates it
+// - Used to open lab in a new browser tab
+router.post('/:sessionId/launch-token', requireAuth, resolveExamSession, requireActiveExamSession, (req, res) => {
+  const { createLaunchToken, LAUNCH_TOKEN_TTL_SECONDS } = require('../lib/launch-token');
+  
+  if (!req.examSession.ckxSessionId) {
+    return res.status(400).json({ error: 'Session has no CKX session ID' });
+  }
+
+  const result = createLaunchToken(
+    req.examSession.ckxSessionId,
+    req.user.id,
+    req.examSession.id
+  );
+
+  // Build the launch URL that the client should open in a new tab
+  const ckxBaseUrl = config.ckx.baseUrl;
+  const launchUrl = `${ckxBaseUrl}/launch?token=${encodeURIComponent(result.token)}`;
+
+  return res.json({
+    launchToken: result.token,
+    launchUrl,
+    expiresIn: LAUNCH_TOKEN_TTL_SECONDS,
     ckxSessionId: req.examSession.ckxSessionId,
   });
 });

@@ -83,7 +83,19 @@ class RouteService {
         });
 
         // ——— Static and catch-all ———
+        // IMPORTANT: API routes must NOT serve HTML to prevent recursive UI embedding
         app.get('*', (req, res) => {
+            // If this is an API path, return 404 JSON - NEVER serve HTML for API routes
+            // This prevents the VNC iframe from loading index.html on proxy failure
+            if (req.path.startsWith('/api/')) {
+                return res.status(404).json({ 
+                    error: 'Not Found', 
+                    path: req.path,
+                    message: 'API endpoint not found. This may indicate a missing session or invalid route.'
+                });
+            }
+            
+            // Static HTML routes
             if (req.path === '/exam') {
                 res.sendFile(path.join(this.publicService.getPublicDir(), 'exam.html'));
             } else if (req.path === '/results') {

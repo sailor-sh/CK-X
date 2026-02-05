@@ -106,17 +106,41 @@ function terminateSession(examId) {
     });
 }
 
+// Function to ensure a session exists in CKX registry (for standalone mode)
+// In integrated mode, Sailor API registers sessions. In standalone, we auto-register.
+// Returns a promise that resolves when session is verified/created.
+function ensureSession(sessionId) {
+    const sid = sessionId || getSessionId();
+    
+    // First check if session already exists
+    return fetch(`/api/sessions/${encodeURIComponent(sid)}/vnc-info`)
+        .then(response => {
+            if (response.ok) {
+                console.log('Session already exists:', sid);
+                return response.json();
+            }
+            
+            // Session doesn't exist - the server should have bootstrapped it from env vars
+            // If not, the VNC/SSH containers aren't configured or running
+            console.warn('Session not found. Server may not have VNC_SERVICE_HOST configured.');
+            throw new Error('Session not found - VNC service may not be configured');
+        });
+}
+
 // Function to get VNC/runtime info for a session (sessionId required for isolation)
 function getVncInfo(sessionId) {
     const sid = sessionId || getSessionId();
-    return fetch(`/api/sessions/${encodeURIComponent(sid)}/vnc-info`)
-        .then(response => {
-            if (!response.ok) throw new Error(`VNC info failed: ${response.status}`);
-            return response.json();
-        })
+    
+    // First ensure session exists, then get VNC info
+    return ensureSession(sid)
         .catch(error => {
-            console.error('Error fetching VNC info:', error);
-            throw error;
+            console.error('Error ensuring session exists:', error);
+            // Try direct VNC info fetch as fallback
+            return fetch(`/api/sessions/${encodeURIComponent(sid)}/vnc-info`)
+                .then(response => {
+                    if (!response.ok) throw new Error(`VNC info failed: ${response.status}`);
+                    return response.json();
+                });
         });
 }
 
@@ -172,6 +196,7 @@ export {
     fetchCurrentExamInfo,
     evaluateExam,
     terminateSession,
+    ensureSession,
     getVncInfo,
     trackExamEvent,
     submitFeedback

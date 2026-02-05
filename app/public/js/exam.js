@@ -51,8 +51,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add event listener for page unload to clean up resources
     window.addEventListener('beforeunload', cleanupResources);
     
-    // Initialize by fetching questions
-    fetchExamQuestions();
+    // Ensure session exists before initializing (prevents recursive UI bug)
+    console.log('Ensuring session exists before loading exam:', sessionId);
+    ExamApi.ensureSession(sessionId)
+        .then(() => {
+            console.log('Session verified, loading exam');
+            // Initialize by fetching questions
+            fetchExamQuestions();
+        })
+        .catch(error => {
+            console.error('Failed to verify session:', error);
+            // Show error and offer to return to homepage
+            pageLoader.style.display = 'none';
+            alert('Session not available. Please return to the dashboard and start a new lab.');
+            window.location.href = '/';
+        });
     
     // Listen for examCompletedSession event and handle connecting to a finished exam session
     document.addEventListener('examCompletedSession', function(event) {

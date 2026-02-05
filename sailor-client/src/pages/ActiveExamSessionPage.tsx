@@ -1,10 +1,8 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { api, ApiError } from '../utils/api'
 import { useAuth } from '../state/auth/useAuth'
 import type { ExamSession } from '../types/sailor'
-
-const API_BASE = (import.meta as any).env?.VITE_SAILOR_API_BASE ?? 'http://localhost:4000'
 
 function msToClock(ms: number) {
   const s = Math.max(0, Math.floor(ms / 1000))
@@ -14,6 +12,8 @@ function msToClock(ms: number) {
   const pad = (n: number) => n.toString().padStart(2, '0')
   return `${pad(hh)}:${pad(mm)}:${pad(ss)}`
 }
+
+type LaunchState = 'idle' | 'loading' | 'launched' | 'error'
 
 export function ActiveExamSessionPage() {
   const { examSessionId } = useParams()
@@ -25,20 +25,24 @@ export function ActiveExamSessionPage() {
   const [allowed, setAllowed] = useState<boolean | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [now, setNow] = useState<number>(() => Date.now())
-  const [iframeToken, setIframeToken] = useState<string | null>(null)
-  const [iframeTokenError, setIframeTokenError] = useState<string | null>(null)
 
+  // New-tab launch state
+  const [launchState, setLaunchState] = useState<LaunchState>('idle')
+  const [launchError, setLaunchError] = useState<string | null>(null)
+  const [labWindowRef, setLabWindowRef] = useState<Window | null>(null)
+
+  // Timer for countdown
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 1000)
     return () => clearInterval(t)
   }, [])
 
+  // Load session data
   useEffect(() => {
     if (!examSessionId) return
     const run = async () => {
       setError(null)
       setAllowed(null)
-      setIframeTokenError(null)
       try {
         const s = await api.get<{ session: ExamSession }>(`/exam-sessions/${encodeURIComponent(examSessionId)}`, {
           token,
@@ -48,21 +52,6 @@ export function ActiveExamSessionPage() {
         // Safe resume: always re-validate access right before connecting
         await api.get(`/exam-sessions/${encodeURIComponent(examSessionId)}/access`, { token })
         setAllowed(true)
-
-        // Fetch iframe token for VNC access
-        if (s.session.ckxSessionId) {
-          try {
-            const tokenResponse = await api.get<{ iframeToken: string; expiresIn: number }>(
-              `/exam-sessions/${encodeURIComponent(examSessionId)}/iframe-token`,
-              { token }
-            )
-            setIframeToken(tokenResponse.iframeToken)
-            setIframeTokenError(null)
-          } catch (e) {
-            setIframeTokenError(e instanceof ApiError ? e.message : 'Failed to get iframe token')
-            console.error('Iframe token fetch failed:', e)
-          }
-        }
       } catch (e) {
         setAllowed(false)
         setError(e instanceof ApiError ? e.message : 'Unexpected error')
@@ -70,6 +59,30 @@ export function ActiveExamSessionPage() {
     }
     run()
   }, [examSessionId, token])
+
+  // Poll session status to update UI if session ends
+  useEffect(() => {
+    if (!examSessionId || !allowed) return
+    const poll = setInterval(async () => {
+      try {
+        const s = await api.get<{ session: ExamSession }>(`/exam-sessions/${encodeURIComponent(examSessionId)}`, {
+          token,
+        })
+        setSession(s.session)
+        
+        // If session is no longer active, update UI
+        if (s.session.status !== 'ACTIVE') {
+          setAllowed(false)
+          setError(`Session ${s.session.status.toLowerCase()}`)
+        }
+      } catch (e) {
+        // Don't update error on poll failure - might just be network hiccup
+        console.warn('Session poll failed:', e)
+      }
+    }, 10000) // Poll every 10 seconds
+    
+    return () => clearInterval(poll)
+  }, [examSessionId, token, allowed])
 
   const endsAtMs = useMemo(() => {
     if (!session?.endsAt) return null
@@ -79,17 +92,64 @@ export function ActiveExamSessionPage() {
   const remainingMs = endsAtMs == null ? null : Math.max(0, endsAtMs - now)
 
   const ckxSessionId = session?.ckxSessionId ?? null
-  const vncSrc = useMemo(() => {
-    if (!ckxSessionId || !iframeToken) return null
-    const params = new URLSearchParams({
-      iframeToken: iframeToken,
-      autoconnect: 'true',
-      resize: 'scale',
-      show_dot: 'true',
-      reconnect: 'true',
-    })
-    return `${API_BASE}/ckx/sessions/${encodeURIComponent(ckxSessionId)}/vnc-proxy/?${params.toString()}`
-  }, [ckxSessionId, iframeToken])
+
+  /**
+   * Open the lab in a new browser tab.
+   * 1. Request a launch token from Sailor API
+   * 2. Open the launch URL in a new tab
+   * 3. CKX validates the token and establishes a session
+   */
+  const openLabInNewTab = useCallback(async () => {
+    if (!examSessionId || !ckxSessionId) return
+
+    setLaunchState('loading')
+    setLaunchError(null)
+
+    try {
+      // Get launch token from Sailor API
+      const response = await api.post<{ launchUrl: string; launchToken: string; expiresIn: number }>(
+        `/exam-sessions/${encodeURIComponent(examSessionId)}/launch-token`,
+        {},
+        { token }
+      )
+
+      // Open the launch URL in a new tab
+      const newWindow = window.open(response.launchUrl, '_blank', 'noopener')
+      
+      if (newWindow) {
+        setLabWindowRef(newWindow)
+        setLaunchState('launched')
+      } else {
+        // Pop-up was blocked
+        setLaunchError('Pop-up blocked. Please allow pop-ups for this site and try again.')
+        setLaunchState('error')
+      }
+    } catch (e) {
+      const message = e instanceof ApiError ? e.message : 'Failed to open lab'
+      setLaunchError(message)
+      setLaunchState('error')
+      console.error('Lab launch failed:', e)
+    }
+  }, [examSessionId, ckxSessionId, token])
+
+  /**
+   * Check if the lab window is still open.
+   */
+  const isLabWindowOpen = useMemo(() => {
+    return labWindowRef !== null && !labWindowRef.closed
+  }, [labWindowRef])
+
+  // Periodically check if lab window is still open
+  useEffect(() => {
+    if (!labWindowRef) return
+    const check = setInterval(() => {
+      if (labWindowRef.closed) {
+        setLabWindowRef(null)
+        setLaunchState('idle')
+      }
+    }, 1000)
+    return () => clearInterval(check)
+  }, [labWindowRef])
 
   return (
     <div className="container stack">
@@ -133,7 +193,7 @@ export function ActiveExamSessionPage() {
 
       <div className="card stack">
         <div className="row" style={{ justifyContent: 'space-between' }}>
-          <div style={{ fontWeight: 800 }}>Remote desktop (VNC)</div>
+          <div style={{ fontWeight: 800 }}>Lab Environment</div>
           <div className="row">
             <button
               className="btn secondary"
@@ -153,68 +213,75 @@ export function ActiveExamSessionPage() {
           <div className="muted">Validating access…</div>
         ) : !ckxSessionId ? (
           <div className="muted">
-            No CKX session id attached. This usually means provisioning failed or the session is not active.
+            No lab session attached. This usually means provisioning failed or the session is not active.
           </div>
-        ) : iframeTokenError ? (
-          <div className="card" style={{ borderColor: '#fecaca', background: '#fef2f2' }}>
-            <div style={{ color: '#991b1b', fontWeight: 800 }}>Failed to load VNC</div>
-            <div style={{ color: '#991b1b' }}>{iframeTokenError}</div>
-            <button
-              className="btn secondary"
-              style={{ marginTop: 8 }}
-              onClick={async () => {
-                if (!examSessionId) return
-                try {
-                  const tokenResponse = await api.get<{ iframeToken: string }>(
-                    `/exam-sessions/${encodeURIComponent(examSessionId)}/iframe-token`,
-                    { token }
-                  )
-                  setIframeToken(tokenResponse.iframeToken)
-                  setIframeTokenError(null)
-                } catch (e) {
-                  setIframeTokenError(e instanceof ApiError ? e.message : 'Failed to get iframe token')
-                }
-              }}
-            >
-              Retry
-            </button>
-          </div>
-        ) : !iframeToken ? (
-          <div className="muted">Loading VNC access token…</div>
-        ) : !vncSrc ? (
-          <div className="muted">Preparing VNC connection…</div>
         ) : (
-          <>
+          <div className="stack" style={{ gap: 16 }}>
+            {/* Launch status */}
+            {launchState === 'launched' && isLabWindowOpen && (
+              <div className="card" style={{ borderColor: '#bbf7d0', background: '#f0fdf4' }}>
+                <div style={{ color: '#166534', fontWeight: 800 }}>Lab is open in another tab</div>
+                <div style={{ color: '#166534' }}>
+                  Your lab environment is running in a separate browser tab.
+                  You can switch between this dashboard and the lab tab freely.
+                </div>
+              </div>
+            )}
+
+            {launchState === 'error' && launchError && (
+              <div className="card" style={{ borderColor: '#fecaca', background: '#fef2f2' }}>
+                <div style={{ color: '#991b1b', fontWeight: 800 }}>Failed to open lab</div>
+                <div style={{ color: '#991b1b' }}>{launchError}</div>
+              </div>
+            )}
+
+            {/* Launch buttons */}
+            <div className="row" style={{ gap: 12 }}>
+              <button
+                className="btn primary"
+                disabled={launchState === 'loading'}
+                onClick={openLabInNewTab}
+                style={{ minWidth: 160 }}
+              >
+                {launchState === 'loading' ? 'Opening…' : 
+                 isLabWindowOpen ? 'Open Lab Again' : 'Open Lab'}
+              </button>
+
+              {isLabWindowOpen && (
+                <button
+                  className="btn secondary"
+                  onClick={() => labWindowRef?.focus()}
+                >
+                  Focus Lab Tab
+                </button>
+              )}
+            </div>
+
+            {/* Instructions */}
             <div className="muted" style={{ fontSize: 13 }}>
-              This iframe loads the lab environment through <b>Sailor API only</b>. It must proxy to CKX; the client
-              never calls CKX directly.
+              <p style={{ margin: 0 }}>
+                Click <strong>Open Lab</strong> to launch the lab environment in a new browser tab.
+                The lab runs independently — you can switch between this dashboard and the lab freely.
+              </p>
+              <ul style={{ margin: '8px 0 0 0', paddingLeft: 20 }}>
+                <li>Your session persists even if you close the lab tab</li>
+                <li>You can re-open the lab any time before the timer expires</li>
+                <li>This dashboard shows your remaining time and session status</li>
+              </ul>
             </div>
-            <iframe
-              title="Exam environment"
-              src={vncSrc}
-              style={{
-                width: '100%',
-                height: '70vh',
-                border: '1px solid #e2e8f0',
-                borderRadius: 12,
-                background: '#0b1220',
-              }}
-            />
-            <div className="muted" style={{ fontSize: 12 }}>
-              If you refresh, we re-check `/exam-sessions/:id/access` before reconnecting (safe resume).
-            </div>
-          </>
+          </div>
         )}
       </div>
 
       <div className="card stack">
-        <div style={{ fontWeight: 800 }}>Terminal</div>
-        <div className="muted">
-          Terminal access must also be proxied via Sailor API (never CKX directly). Hook this up to a Sailor API WebSocket
-          proxy for CKX `/ssh` once available.
+        <div style={{ fontWeight: 800 }}>Session Info</div>
+        <div className="muted" style={{ fontSize: 13 }}>
+          <div><strong>Session ID:</strong> {examSessionId ?? '—'}</div>
+          <div><strong>Lab ID:</strong> {ckxSessionId ?? '—'}</div>
+          <div><strong>Started:</strong> {session?.startedAt ? new Date(session.startedAt).toLocaleString() : '—'}</div>
+          <div><strong>Ends:</strong> {session?.endsAt ? new Date(session.endsAt).toLocaleString() : '—'}</div>
         </div>
       </div>
     </div>
   )
 }
-

@@ -10,6 +10,8 @@ const authRoutes = require('./routes/auth');
 const paymentsRoutes = require('./routes/payments');
 const examsRoutes = require('./routes/exams');
 const examSessionsRoutes = require('./routes/exam-sessions');
+const launchTokensRoutes = require('./routes/launch-tokens');
+// DEPRECATED: These will be removed once new-tab architecture is fully deployed
 const setupCkxProxyRoutes = require('./routes/ckx-proxy');
 const ckxVncInfoRoutes = require('./routes/ckx-vnc-info');
 
@@ -25,9 +27,15 @@ app.use('/auth', authRoutes);
 app.use('/payments', paymentsRoutes);
 app.use('/exams', examsRoutes);
 app.use('/exam-sessions', examSessionsRoutes);
+
+// Launch token validation - called by CKX during new-tab lab launch
+app.use('/launch-tokens', launchTokensRoutes);
+
+// DEPRECATED: iframe-based routes (will be removed)
 app.use('/api', ckxVncInfoRoutes);
 
-// CKX proxy routes (VNC/terminal access - validates session access before proxying)
+// DEPRECATED: CKX proxy routes (VNC/terminal access via iframe)
+// These will be removed once new-tab architecture is fully deployed
 setupCkxProxyRoutes(app);
 
 // Debug route to test parameter parsing (remove in production)

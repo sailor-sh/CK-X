@@ -4,6 +4,11 @@
  */
 import { getVncInfo, getSessionId } from './exam-api.js';
 
+// Track retry attempts to prevent infinite loops
+let retryCount = 0;
+const MAX_RETRIES = 5;
+const RETRY_DELAY = 5000;
+
 // Connect to VNC for the given session
 function connectToRemoteDesktop(vncFrame, statusCallback, sessionId) {
     const sid = sessionId ?? getSessionId();
@@ -12,6 +17,9 @@ function connectToRemoteDesktop(vncFrame, statusCallback, sessionId) {
     }
     return getVncInfo(sid)
         .then(data => {
+            // Reset retry count on successful VNC info fetch
+            retryCount = 0;
+            
             const basePath = data.vncProxyPath || `/api/sessions/${encodeURIComponent(sid)}/vnc-proxy`;
             const vncUrl = `${basePath}/?autoconnect=true&resize=scale&show_dot=true&reconnect=true&password=${encodeURIComponent(data.defaultPassword || '')}`;
             vncFrame.src = vncUrl;
@@ -20,9 +28,62 @@ function connectToRemoteDesktop(vncFrame, statusCallback, sessionId) {
         })
         .catch(error => {
             console.error('Error connecting to Remote Desktop:', error);
-            if (statusCallback) statusCallback('Failed to connect to Remote Desktop. Retrying...', 'error');
+            retryCount++;
+            
+            // Check if it's a permanent failure (session not found)
+            const isSessionError = error.message && (
+                error.message.includes('404') || 
+                error.message.includes('Session not found') ||
+                error.message.includes('not available')
+            );
+            
+            if (isSessionError) {
+                // Session doesn't exist - this is a permanent failure, don't retry
+                console.error('Session not found - cannot connect to Remote Desktop');
+                if (statusCallback) {
+                    statusCallback('Session not found. Please return to dashboard and start a new session.', 'error');
+                }
+                // Show a clear error in the VNC frame instead of loading wrong content
+                vncFrame.srcdoc = `
+                    <html>
+                    <body style="display:flex;align-items:center;justify-content:center;height:100%;margin:0;background:#1a1a2e;color:#fff;font-family:sans-serif;">
+                        <div style="text-align:center;padding:20px;">
+                            <h2>Session Not Available</h2>
+                            <p>The lab session could not be found or has expired.</p>
+                            <p>Please return to the dashboard and start a new session.</p>
+                        </div>
+                    </body>
+                    </html>
+                `;
+                return Promise.reject(new Error('Session not available'));
+            }
+            
+            // Check if we've exceeded max retries
+            if (retryCount >= MAX_RETRIES) {
+                console.error(`Max retries (${MAX_RETRIES}) exceeded for Remote Desktop connection`);
+                if (statusCallback) {
+                    statusCallback('Failed to connect after multiple attempts. Please refresh the page.', 'error');
+                }
+                vncFrame.srcdoc = `
+                    <html>
+                    <body style="display:flex;align-items:center;justify-content:center;height:100%;margin:0;background:#1a1a2e;color:#fff;font-family:sans-serif;">
+                        <div style="text-align:center;padding:20px;">
+                            <h2>Connection Failed</h2>
+                            <p>Could not connect to the Remote Desktop after multiple attempts.</p>
+                            <p>Please refresh the page or contact support.</p>
+                        </div>
+                    </body>
+                    </html>
+                `;
+                return Promise.reject(new Error('Max retries exceeded'));
+            }
+            
+            // Transient error - retry with backoff
+            if (statusCallback) {
+                statusCallback(`Failed to connect. Retrying (${retryCount}/${MAX_RETRIES})...`, 'error');
+            }
             return new Promise(resolve => {
-                setTimeout(() => resolve(connectToRemoteDesktop(vncFrame, statusCallback, sid)), 5000);
+                setTimeout(() => resolve(connectToRemoteDesktop(vncFrame, statusCallback, sid)), RETRY_DELAY);
             });
         });
 }

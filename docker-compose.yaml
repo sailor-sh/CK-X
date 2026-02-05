@@ -8,6 +8,8 @@ services:
     expose:
       - "5901" # VNC port (internal only)
       - "6901" # Web VNC port (internal only)
+    ports:
+      - "6901:6901" # Expose for local development (CKX app outside Docker)
     environment:
       - VNC_PW=bakku-the-wizard
       - VNC_PASSWORD=bakku-the-wizard
@@ -203,6 +205,8 @@ services:
     hostname: facilitator
     expose:
       - "3000"
+    ports:
+      - "3004:3000" # Expose for local development (CKX app outside Docker)
     environment:
       - PORT=3000
       - NODE_ENV=prod
