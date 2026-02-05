@@ -10,7 +10,7 @@ const RouteService = require('./services/route-service');
 const VNCService = require('./services/vnc-service');
 const LaunchService = require('./services/launch-service');
 const { SessionRegistry, SESSION_STATES } = require('./services/session-registry');
-const { requireSession } = require('./middleware/session-resolver');
+const { requireSession, requireOwnedSession, extractOwnerId } = require('./middleware/session-resolver');
 
 const { createProxyMiddleware } = require('http-proxy-middleware');
 
@@ -22,8 +22,9 @@ const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
 
-// ——— Session registry (no global runtime; all routing by sessionId) ———
+// ——— Session registry (Redis-backed in production, in-memory for dev) ———
 const sessionRegistry = new SessionRegistry();
+const redisClient = require('./utils/redis-client');
 
 // Bootstrap default session for single-session development mode
 // In production/multi-session mode, sessions are registered via POST /api/sessions by Sailor API
@@ -34,8 +35,12 @@ function bootstrapDefaultSession() {
     const vncHost = process.env.VNC_SERVICE_HOST || 'remote-desktop';
     const sshHost = process.env.SSH_HOST || 'remote-terminal';
     
-    sessionRegistry.set(sessionId, {
+    // Use sync version for bootstrap during startup
+    // NOTE: No ownerId for default session - ownership checks are skipped for unowned sessions
+    // In production, sessions are created via API with proper ownerId
+    sessionRegistry.setSync(sessionId, {
         state: SESSION_STATES.READY,
+        ownerId: null,  // No ownership in standalone dev mode
         vnc: {
             host: vncHost,
             port: parseInt(process.env.VNC_SERVICE_PORT || '6901', 10),
@@ -58,7 +63,25 @@ function bootstrapDefaultSession() {
         console.warn('   For local dev, set VNC_SERVICE_HOST=localhost or run: docker compose up remote-desktop');
     }
 }
+
+// Initialize Redis and session registry
+async function initializeSessionStore() {
+    try {
+        await redisClient.connect();
+        await sessionRegistry.initialize(redisClient);
+        console.log('[Server] Session store initialized with Redis');
+    } catch (error) {
+        console.warn('[Server] Redis initialization failed, using in-memory fallback:', error.message);
+    }
+}
+
+// Bootstrap default session SYNCHRONOUSLY before server starts
+// This ensures the session exists when requests come in
 bootstrapDefaultSession();
+
+// Start async Redis initialization in background (non-blocking)
+// If Redis connects later, sessions will persist there too
+initializeSessionStore();
 
 // ——— Stateless services (no per-process connection state) ———
 const publicService = new PublicService(path.join(__dirname, 'public'));
@@ -66,6 +89,7 @@ publicService.initialize();
 const vncService = new VNCService();
 vncService.setSessionRegistry(sessionRegistry); // Required for WebSocket session resolution
 const requireSessionMiddleware = requireSession(sessionRegistry);
+const requireOwnedSessionMiddleware = requireOwnedSession(sessionRegistry);
 const routeService = new RouteService(
     publicService,
     vncService,
@@ -222,41 +246,154 @@ app.get('/launch', async (req, res) => {
 app.use(express.static(publicService.getPublicDir()));
 
 // ——— Session-scoped VNC proxy (must run after session resolution) ———
+// SECURITY: Use requireOwnedSession to enforce ownership verification
 app.use(
     '/api/sessions/:sessionId/vnc-proxy',
-    requireSessionMiddleware,
+    requireOwnedSessionMiddleware,  // Strict ownership check
     vncService.sessionVncProxy()
 );
 app.use(
     '/api/sessions/:sessionId/websockify',
-    requireSessionMiddleware,
+    requireOwnedSessionMiddleware,  // Strict ownership check
     vncService.sessionWebsockifyProxy()
 );
 
-// ——— Root-level websockify for noVNC client compatibility ———
+// ——— Root-level websockify for noVNC client compatibility (multi-session aware) ———
 // noVNC loaded via vnc-proxy tries to connect to /websockify on the same host.
 // WebSocket upgrades bypass Express, so we handle them at the HTTP server level.
-const websockifyProxy = createProxyMiddleware({
-    target: `http://${process.env.VNC_SERVICE_HOST || 'remote-desktop'}:${process.env.VNC_SERVICE_PORT || 6901}`,
-    ws: true,
-    changeOrigin: true,
-    pathRewrite: { '^/websockify': '/websockify' },
-    onError: (err, req, res) => {
-        console.error('[Websockify Root] Proxy error:', err.message);
-    }
-});
+// For multi-session, we extract sessionId from query param or cookie.
 
-// Handle WebSocket upgrade for /websockify
+/**
+ * Resolve VNC target from request with OWNERSHIP VERIFICATION.
+ * Returns the VNC endpoint only if the requesting user owns the session.
+ * @returns {{ host, port, sessionId, error? }}
+ */
+function resolveVncTargetFromRequest(req) {
+    // Try to extract sessionId from query params
+    const url = new URL(req.url, `http://${req.headers.host}`);
+    let sessionId = url.searchParams.get('sessionId');
+    let userId = null;
+    
+    // Try to extract from cookies if not in query
+    if (req.headers.cookie) {
+        const cookieMatch = req.headers.cookie.match(/ckx_session=([^;]+)/);
+        if (cookieMatch) {
+            const cookieValue = cookieMatch[1];
+            // Look up session from cookie store
+            const result = LaunchService.validateSessionCookie(cookieValue);
+            if (result.valid && result.data) {
+                if (!sessionId) {
+                    sessionId = result.data.sessionId;
+                }
+                userId = result.data.userId;
+            }
+        }
+    }
+    
+    // If we have a sessionId, look up the VNC endpoint from registry
+    if (sessionId) {
+        const session = sessionRegistry.get(sessionId);
+        if (session?.vnc?.host) {
+            // SECURITY: Verify ownership before allowing VNC access
+            // If session has an ownerId and user is authenticated, they must match
+            if (session.ownerId && userId && session.ownerId !== userId) {
+                console.warn(`[Websockify] SECURITY: Ownership mismatch for session ${sessionId}. Cookie userId: ${userId}, Session ownerId: ${session.ownerId}`);
+                return {
+                    error: 'ACCESS_DENIED',
+                    message: 'You do not own this session',
+                    sessionId
+                };
+            }
+            
+            // For sessions with ownerId, require authenticated user (cookie)
+            if (session.ownerId && !userId) {
+                console.warn(`[Websockify] SECURITY: No auth for owned session ${sessionId}`);
+                return {
+                    error: 'AUTH_REQUIRED',
+                    message: 'Authentication required for this session',
+                    sessionId
+                };
+            }
+            
+            return {
+                host: session.vnc.host,
+                port: session.vnc.port || 6901,
+                sessionId,
+                userId
+            };
+        }
+    }
+    
+    // Fall back to env vars for single-session dev mode (no ownership check)
+    return {
+        host: process.env.VNC_SERVICE_HOST || 'localhost',
+        port: parseInt(process.env.VNC_SERVICE_PORT || '6901', 10),
+        sessionId: 'default',
+        userId: null
+    };
+}
+
+// Handle WebSocket upgrade for /websockify (multi-session aware with ownership verification)
 server.on('upgrade', (req, socket, head) => {
     if (req.url === '/websockify' || req.url.startsWith('/websockify?')) {
-        console.log('[Websockify] Handling WebSocket upgrade for /websockify');
-        websockifyProxy.upgrade(req, socket, head);
+        const target = resolveVncTargetFromRequest(req);
+        
+        // SECURITY: Reject if ownership verification failed
+        if (target.error) {
+            console.warn(`[Websockify] WebSocket rejected: ${target.error} - ${target.message}`);
+            socket.write('HTTP/1.1 403 Forbidden\r\n\r\n');
+            socket.destroy();
+            return;
+        }
+        
+        console.log(`[Websockify] WebSocket upgrade for session ${target.sessionId} (user: ${target.userId || 'dev'}) -> ${target.host}:${target.port}`);
+        
+        // Create a dynamic proxy for this specific connection
+        const proxy = createProxyMiddleware({
+            target: `http://${target.host}:${target.port}`,
+            ws: true,
+            changeOrigin: true,
+            pathRewrite: { '^/websockify': '/websockify' },
+            onError: (err) => {
+                console.error(`[Websockify] Proxy error for session ${target.sessionId}:`, err.message);
+                socket.destroy();
+            }
+        });
+        
+        proxy.upgrade(req, socket, head);
     }
     // Other WebSocket upgrades (like Socket.IO for SSH) are handled by their respective handlers
 });
 
-// Also handle HTTP requests to /websockify (for initial handshake)
-app.use('/websockify', websockifyProxy);
+// HTTP requests to /websockify (for initial handshake with ownership verification)
+app.use('/websockify', (req, res, next) => {
+    const target = resolveVncTargetFromRequest(req);
+    
+    // SECURITY: Reject if ownership verification failed
+    if (target.error) {
+        console.warn(`[Websockify] HTTP rejected: ${target.error} - ${target.message}`);
+        const statusCode = target.error === 'AUTH_REQUIRED' ? 401 : 403;
+        return res.status(statusCode).json({ 
+            error: target.error, 
+            message: target.message,
+            sessionId: target.sessionId 
+        });
+    }
+    
+    console.log(`[Websockify] HTTP request for session ${target.sessionId} (user: ${target.userId || 'dev'}) -> ${target.host}:${target.port}`);
+    
+    const proxy = createProxyMiddleware({
+        target: `http://${target.host}:${target.port}`,
+        changeOrigin: true,
+        pathRewrite: { '^/websockify': '/websockify' },
+        onError: (err, req, res) => {
+            console.error(`[Websockify] HTTP error for session ${target.sessionId}:`, err.message);
+            res.status(502).json({ error: 'VNC service unavailable' });
+        }
+    });
+    
+    proxy(req, res, next);
+});
 
 // Routes (session-scoped API + health + static)
 routeService.setupRoutes(app);
@@ -264,6 +401,7 @@ routeService.setupRoutes(app);
 app.use(cors());
 
 // ——— SSH terminal: one namespace; each connection bound to a session by sessionId in handshake ———
+// SECURITY: Ownership verification required before SSH access
 const sshIO = io.of('/ssh');
 sshIO.on('connection', (socket) => {
     const sessionId = socket.handshake?.query?.sessionId;
@@ -283,6 +421,40 @@ sshIO.on('connection', (socket) => {
         socket.disconnect(true);
         return;
     }
+    
+    // SECURITY: Verify session ownership before allowing SSH access
+    // Extract userId from session cookie in handshake headers
+    let userId = null;
+    const cookieHeader = socket.handshake?.headers?.cookie;
+    if (cookieHeader) {
+        const cookieMatch = cookieHeader.match(/ckx_session=([^;]+)/);
+        if (cookieMatch) {
+            const cookieValue = cookieMatch[1];
+            const result = LaunchService.validateSessionCookie(cookieValue);
+            if (result.valid && result.data?.userId) {
+                userId = result.data.userId;
+            }
+        }
+    }
+    
+    // If session has an owner, verify the connecting user matches
+    if (session.ownerId) {
+        if (!userId) {
+            console.warn(`[SSH] SECURITY: No auth for owned session ${sessionId}`);
+            socket.emit('data', 'Error: Authentication required for this session.\r\n');
+            socket.disconnect(true);
+            return;
+        }
+        if (userId !== session.ownerId) {
+            console.warn(`[SSH] SECURITY: Ownership mismatch for session ${sessionId}. Cookie userId: ${userId}, Session ownerId: ${session.ownerId}`);
+            socket.emit('data', 'Error: Access denied. You do not own this session.\r\n');
+            socket.disconnect(true);
+            return;
+        }
+    }
+    
+    console.log(`[SSH] Connection established for session ${sessionId} (user: ${userId || 'dev'})`);
+    
     const sshConfig = session.ssh || {};
     const terminal = new SSHTerminal({
         host: sshConfig.host || 'remote-terminal',

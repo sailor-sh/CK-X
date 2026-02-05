@@ -21,7 +21,10 @@ function connectToRemoteDesktop(vncFrame, statusCallback, sessionId) {
             retryCount = 0;
             
             const basePath = data.vncProxyPath || `/api/sessions/${encodeURIComponent(sid)}/vnc-proxy`;
-            const vncUrl = `${basePath}/?autoconnect=true&resize=scale&show_dot=true&reconnect=true&password=${encodeURIComponent(data.defaultPassword || '')}`;
+            // Include path parameter to route websockify through session-specific endpoint
+            // Also include sessionId in query for root /websockify fallback
+            const websockifyPath = encodeURIComponent(`/websockify?sessionId=${encodeURIComponent(sid)}`);
+            const vncUrl = `${basePath}/?autoconnect=true&resize=scale&show_dot=true&reconnect=true&password=${encodeURIComponent(data.defaultPassword || '')}&path=${websockifyPath}`;
             vncFrame.src = vncUrl;
             if (statusCallback) statusCallback('Connected to Session', 'success');
             return vncUrl;

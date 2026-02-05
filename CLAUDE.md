@@ -22,18 +22,53 @@ The system has three main layers with strict boundaries (see `docs/ARCHITECTURE-
 - `remote-terminal/` — SSH terminal
 - `jumphost/` — SSH jumphost for exam environment access
 - `kind-cluster/` — KIND Kubernetes cluster (privileged container)
-- `nginx/` — Reverse proxy, only externally-exposed service
+- `nginx/` — Reverse proxy, only externally-exposed service (port 30080)
 - `redis` — Cache for facilitator
 
-### Session Isolation Model
+### Two Operational Modes
 
-CKX enforces per-session isolation via `SessionRegistry` (in-memory map of `sessionId → {vnc, ssh, state}`). All HTTP routes require `:sessionId` parameter; Socket.IO SSH connections require `sessionId` in handshake query. The `requireSession` middleware resolves the session and rejects invalid/missing IDs (400/404/410). No global VNC or SSH connections exist — each request creates connections from the session's stored endpoints.
-
-For single-session dev, setting `VNC_SERVICE_HOST`/`SSH_HOST` env vars bootstraps a `default` session automatically.
+1. **Docker Compose standalone** (CKX + infra only): Access via `http://localhost:30080`. Nginx routes `/` to webapp:3000, `/facilitator/api/` to facilitator:3000, `/vnc-proxy/` to webapp:3000. CKX serves its own exam UI directly.
+2. **Full Sailor stack** (Sailor Client → Sailor API → CKX): Sailor Client talks only to Sailor API (port 4000). CKX is loaded inside an iframe via Sailor API proxy URLs. Sailor API rewrites CKX responses to route facilitator calls back through itself.
 
 ### Key Constraint
 
 CKX must NOT handle auth, payments, or user identity. Sailor API must NOT delegate session lifecycle to CKX. Sailor Client must NOT call CKX directly.
+
+### Session Isolation Model
+
+CKX enforces per-session isolation via `SessionRegistry` (`app/services/session-registry.js` — in-memory map of `sessionId → {vnc, ssh, state}`). All HTTP routes require `:sessionId` parameter; Socket.IO SSH connections require `sessionId` in handshake query. The `requireSession` middleware (`app/middleware/session-resolver.js`) resolves the session and rejects invalid/missing IDs (400/404/410).
+
+For single-session dev, setting `VNC_SERVICE_HOST`/`SSH_HOST` env vars bootstraps a `default` session automatically.
+
+### CKX-in-Iframe Proxy Flow (Sailor API)
+
+When the Sailor Client renders an active exam, CKX is loaded inside an `<iframe>`. Since iframes can't send Authorization headers, a capability-based **iframeToken** (custom HMAC-SHA256, not jsonwebtoken) is used:
+
+1. Sailor Client calls `GET /exam-sessions/:id/iframe-token` (with JWT auth) to get a short-lived token (10min)
+2. Iframe src is set to `/ckx/sessions/:ckxSessionId/vnc-proxy/?iframeToken=...`
+3. Sailor API validates the iframeToken, then proxies to CKX with the token stripped
+
+**Key files:**
+- `sailor-api/src/lib/iframe-token.js` — Token create/verify (custom HMAC, not jwt lib)
+- `sailor-api/src/middleware/iframe-token-auth.js` — iframeToken validation middleware
+- `sailor-api/src/routes/ckx-proxy.js` — VNC/terminal proxy with HTML/JS response rewriting
+
+**Response rewriting** (`ckx-proxy.js`):
+- **HTML**: Asset paths made relative, iframeToken appended to asset URLs, fetch monkey-patch injected in `<head>` to rewrite `/facilitator/api/v1/*` → `/exam-sessions/:id/fproxy/*` with iframeToken
+- **JS**: Page navigation paths (`/exam.html?`, `/results?`, `'/'`) rewritten to relative paths with iframeToken
+- **fproxy route**: Catch-all `/:sessionId/fproxy/*` in `exam-sessions.js` proxies to facilitator
+
+### Middleware Stack (Sailor API Proxy Routes)
+
+```
+/ckx/sessions/:ckxSessionId/vnc-proxy
+├── [1] Extract ckxSessionId → set req.params.sessionId
+├── [2] validateIframeToken (if present: verify sig, expiry, session match; set req.user)
+├── [3] resolveExamSession (by ckxSessionId)
+├── [4] requireAuth (skipped if iframeToken already validated)
+├── [5] requireActiveExamSession (ownership, status, expiry)
+└── [6] http-proxy-middleware → CKX (with selfHandleResponse for rewriting)
+```
 
 ## Development Commands
 
@@ -95,9 +130,9 @@ Core models: `User`, `Product` (exam SKU), `Exam`, `ExamQuestion`, `ExamSession`
 
 ## Environment Configuration
 
-- **Sailor API**: `.env` from `.env.example` — DATABASE_URL, JWT_SECRET, CKX_BASE_URL, FACILITATOR_BASE_URL, CKX_DEFAULT_* (dev VNC/SSH defaults)
+- **Sailor API**: `.env` from `.env.example` — DATABASE_URL, JWT_SECRET, CKX_BASE_URL, FACILITATOR_BASE_URL, IFRAME_TOKEN_SECRET (optional, falls back to JWT_SECRET), CKX_DEFAULT_* (dev VNC/SSH defaults), CKX_API_KEY (shared secret for CKX admin endpoints)
 - **Facilitator**: env vars for SSH_HOST, SSH_PORT, SSH_USERNAME, REDIS_HOST, REDIS_PORT, LOG_LEVEL
-- **CKX Webapp**: VNC_SERVICE_HOST, VNC_SERVICE_PORT, VNC_PASSWORD, SSH_HOST, SSH_PORT, SSH_USER, SSH_PASSWORD
+- **CKX Webapp**: VNC_SERVICE_HOST, VNC_SERVICE_PORT, VNC_PASSWORD, SSH_HOST, SSH_PORT, SSH_USER, SSH_PASSWORD, CKX_INTERNAL_API_KEY (must match Sailor API's CKX_API_KEY), CKX_DEV_SKIP_OWNERSHIP (dev only: set to "true" to allow query param ownerId bypass)
 
 ## Code Patterns
 
@@ -114,4 +149,12 @@ Only `sailor-client` has ESLint configured (flat config format in `eslint.config
 
 ## Docker Network
 
-All containers communicate via service names on `ckx-network` bridge. Shared volumes: `kube-config` (Kubernetes config between jumphost and kind-cluster), `redis-data`.
+All containers communicate via service names on `ckx-network` bridge. Shared volumes: `kube-config` (Kubernetes config between jumphost and kind-cluster). Only nginx is exposed externally (port 30080→80).
+
+## Known Pitfalls
+
+- **Never append query params mid-URL**: String concat like `appendToken(url) + '/'` puts the trailing slash AFTER the query string, corrupting token values.
+- **Static regex replacement breaks template literals**: Regex like `/\/exams\/(?!current)/g` matches template literal expressions like `${examId}` and corrupts dynamic URLs. Use runtime interception (fetch monkey-patch) instead.
+- **Express 4 `req.query` caching**: Once accessed by middleware, `req.query` becomes a plain property that survives `req.url` modifications by proxy handlers.
+- **Express 4 `strict:false`**: Router matches both `/path` and `/path/` by default.
+- **iframeToken is NOT a JWT**: It uses custom HMAC-SHA256 signing in `sailor-api/src/lib/iframe-token.js`. Do not use the `jsonwebtoken` library for it.

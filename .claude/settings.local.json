@@ -4,7 +4,9 @@
       "Bash(tree:*)",
       "Bash(git -C /Users/danilo/repos/CK-X log --oneline -15)",
       "Bash(git -C /Users/danilo/repos/CK-X branch:*)",
-      "Bash(xargs:*)"
+      "Bash(xargs:*)",
+      "Bash(node --check:*)",
+      "Bash(curl:*)"
     ]
   }
 }

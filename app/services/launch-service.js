@@ -105,6 +105,17 @@ function validateSessionCookie(cookieValue) {
 }
 
 /**
+ * Verify a session cookie and return the session data directly.
+ * Used by middleware that needs just the data, not the wrapper.
+ * @param {string} cookieValue - The cookie value
+ * @returns {object|null} Session data or null if invalid
+ */
+function verifySessionCookie(cookieValue) {
+  const result = validateSessionCookie(cookieValue);
+  return result.valid ? result.data : null;
+}
+
+/**
  * Invalidate a session cookie (on logout or session end).
  * @param {string} cookieValue - The cookie value
  */
@@ -154,6 +165,7 @@ module.exports = {
   validateLaunchTokenWithSailor,
   createSessionCookie,
   validateSessionCookie,
+  verifySessionCookie,
   invalidateSessionCookie,
   requireSessionCookie,
   optionalSessionCookie,

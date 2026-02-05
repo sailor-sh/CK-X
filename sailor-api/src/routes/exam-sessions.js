@@ -155,6 +155,7 @@ router.get('/:sessionId/iframe-token', requireAuth, resolveExamSession, requireA
 // - Short-lived (60s) - just enough time to complete the handoff
 // - One-time use - consumed when CKX validates it
 // - Used to open lab in a new browser tab
+// - Rate-limited to prevent duplicate launches
 router.post('/:sessionId/launch-token', requireAuth, resolveExamSession, requireActiveExamSession, (req, res) => {
   const { createLaunchToken, LAUNCH_TOKEN_TTL_SECONDS } = require('../lib/launch-token');
   
@@ -162,11 +163,23 @@ router.post('/:sessionId/launch-token', requireAuth, resolveExamSession, require
     return res.status(400).json({ error: 'Session has no CKX session ID' });
   }
 
+  const { allowDuplicate } = req.body || {};
+
   const result = createLaunchToken(
     req.examSession.ckxSessionId,
     req.user.id,
-    req.examSession.id
+    req.examSession.id,
+    { allowDuplicate }
   );
+
+  // Handle rate-limited response
+  if (result.rateLimited) {
+    return res.status(429).json({
+      error: result.error,
+      rateLimited: true,
+      retryAfter: result.retryAfter,
+    });
+  }
 
   // Build the launch URL that the client should open in a new tab
   const ckxBaseUrl = config.ckx.baseUrl;
@@ -175,8 +188,9 @@ router.post('/:sessionId/launch-token', requireAuth, resolveExamSession, require
   return res.json({
     launchToken: result.token,
     launchUrl,
-    expiresIn: LAUNCH_TOKEN_TTL_SECONDS,
+    expiresIn: result.expiresIn || LAUNCH_TOKEN_TTL_SECONDS,
     ckxSessionId: req.examSession.ckxSessionId,
+    reused: result.reused || false,
   });
 });
 

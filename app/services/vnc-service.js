@@ -67,8 +67,17 @@ class VNCService {
                 const session = self._resolveSession(req);
                 const vnc = session?.vnc;
                 if (!vnc?.host || vnc.port == null) {
+                    // For dev mode, fall back to env vars instead of crashing
+                    const fallbackHost = process.env.VNC_SERVICE_HOST;
+                    const fallbackPort = process.env.VNC_SERVICE_PORT || '6901';
+                    if (fallbackHost) {
+                        console.warn(`[VNC Proxy] Session ${req.sessionId || 'unknown'} has no VNC config, using env fallback: ${fallbackHost}:${fallbackPort}`);
+                        return `http://${fallbackHost}:${fallbackPort}`;
+                    }
                     console.error('[VNC Proxy] Session has no VNC endpoint configured:', req.sessionId);
-                    throw new Error('Session has no VNC endpoint');
+                    // Return a dummy target - the connection will fail but won't crash the server
+                    // The onError handler will provide a helpful error page
+                    return 'http://127.0.0.1:1';
                 }
                 const target = `http://${vnc.host}:${Number(vnc.port)}`;
                 console.log(`[VNC Proxy] Routing session ${req.sessionId || 'unknown'} to ${target}`);
@@ -131,8 +140,15 @@ class VNCService {
                 const session = self._resolveSession(req);
                 const vnc = session?.vnc;
                 if (!vnc?.host || vnc.port == null) {
+                    // For dev mode, fall back to env vars instead of crashing
+                    const fallbackHost = process.env.VNC_SERVICE_HOST;
+                    const fallbackPort = process.env.VNC_SERVICE_PORT || '6901';
+                    if (fallbackHost) {
+                        console.warn(`[Websockify Proxy] Session ${req.sessionId || 'unknown'} has no VNC config, using env fallback: ${fallbackHost}:${fallbackPort}`);
+                        return `http://${fallbackHost}:${fallbackPort}`;
+                    }
                     console.error('[Websockify Proxy] Session has no VNC endpoint:', req.sessionId);
-                    throw new Error('Session has no VNC endpoint');
+                    return 'http://127.0.0.1:1';
                 }
                 const target = `http://${vnc.host}:${Number(vnc.port)}`;
                 console.log(`[Websockify Proxy] Routing session ${req.sessionId || 'unknown'} to ${target}`);

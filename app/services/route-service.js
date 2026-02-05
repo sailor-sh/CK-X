@@ -1,29 +1,36 @@
 const path = require('path');
+const { requireOwnedSession, requireSessionReadOnly, requireSession } = require('../middleware/session-resolver');
+const { requireInternalApiKey } = require('../middleware/internal-auth');
 
 /**
  * Route service — session-scoped API and static routes.
  * All execution paths that touch runtime require sessionId. No global vnc-info.
+ * 
+ * Multi-Session Isolation:
+ * - VNC and SSH access requires STRICT ownership verification
+ * - Status/info endpoints allow read-only access
  */
 class RouteService {
     /**
      * @param {import('./public-service')} publicService
      * @param {import('./vnc-service')} vncService
      * @param {import('./session-registry').SessionRegistry} sessionRegistry
-     * @param {import('../middleware/session-resolver').requireSession} requireSession
+     * @param {import('../middleware/session-resolver').requireSession} requireSessionFn
      */
-    constructor(publicService, vncService, sessionRegistry, requireSession) {
+    constructor(publicService, vncService, sessionRegistry, requireSessionFn) {
         this.publicService = publicService;
         this.vncService = vncService;
         this.sessionRegistry = sessionRegistry;
-        this.requireSession = requireSession;
+        this.requireSession = requireSessionFn;
     }
 
     setupRoutes(app) {
         // ——— Session-scoped API (sessionId required) ———
         // Get runtime info for a session (VNC + terminal endpoints)
+        // SECURITY: Use strict ownership check since this exposes runtime endpoints
         app.get(
             '/api/sessions/:sessionId/runtime',
-            this.requireSession(this.sessionRegistry),
+            requireOwnedSession(this.sessionRegistry),  // STRICT ownership
             (req, res) => {
                 const session = req.session;
                 const vncInfo = this.vncService.getVncInfoForSession(req.sessionId, session);
@@ -41,40 +48,119 @@ class RouteService {
         );
 
         // Legacy alias: vnc-info for a session (same as runtime.vncInfo)
+        // SECURITY: Use strict ownership check since this exposes VNC credentials
         app.get(
             '/api/sessions/:sessionId/vnc-info',
-            this.requireSession(this.sessionRegistry),
+            requireOwnedSession(this.sessionRegistry),  // STRICT ownership
             (req, res) => {
                 res.json(this.vncService.getVncInfoForSession(req.sessionId, req.session));
             }
         );
 
         // Register session (called by Sailor API / orchestrator after provisioning)
-        app.post('/api/sessions', (req, res) => {
-            const { sessionId, vnc, ssh, state, expiresAt } = req.body || {};
+        // SECURITY: Requires internal API key (protects against unauthorized session creation)
+        app.post('/api/sessions', requireInternalApiKey, async (req, res) => {
+            const { 
+                sessionId, 
+                vnc, 
+                ssh, 
+                kubernetes,
+                state, 
+                expiresAt,
+                ownerId,      // User who owns this session
+                examSessionId // Sailor API ExamSession ID for reference
+            } = req.body || {};
+            
             if (!sessionId || typeof sessionId !== 'string' || !sessionId.trim()) {
-                res.status(400).json({ error: 'sessionId is required' });
-                return;
+                return res.status(400).json({ error: 'sessionId is required' });
             }
+            
+            // Check for duplicate session creation (idempotency)
+            if (this.sessionRegistry.has(sessionId)) {
+                const existing = this.sessionRegistry.get(sessionId);
+                // If same owner, return success (idempotent)
+                if (existing.ownerId === ownerId) {
+                    console.log(`[Sessions] Idempotent session creation for ${sessionId}`);
+                    return res.status(200).json({ 
+                        sessionId, 
+                        state: existing.state,
+                        idempotent: true 
+                    });
+                }
+                // Different owner trying to create same session - reject
+                return res.status(409).json({ 
+                    error: 'Session already exists',
+                    sessionId 
+                });
+            }
+            
             try {
-                const record = this.sessionRegistry.set(sessionId, {
+                const record = await this.sessionRegistry.set(sessionId, {
                     state: state || 'ready',
                     vnc: vnc || {},
                     ssh: ssh || {},
-                    expiresAt: expiresAt || null
+                    kubernetes: kubernetes || null,
+                    expiresAt: expiresAt || null,
+                    ownerId: ownerId || null,
+                    examSessionId: examSessionId || null,
                 });
-                res.status(201).json({ sessionId: record.sessionId, state: record.state });
+                console.log(`[Sessions] Created session ${sessionId} for owner ${ownerId}`);
+                res.status(201).json({ 
+                    sessionId: record.sessionId, 
+                    state: record.state,
+                    ownerId: record.ownerId
+                });
             } catch (e) {
+                console.error(`[Sessions] Failed to create session ${sessionId}:`, e.message);
                 res.status(400).json({ error: e.message });
             }
         });
 
         // Release session (remove from registry; teardown is external)
-        app.delete('/api/sessions/:sessionId', (req, res) => {
+        // SECURITY: Requires internal API key (protects against unauthorized session deletion)
+        app.delete('/api/sessions/:sessionId', requireInternalApiKey, async (req, res) => {
             const { sessionId } = req.params;
+            const { ownerId } = req.query; // Optional owner verification
+            
+            const session = this.sessionRegistry.get(sessionId);
+            
+            // If ownerId provided, verify ownership
+            if (ownerId && session && session.ownerId && session.ownerId !== ownerId) {
+                return res.status(403).json({ 
+                    error: 'Not authorized to release this session',
+                    sessionId 
+                });
+            }
+            
             const had = this.sessionRegistry.has(sessionId);
-            this.sessionRegistry.delete(sessionId);
+            await this.sessionRegistry.delete(sessionId);
+            console.log(`[Sessions] Released session ${sessionId} (existed: ${had})`);
             res.status(200).json({ released: true, sessionId, existed: had });
+        });
+
+        // Check session existence and ownership
+        app.get('/api/sessions/:sessionId/verify', (req, res) => {
+            const { sessionId } = req.params;
+            const { ownerId } = req.query;
+            
+            const session = this.sessionRegistry.get(sessionId);
+            if (!session) {
+                return res.status(404).json({ 
+                    exists: false, 
+                    sessionId,
+                    message: 'Session not found'
+                });
+            }
+            
+            const isOwner = !ownerId || session.ownerId === ownerId || !session.ownerId;
+            
+            res.json({
+                exists: true,
+                sessionId,
+                state: session.state,
+                isOwner,
+                expiresAt: session.expiresAt,
+            });
         });
 
         // ——— No session (health only) ———

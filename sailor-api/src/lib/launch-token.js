@@ -21,12 +21,25 @@ const config = require('../config');
 // Map<tokenId, { sessionId, userId, ckxSessionId, expiresAt, consumed }>
 const launchTokenStore = new Map();
 
+// Track recent token requests per session to prevent rapid-fire duplicates
+// Map<ckxSessionId, { lastTokenAt: timestamp, pendingTokenId: string | null }>
+const sessionLaunchTracker = new Map();
+
+// Minimum interval between token requests for same session (ms)
+const MIN_TOKEN_INTERVAL_MS = 5000;
+
 // Cleanup expired tokens periodically
 setInterval(() => {
   const now = Date.now();
   for (const [tokenId, data] of launchTokenStore) {
     if (data.expiresAt < now) {
       launchTokenStore.delete(tokenId);
+    }
+  }
+  // Also cleanup old session trackers
+  for (const [sessionId, tracker] of sessionLaunchTracker) {
+    if (now - tracker.lastTokenAt > 120000) { // 2 minutes
+      sessionLaunchTracker.delete(sessionId);
     }
   }
 }, 60000); // Every minute
@@ -36,14 +49,60 @@ const LAUNCH_TOKEN_TTL_SECONDS = parseInt(process.env.LAUNCH_TOKEN_TTL_SECONDS |
 
 /**
  * Create a launch token for opening a lab session in a new tab.
+ * Includes duplicate launch prevention:
+ * - Returns existing token if one was recently created and not consumed
+ * - Rate-limits token creation per session
+ * 
  * @param {string} ckxSessionId - The CKX session ID
  * @param {string} userId - The user ID
  * @param {string} examSessionId - The Sailor exam session ID
- * @returns {{ token: string, expiresAt: number }}
+ * @param {object} options - Optional settings
+ * @param {boolean} options.allowDuplicate - Allow creating new token even if recent one exists
+ * @returns {{ token: string, expiresAt: number, reused?: boolean, rateLimited?: boolean }}
  */
-function createLaunchToken(ckxSessionId, userId, examSessionId) {
+function createLaunchToken(ckxSessionId, userId, examSessionId, options = {}) {
+  const now = Date.now();
+  const tracker = sessionLaunchTracker.get(ckxSessionId);
+  
+  // Check for rate limiting and duplicate prevention
+  if (tracker && !options.allowDuplicate) {
+    const timeSinceLastToken = now - tracker.lastTokenAt;
+    
+    // If a token was recently created, check if it's still valid
+    if (timeSinceLastToken < MIN_TOKEN_INTERVAL_MS && tracker.pendingTokenId) {
+      const existingData = launchTokenStore.get(tracker.pendingTokenId);
+      
+      // Return existing token if still valid and not consumed
+      if (existingData && !existingData.consumed && existingData.expiresAt > now) {
+        const signature = crypto
+          .createHmac('sha256', LAUNCH_TOKEN_SECRET)
+          .update(tracker.pendingTokenId)
+          .digest('hex');
+        
+        console.log(`[LaunchToken] Returning existing token for session ${ckxSessionId}`);
+        return {
+          token: `${tracker.pendingTokenId}.${signature}`,
+          expiresAt: existingData.expiresAt,
+          expiresIn: Math.floor((existingData.expiresAt - now) / 1000),
+          reused: true,
+        };
+      }
+    }
+    
+    // Rate limit - reject if too soon after last token
+    if (timeSinceLastToken < MIN_TOKEN_INTERVAL_MS / 2) {
+      console.log(`[LaunchToken] Rate limited for session ${ckxSessionId}`);
+      return {
+        token: null,
+        rateLimited: true,
+        retryAfter: Math.ceil((MIN_TOKEN_INTERVAL_MS / 2 - timeSinceLastToken) / 1000),
+        error: 'Token request rate limited. Please wait before requesting another.'
+      };
+    }
+  }
+  
   const tokenId = crypto.randomBytes(32).toString('hex');
-  const expiresAt = Date.now() + (LAUNCH_TOKEN_TTL_SECONDS * 1000);
+  const expiresAt = now + (LAUNCH_TOKEN_TTL_SECONDS * 1000);
   
   // Store token data
   launchTokenStore.set(tokenId, {
@@ -52,6 +111,12 @@ function createLaunchToken(ckxSessionId, userId, examSessionId) {
     examSessionId,
     expiresAt,
     consumed: false,
+  });
+  
+  // Track this token for the session
+  sessionLaunchTracker.set(ckxSessionId, {
+    lastTokenAt: now,
+    pendingTokenId: tokenId,
   });
   
   // Sign the token ID to prevent tampering

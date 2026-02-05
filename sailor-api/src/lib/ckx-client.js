@@ -12,7 +12,6 @@ function headers() {
   return h;
 }
 
-console.log(baseUrl(),'baseUrl')
 /**
  * Register a session with CKX (after provisioning runtime elsewhere, or CKX provisions).
  * @param {string} sessionId - Opaque session id (e.g. ExamSession.ckxSessionId)
@@ -27,8 +26,11 @@ async function createSession(sessionId, body) {
       sessionId,
       vnc: body.vnc || {},
       ssh: body.ssh || {},
+      kubernetes: body.kubernetes || null,
       state: body.state || 'ready',
       expiresAt: body.expiresAt || null,
+      ownerId: body.ownerId || null,
+      examSessionId: body.examSessionId || null,
     }),
   });
 
