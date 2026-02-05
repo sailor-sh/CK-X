@@ -14,4 +14,7 @@ module.exports = {
     baseUrl: (process.env.CKX_BASE_URL || 'http://localhost:3000').replace(/\/$/, ''),
     apiKey: process.env.CKX_API_KEY || '',
   },
+  facilitator: {
+    baseUrl: (process.env.FACILITATOR_BASE_URL || 'http://localhost:3001').replace(/\/$/, ''),
+  },
 };

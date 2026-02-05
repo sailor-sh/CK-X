@@ -1,7 +1,7 @@
 require('dotenv').config();
 
 const config = {
-  port: process.env.PORT || 3000,
+  port: process.env.PORT || 3004,
   env: process.env.NODE_ENV || 'development',
   
   ssh: {

@@ -2,7 +2,7 @@
  * CKX proxy routes. Sailor API proxies VNC/terminal requests to CKX after validating session access.
  * Client never calls CKX directly; all access is mediated by Sailor API.
  */
-const { createProxyMiddleware } = require('http-proxy-middleware');
+const { createProxyMiddleware, responseInterceptor } = require('http-proxy-middleware');
 const config = require('../config');
 const { resolveExamSession, requireActiveExamSession } = require('../middleware/session-enforcement');
 const { requireAuth } = require('../middleware/auth');
@@ -43,6 +43,7 @@ function createCkxProxy(ckxPathPrefix) {
       changeOrigin: true,
       ws: true, // Enable WebSocket proxying
       secure: false, // Allow self-signed certs in dev
+      selfHandleResponse: true, // needed for HTML rewriting
       pathRewrite: (path, req) => {
         // Rewrite /ckx/sessions/:ckxSessionId/vnc-proxy/* to /api/sessions/:ckxSessionId/vnc-proxy/*
         // Also handle asset requests like /ckx/sessions/:ckxSessionId/vnc-proxy/css/... -> /api/sessions/:ckxSessionId/vnc-proxy/css/...
@@ -85,6 +86,94 @@ function createCkxProxy(ckxPathPrefix) {
           res.writeHead(502, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: 'CKX proxy error', message: err.message }));
         }
+      },
+      on: {
+        proxyRes: responseInterceptor(async (responseBuffer, proxyRes, req, res) => {
+          const contentType = proxyRes.headers['content-type'] || '';
+          const isHtml = contentType.includes('text/html');
+          const isJs =
+            contentType.includes('javascript') ||
+            contentType.includes('ecmascript') ||
+            (req.path && req.path.endsWith('.js'));
+
+          // Only rewrite HTML or JS; passthrough others
+          if (!isHtml && !isJs) {
+            return responseBuffer;
+          }
+
+          const iframeToken = req.query && req.query.iframeToken;
+          const ckxSessionId = req.params?.ckxSessionId;
+          const safeToken = iframeToken && typeof iframeToken === 'string' ? encodeURIComponent(iframeToken) : null;
+          const appendToken = (url) =>
+            safeToken
+              ? url.includes('iframeToken')
+                ? url
+                : url + (url.includes('?') ? '&' : '?') + 'iframeToken=' + safeToken
+              : url;
+
+          if (isHtml) {
+            // Rewrite HTML so assets load under the proxied path and carry iframeToken for auth
+            let html = responseBuffer.toString('utf8');
+            // Make asset paths relative to /ckx/sessions/:id/vnc-proxy/
+            html = html.replace(/href="\/css\//g, 'href="css/');
+            html = html.replace(/src="\/js\//g, 'src="js/');
+            html = html.replace(/href="\/assets\//g, 'href="assets/');
+            html = html.replace(/src="\/assets\//g, 'src="assets/');
+
+            if (safeToken) {
+              html = html.replace(/(href|src)="(css\/[^"]*)"/g, (_, attr, url) => `${attr}="${appendToken(url)}"`);
+              html = html.replace(/(href|src)="(js\/[^"]*)"/g, (_, attr, url) => `${attr}="${appendToken(url)}"`);
+              html = html.replace(/(href|src)="(assets\/[^"]*)"/g, (_, attr, url) => `${attr}="${appendToken(url)}"`);
+            }
+
+            // Inject fetch monkey-patch to rewrite facilitator API calls at runtime.
+            // This handles ALL facilitator URLs including ones with dynamic exam IDs
+            // in JS template literals (status, terminate, evaluate, questions, events, etc.).
+            if (ckxSessionId && iframeToken) {
+              const proxyPath = '/exam-sessions/' + ckxSessionId + '/fproxy/';
+              const scriptContent =
+                '(function(){' +
+                'var t=' + JSON.stringify(iframeToken) + ';' +
+                'var p=' + JSON.stringify(proxyPath) + ';' +
+                'var s="/facilitator/api/v1/";' +
+                'var f=window.fetch;' +
+                'window.fetch=function(u,o){' +
+                'if(typeof u==="string"){' +
+                'if(u.indexOf(s)===0)u=p+u.substring(s.length);' +
+                'u+=(u.indexOf("?")>=0?"&":"?")+"iframeToken="+encodeURIComponent(t);' +
+                '}' +
+                'return f.call(this,u,o);' +
+                '};' +
+                '})();';
+              html = html.replace(/<head>/i, '<head>\n<script>' + scriptContent + '</script>');
+            }
+
+            return html;
+          }
+
+          if (isJs) {
+            // Rewrite page navigation paths from absolute to relative with iframeToken.
+            // Facilitator API fetch calls are handled by the monkey-patch injected in HTML <head>.
+            let js = responseBuffer.toString('utf8');
+            if (ckxSessionId && safeToken) {
+              js = js.replace(/\/exam\.html\?/g, 'exam.html?iframeToken=' + safeToken + '&');
+              js = js.replace(/\/results\?/g, 'results?iframeToken=' + safeToken + '&');
+              js = js.replace(/(location\.href\s*=\s*)'\/'/g, "$1'./?iframeToken=" + safeToken + "'");
+            }
+            // Add cache busting so rewritten bundle is fetched fresh
+            const cacheBuster = Date.now();
+            js = js.replace(/(href|src)="(js\/[^"]*)"/g, (_, attr, url) => {
+              const sep = url.includes('?') ? '&' : '?';
+              return `${attr}="${url}${sep}v=${cacheBuster}"`;
+            });
+            res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+            res.setHeader('Pragma', 'no-cache');
+            res.setHeader('Expires', '0');
+            return js;
+          }
+
+          return responseBuffer;
+        }),
       },
       logLevel: 'warn',
     }),
