@@ -56,7 +56,7 @@ class VNCService {
         return createProxyMiddleware({
             target: false,
             changeOrigin: true,
-            ws: true,
+            ws: false, // WebSocket handled by server.js upgrade handler
             secure: false,
             pathRewrite: (pathIn) => {
                 const match = pathIn.match(/^\/api\/sessions\/[^/]+\/vnc-proxy(\/?.*)$/);
@@ -132,7 +132,7 @@ class VNCService {
         const self = this;
         return createProxyMiddleware({
             target: false,
-            ws: true,
+            ws: false, // WebSocket handled by server.js upgrade handler
             changeOrigin: true,
             pathRewrite: (path) => '/websockify',
             router: (req) => {

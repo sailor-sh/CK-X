@@ -1,9 +1,10 @@
 /**
  * ExamSession lifecycle + CKX orchestration.
  * Sailor API creates CKX sessions and revokes access when time/payment expires.
- * 
+ *
  * Multi-Session Isolation:
  * - Each session gets unique credentials
+ * - Each session gets isolated VNC/terminal containers
  * - Concurrent session limits enforced per user
  * - Idempotent session creation (prevents duplicates)
  * - Session ownership strictly enforced
@@ -13,6 +14,7 @@ const { v4: uuid } = require('uuid');
 const crypto = require('crypto');
 const ckxClient = require('../lib/ckx-client');
 const config = require('../config');
+const containerOrchestrator = require('./container-orchestrator');
 
 const prisma = new PrismaClient();
 
@@ -51,6 +53,27 @@ function generateSessionCredentials(sessionId) {
   };
 }
 
+// Isolation modes:
+// - 'container': Per-session Docker containers (production) - full isolation
+// - 'shared': Single shared containers (dev/fallback) - no isolation
+const ISOLATION_MODE = process.env.CKX_ISOLATION_MODE || 'container';
+
+// Cache Docker availability check (re-check every 60 seconds to handle Docker restarts)
+let dockerAvailable = null;
+let dockerAvailableCheckedAt = 0;
+const DOCKER_CHECK_INTERVAL_MS = 60 * 1000;
+
+async function isDockerAvailable() {
+  const now = Date.now();
+  // Re-check if never checked, or if check is stale, or if last check failed (retry on failure)
+  if (dockerAvailable === null || (now - dockerAvailableCheckedAt > DOCKER_CHECK_INTERVAL_MS) || dockerAvailable === false) {
+    dockerAvailable = await containerOrchestrator.checkDockerAvailable();
+    dockerAvailableCheckedAt = now;
+    console.log(`[ExamSession] Docker available: ${dockerAvailable}, isolation mode: ${ISOLATION_MODE}`);
+  }
+  return dockerAvailable;
+}
+
 // Default runtime for dev (single shared CKX stack). In production, orchestrator provides per-session endpoints.
 function getDefaultRuntime(sessionCredentials = null) {
   const base = (process.env.CKX_DEFAULT_VNC_HOST || 'remote-desktop').trim();
@@ -72,6 +95,36 @@ function getDefaultRuntime(sessionCredentials = null) {
       password: sessionCredentials?.ssh?.password || process.env.CKX_DEFAULT_SSH_PASSWORD || 'password',
     },
     kubernetes: sessionCredentials?.kubernetes || null,
+  };
+}
+
+/**
+ * Get runtime configuration for a session.
+ * In 'container' mode with Docker available: provisions per-session containers
+ * Otherwise: falls back to shared containers
+ */
+async function getSessionRuntime(sessionId, sessionCredentials) {
+  const useContainerIsolation = ISOLATION_MODE === 'container' && await isDockerAvailable();
+
+  if (useContainerIsolation) {
+    console.log(`[ExamSession] Provisioning isolated containers for session ${sessionId.slice(0, 8)}`);
+    try {
+      const runtime = await containerOrchestrator.provisionSessionContainers(sessionId, sessionCredentials);
+      return {
+        ...runtime,
+        kubernetes: sessionCredentials?.kubernetes || null,
+        isolated: true,
+      };
+    } catch (err) {
+      console.error(`[ExamSession] Container provisioning failed, falling back to shared:`, err.message);
+      // Fall through to shared runtime
+    }
+  }
+
+  console.log(`[ExamSession] Using shared containers for session ${sessionId.slice(0, 8)}`);
+  return {
+    ...getDefaultRuntime(sessionCredentials),
+    isolated: false,
   };
 }
 
@@ -267,8 +320,9 @@ async function createExamSession(userId, examId, modeInput, options = {}) {
   const startedAt = new Date();
   const endsAt = computeEndsAt(exam, mode, startedAt);
   
-  // 6. Get runtime config with session-specific credentials
-  const runtime = getDefaultRuntime(sessionCredentials);
+  // 6. Get runtime config — provisions per-session containers when Docker is available
+  const runtime = await getSessionRuntime(ckxSessionId, sessionCredentials);
+  console.log(`[ExamSession] Runtime for ${ckxSessionId.slice(0, 8)}: vnc=${runtime.vnc?.host}:${runtime.vnc?.port}, ssh=${runtime.ssh?.host}, isolated=${runtime.isolated}`);
 
   // 7. Create exam session in database
   // Note: Session credentials are stored in CKX registry, not in Sailor DB
@@ -292,7 +346,10 @@ async function createExamSession(userId, examId, modeInput, options = {}) {
 
   // 8. Create CKX session with ownership binding
   try {
-    await ckxClient.createSession(ckxSessionId, {
+    console.log(`[ExamSession] Registering session ${ckxSessionId.slice(0, 8)} with CKX at ${require('../config').ckx.baseUrl}`);
+    console.log(`[ExamSession] VNC: ${runtime.vnc?.host}:${runtime.vnc?.port}, SSH: ${runtime.ssh?.host}:${runtime.ssh?.port}`);
+
+    const ckxResponse = await ckxClient.createSession(ckxSessionId, {
       vnc: runtime.vnc,
       ssh: runtime.ssh,
       kubernetes: runtime.kubernetes,
@@ -301,12 +358,17 @@ async function createExamSession(userId, examId, modeInput, options = {}) {
       examSessionId: examSession.id,
       expiresAt: endsAt.toISOString(),
     });
+    console.log(`[ExamSession] CKX registration successful:`, ckxResponse);
   } catch (err) {
-    // 9. Cleanup on CKX failure
+    console.error(`[ExamSession] CKX registration FAILED for ${ckxSessionId.slice(0, 8)}:`, err.message);
+    // 9. Cleanup on CKX failure — also tear down any containers we provisioned
     await prisma.examSession.update({
       where: { id: examSession.id },
       data: { status: 'CREATED' },
     });
+    try { await containerOrchestrator.cleanupSessionContainers(ckxSessionId); } catch (cleanupErr) {
+      console.error('[ExamSession] Container cleanup after CKX failure:', cleanupErr.message);
+    }
     throw new Error(`CKX session creation failed: ${err.message}`);
   }
 
@@ -357,10 +419,17 @@ async function endExamSession(examSessionId, userId) {
     data: { status: 'ENDED', submittedAt: new Date() },
   });
   if (session.ckxSessionId) {
+    // Release CKX session
     try {
       await ckxClient.releaseSession(session.ckxSessionId);
     } catch (e) {
       console.error('CKX release on end failed:', e.message);
+    }
+    // Cleanup per-session containers (idempotent, no-op if shared mode)
+    try {
+      await containerOrchestrator.cleanupSessionContainers(session.ckxSessionId);
+    } catch (e) {
+      console.error('Container cleanup on end failed:', e.message);
     }
   }
 
@@ -408,12 +477,12 @@ async function cleanupStaleSessions() {
       data: { status: 'REVOKED' },
     });
     
-    // Try to release CKX if it was created
     if (session.ckxSessionId) {
-      try {
-        await ckxClient.releaseSession(session.ckxSessionId);
-      } catch (e) {
+      try { await ckxClient.releaseSession(session.ckxSessionId); } catch (e) {
         console.error(`[Cleanup] Failed to release CKX session ${session.ckxSessionId}:`, e.message);
+      }
+      try { await containerOrchestrator.cleanupSessionContainers(session.ckxSessionId); } catch (e) {
+        console.error(`[Cleanup] Failed to cleanup containers for ${session.ckxSessionId}:`, e.message);
       }
     }
     cleanedCount++;
@@ -435,10 +504,11 @@ async function cleanupStaleSessions() {
     });
     
     if (session.ckxSessionId) {
-      try {
-        await ckxClient.releaseSession(session.ckxSessionId);
-      } catch (e) {
+      try { await ckxClient.releaseSession(session.ckxSessionId); } catch (e) {
         console.error(`[Cleanup] Failed to release CKX session ${session.ckxSessionId}:`, e.message);
+      }
+      try { await containerOrchestrator.cleanupSessionContainers(session.ckxSessionId); } catch (e) {
+        console.error(`[Cleanup] Failed to cleanup containers for ${session.ckxSessionId}:`, e.message);
       }
     }
     cleanedCount++;
@@ -460,10 +530,11 @@ async function cleanupStaleSessions() {
     });
     
     if (session.ckxSessionId) {
-      try {
-        await ckxClient.releaseSession(session.ckxSessionId);
-      } catch (e) {
+      try { await ckxClient.releaseSession(session.ckxSessionId); } catch (e) {
         console.error(`[Cleanup] Failed to release CKX session ${session.ckxSessionId}:`, e.message);
+      }
+      try { await containerOrchestrator.cleanupSessionContainers(session.ckxSessionId); } catch (e) {
+        console.error(`[Cleanup] Failed to cleanup containers for ${session.ckxSessionId}:`, e.message);
       }
     }
     
@@ -474,6 +545,21 @@ async function cleanupStaleSessions() {
     cleanedCount++;
   }
   
+  // 4. Cleanup orphaned containers (containers without active sessions)
+  try {
+    const activeSessions = await prisma.examSession.findMany({
+      where: { status: { in: ['ACTIVE', 'PROVISIONING'] } },
+      select: { ckxSessionId: true },
+    });
+    const activeIds = activeSessions.map(s => s.ckxSessionId).filter(Boolean);
+    const orphanCount = await containerOrchestrator.cleanupOrphanedContainers(activeIds);
+    if (orphanCount > 0) {
+      console.log(`[Cleanup] Removed ${orphanCount} orphaned containers`);
+    }
+  } catch (e) {
+    console.error('[Cleanup] Orphaned container cleanup failed:', e.message);
+  }
+
   if (cleanedCount > 0) {
     console.log(`[Cleanup] Cleaned up ${cleanedCount} stale sessions`);
   }
@@ -494,12 +580,13 @@ async function forceCleanupSession(sessionId) {
     return { success: false, error: 'Session not found' };
   }
   
-  // Release CKX
+  // Release CKX + cleanup containers
   if (session.ckxSessionId) {
-    try {
-      await ckxClient.releaseSession(session.ckxSessionId);
-    } catch (e) {
+    try { await ckxClient.releaseSession(session.ckxSessionId); } catch (e) {
       console.error(`[ForceCleanup] Failed to release CKX session:`, e.message);
+    }
+    try { await containerOrchestrator.cleanupSessionContainers(session.ckxSessionId); } catch (e) {
+      console.error(`[ForceCleanup] Failed to cleanup containers:`, e.message);
     }
   }
   

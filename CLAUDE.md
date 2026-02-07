@@ -36,7 +36,16 @@ CKX must NOT handle auth, payments, or user identity. Sailor API must NOT delega
 
 ### Session Isolation Model
 
-CKX enforces per-session isolation via `SessionRegistry` (`app/services/session-registry.js` — in-memory map of `sessionId → {vnc, ssh, state}`). All HTTP routes require `:sessionId` parameter; Socket.IO SSH connections require `sessionId` in handshake query. The `requireSession` middleware (`app/middleware/session-resolver.js`) resolves the session and rejects invalid/missing IDs (400/404/410).
+**Infrastructure Isolation** (Container Orchestrator):
+Each exam session gets its own isolated VNC desktop and terminal containers, provisioned dynamically via Docker API. This ensures users cannot see each other's desktops or terminal sessions.
+
+- `sailor-api/src/services/container-orchestrator.js` — Creates/destroys per-session containers using `dockerode`
+- Containers named `ckx-vnc-{sessionId12}` and `ckx-terminal-{sessionId12}` on `ckx-network`
+- Env var `CKX_ISOLATION_MODE=container` (default) enables per-session containers; `=shared` uses single shared containers (dev fallback)
+- Containers are cleaned up on session end, expiry, or by periodic orphan cleanup
+
+**Routing Isolation** (CKX Webapp):
+CKX enforces per-session routing via `SessionRegistry` (`app/services/session-registry.js` — in-memory map of `sessionId → {vnc, ssh, state}`). All HTTP routes require `:sessionId` parameter; Socket.IO SSH connections require `sessionId` in handshake query. The `requireSession` middleware (`app/middleware/session-resolver.js`) resolves the session and rejects invalid/missing IDs (400/404/410).
 
 For single-session dev, setting `VNC_SERVICE_HOST`/`SSH_HOST` env vars bootstraps a `default` session automatically.
 
@@ -130,7 +139,7 @@ Core models: `User`, `Product` (exam SKU), `Exam`, `ExamQuestion`, `ExamSession`
 
 ## Environment Configuration
 
-- **Sailor API**: `.env` from `.env.example` — DATABASE_URL, JWT_SECRET, CKX_BASE_URL, FACILITATOR_BASE_URL, IFRAME_TOKEN_SECRET (optional, falls back to JWT_SECRET), CKX_DEFAULT_* (dev VNC/SSH defaults), CKX_API_KEY (shared secret for CKX admin endpoints)
+- **Sailor API**: `.env` from `.env.example` — DATABASE_URL, JWT_SECRET, CKX_BASE_URL, FACILITATOR_BASE_URL, IFRAME_TOKEN_SECRET (optional, falls back to JWT_SECRET), CKX_DEFAULT_* (dev VNC/SSH defaults), CKX_API_KEY (shared secret for CKX admin endpoints), CKX_ISOLATION_MODE (container|shared), CKX_DOCKER_NETWORK, CKX_VNC_IMAGE, CKX_TERMINAL_IMAGE
 - **Facilitator**: env vars for SSH_HOST, SSH_PORT, SSH_USERNAME, REDIS_HOST, REDIS_PORT, LOG_LEVEL
 - **CKX Webapp**: VNC_SERVICE_HOST, VNC_SERVICE_PORT, VNC_PASSWORD, SSH_HOST, SSH_PORT, SSH_USER, SSH_PASSWORD, CKX_INTERNAL_API_KEY (must match Sailor API's CKX_API_KEY), CKX_DEV_SKIP_OWNERSHIP (dev only: set to "true" to allow query param ownerId bypass)
 

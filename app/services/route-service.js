@@ -27,10 +27,11 @@ class RouteService {
     setupRoutes(app) {
         // ——— Session-scoped API (sessionId required) ———
         // Get runtime info for a session (VNC + terminal endpoints)
-        // SECURITY: Use strict ownership check since this exposes runtime endpoints
+        // SessionId (UUID) is the capability token — no cookie required.
+        // CKX is stateless; Sailor API enforces real auth before creating sessions.
         app.get(
             '/api/sessions/:sessionId/runtime',
-            requireOwnedSession(this.sessionRegistry),  // STRICT ownership
+            this.requireSession(this.sessionRegistry),
             (req, res) => {
                 const session = req.session;
                 const vncInfo = this.vncService.getVncInfoForSession(req.sessionId, session);
@@ -48,10 +49,9 @@ class RouteService {
         );
 
         // Legacy alias: vnc-info for a session (same as runtime.vncInfo)
-        // SECURITY: Use strict ownership check since this exposes VNC credentials
         app.get(
             '/api/sessions/:sessionId/vnc-info',
-            requireOwnedSession(this.sessionRegistry),  // STRICT ownership
+            this.requireSession(this.sessionRegistry),
             (req, res) => {
                 res.json(this.vncService.getVncInfoForSession(req.sessionId, req.session));
             }

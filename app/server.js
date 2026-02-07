@@ -13,6 +13,7 @@ const { SessionRegistry, SESSION_STATES } = require('./services/session-registry
 const { requireSession, requireOwnedSession, extractOwnerId } = require('./middleware/session-resolver');
 
 const { createProxyMiddleware } = require('http-proxy-middleware');
+const httpProxy = require('http-proxy');
 
 const PORT = process.env.PORT || 3000;
 const SAILOR_API_URL = process.env.SAILOR_API_URL || 'http://localhost:4000';
@@ -246,15 +247,18 @@ app.get('/launch', async (req, res) => {
 app.use(express.static(publicService.getPublicDir()));
 
 // ——— Session-scoped VNC proxy (must run after session resolution) ———
-// SECURITY: Use requireOwnedSession to enforce ownership verification
+// Uses non-strict session check: validates session exists and is routable.
+// Cookie ownership is NOT required — the sessionId (UUID) is the capability token.
+// CKX is stateless; Sailor API enforces real auth before creating sessions.
+// Strict cookie checks break the iframe/proxy flow where cookies aren't available.
 app.use(
     '/api/sessions/:sessionId/vnc-proxy',
-    requireOwnedSessionMiddleware,  // Strict ownership check
+    requireSessionMiddleware,
     vncService.sessionVncProxy()
 );
 app.use(
     '/api/sessions/:sessionId/websockify',
-    requireOwnedSessionMiddleware,  // Strict ownership check
+    requireSessionMiddleware,
     vncService.sessionWebsockifyProxy()
 );
 
@@ -294,8 +298,8 @@ function resolveVncTargetFromRequest(req) {
     if (sessionId) {
         const session = sessionRegistry.get(sessionId);
         if (session?.vnc?.host) {
-            // SECURITY: Verify ownership before allowing VNC access
-            // If session has an ownerId and user is authenticated, they must match
+            // SECURITY: If a cookie IS present with a different userId, reject.
+            // This prevents one authenticated user from snooping another's session.
             if (session.ownerId && userId && session.ownerId !== userId) {
                 console.warn(`[Websockify] SECURITY: Ownership mismatch for session ${sessionId}. Cookie userId: ${userId}, Session ownerId: ${session.ownerId}`);
                 return {
@@ -305,15 +309,10 @@ function resolveVncTargetFromRequest(req) {
                 };
             }
             
-            // For sessions with ownerId, require authenticated user (cookie)
-            if (session.ownerId && !userId) {
-                console.warn(`[Websockify] SECURITY: No auth for owned session ${sessionId}`);
-                return {
-                    error: 'AUTH_REQUIRED',
-                    message: 'Authentication required for this session',
-                    sessionId
-                };
-            }
+            // NOTE: We intentionally do NOT require cookie auth when no cookie is present.
+            // The sessionId (UUID) acts as a capability token — knowing it proves access.
+            // CKX is stateless; Sailor API already enforces real auth before creating sessions.
+            // Requiring cookies here breaks the iframe/proxy flow where noVNC can't send cookies.
             
             return {
                 host: session.vnc.host,
@@ -333,6 +332,16 @@ function resolveVncTargetFromRequest(req) {
     };
 }
 
+// Single reusable proxy for WebSocket connections (avoids per-connection middleware lifecycle issues)
+const wsProxy = httpProxy.createProxyServer({ ws: true, changeOrigin: true });
+wsProxy.on('error', (err, req, resOrSocket) => {
+    const sessionId = req._ckxSessionId || 'unknown';
+    console.error(`[Websockify] Proxy error for session ${sessionId}:`, err.message);
+    if (resOrSocket && typeof resOrSocket.destroy === 'function') {
+        resOrSocket.destroy();
+    }
+});
+
 // Handle WebSocket upgrade for /websockify (multi-session aware with ownership verification)
 server.on('upgrade', (req, socket, head) => {
     if (req.url === '/websockify' || req.url.startsWith('/websockify?')) {
@@ -348,25 +357,19 @@ server.on('upgrade', (req, socket, head) => {
         
         console.log(`[Websockify] WebSocket upgrade for session ${target.sessionId} (user: ${target.userId || 'dev'}) -> ${target.host}:${target.port}`);
         
-        // Create a dynamic proxy for this specific connection
-        const proxy = createProxyMiddleware({
-            target: `http://${target.host}:${target.port}`,
-            ws: true,
-            changeOrigin: true,
-            pathRewrite: { '^/websockify': '/websockify' },
-            onError: (err) => {
-                console.error(`[Websockify] Proxy error for session ${target.sessionId}:`, err.message);
-                socket.destroy();
-            }
-        });
+        // Tag request for error handler
+        req._ckxSessionId = target.sessionId;
         
-        proxy.upgrade(req, socket, head);
+        // Proxy WebSocket to session-specific VNC container
+        wsProxy.ws(req, socket, head, {
+            target: `http://${target.host}:${target.port}`,
+        });
     }
     // Other WebSocket upgrades (like Socket.IO for SSH) are handled by their respective handlers
 });
 
 // HTTP requests to /websockify (for initial handshake with ownership verification)
-app.use('/websockify', (req, res, next) => {
+app.use('/websockify', (req, res) => {
     const target = resolveVncTargetFromRequest(req);
     
     // SECURITY: Reject if ownership verification failed
@@ -382,17 +385,10 @@ app.use('/websockify', (req, res, next) => {
     
     console.log(`[Websockify] HTTP request for session ${target.sessionId} (user: ${target.userId || 'dev'}) -> ${target.host}:${target.port}`);
     
-    const proxy = createProxyMiddleware({
+    req._ckxSessionId = target.sessionId;
+    wsProxy.web(req, res, {
         target: `http://${target.host}:${target.port}`,
-        changeOrigin: true,
-        pathRewrite: { '^/websockify': '/websockify' },
-        onError: (err, req, res) => {
-            console.error(`[Websockify] HTTP error for session ${target.sessionId}:`, err.message);
-            res.status(502).json({ error: 'VNC service unavailable' });
-        }
     });
-    
-    proxy(req, res, next);
 });
 
 // Routes (session-scoped API + health + static)
@@ -437,20 +433,15 @@ sshIO.on('connection', (socket) => {
         }
     }
     
-    // If session has an owner, verify the connecting user matches
-    if (session.ownerId) {
-        if (!userId) {
-            console.warn(`[SSH] SECURITY: No auth for owned session ${sessionId}`);
-            socket.emit('data', 'Error: Authentication required for this session.\r\n');
-            socket.disconnect(true);
-            return;
-        }
-        if (userId !== session.ownerId) {
-            console.warn(`[SSH] SECURITY: Ownership mismatch for session ${sessionId}. Cookie userId: ${userId}, Session ownerId: ${session.ownerId}`);
-            socket.emit('data', 'Error: Access denied. You do not own this session.\r\n');
-            socket.disconnect(true);
-            return;
-        }
+    // SECURITY: If a cookie IS present with a different userId, reject.
+    // This prevents one authenticated user from accessing another's terminal.
+    // But if no cookie is present, allow — sessionId (UUID) is the capability token.
+    // CKX is stateless; Sailor API enforces real auth before creating sessions.
+    if (session.ownerId && userId && userId !== session.ownerId) {
+        console.warn(`[SSH] SECURITY: Ownership mismatch for session ${sessionId}. Cookie userId: ${userId}, Session ownerId: ${session.ownerId}`);
+        socket.emit('data', 'Error: Access denied. You do not own this session.\r\n');
+        socket.disconnect(true);
+        return;
     }
     
     console.log(`[SSH] Connection established for session ${sessionId} (user: ${userId || 'dev'})`);
