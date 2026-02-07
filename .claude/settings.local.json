@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tree:*)",
+      "Bash(git -C /Users/danilo/repos/CK-X log --oneline -15)",
+      "Bash(git -C /Users/danilo/repos/CK-X branch:*)",
+      "Bash(xargs:*)",
+      "Bash(node --check:*)",
+      "Bash(curl:*)",
+      "Bash(ls:*)",
+      "Bash(npm install:*)",
+      "Bash(docker ps:*)",
+      "Bash(lsof:*)",
+      "Bash(docker network inspect:*)",
+      "Bash(ping:*)",
+      "Bash(docker inspect:*)"
+    ]
+  }
+}

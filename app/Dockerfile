@@ -11,6 +11,7 @@ RUN npm install --production
 # Copy the application files
 COPY server.js ./
 COPY services/ ./services/
+COPY middleware/ ./middleware/
 COPY public/ ./public/
 
 # Ensure the public directory exists

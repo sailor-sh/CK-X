@@ -40,7 +40,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const startExamModal = new bootstrap.Modal(document.getElementById('startExamModal'));
     const examEndModal = new bootstrap.Modal(document.getElementById('examEndModal'));
     
-    // State variables
+    // State variables (sessionId required for per-session isolation; from URL via Sailor API)
+    let sessionId = ExamApi.getSessionId();
     let examInfo = {}; // Store exam information
     let currentQuestionId = 1;
     let questions = [];
@@ -50,8 +51,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add event listener for page unload to clean up resources
     window.addEventListener('beforeunload', cleanupResources);
     
-    // Initialize by fetching questions
-    fetchExamQuestions();
+    // Ensure session exists before initializing (prevents recursive UI bug)
+    console.log('Ensuring session exists before loading exam:', sessionId);
+    ExamApi.ensureSession(sessionId)
+        .then(() => {
+            console.log('Session verified, loading exam');
+            // Initialize by fetching questions
+            fetchExamQuestions();
+        })
+        .catch(error => {
+            console.error('Failed to verify session:', error);
+            // Show error and offer to return to homepage
+            pageLoader.style.display = 'none';
+            alert('Session not available. Please return to the dashboard and start a new lab.');
+            window.location.href = '/';
+        });
     
     // Listen for examCompletedSession event and handle connecting to a finished exam session
     document.addEventListener('examCompletedSession', function(event) {
@@ -129,8 +143,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
                 
-                // Connect to Remote Desktop
-                RemoteDesktopService.connectToRemoteDesktop(vncFrame, showVncConnectionStatus);
+                RemoteDesktopService.connectToRemoteDesktop(vncFrame, showVncConnectionStatus, sessionId);
                 
                 // Hide loader after a short delay
                 setTimeout(() => {
@@ -190,13 +203,8 @@ document.addEventListener('DOMContentLoaded', function() {
     function connectToExamSession() {
         console.log('Connecting to exam session in completed exam mode');
         
-        // Connect to Remote Desktop
-        RemoteDesktopService.connectToRemoteDesktop(vncFrame, showVncConnectionStatus);
-        
-        // Setup Remote Desktop frame handlers
+        RemoteDesktopService.connectToRemoteDesktop(vncFrame, showVncConnectionStatus, sessionId);
         RemoteDesktopService.setupRemoteDesktopFrameHandlers(vncFrame, showVncConnectionStatus);
-        
-        // Enter fullscreen mode for better visibility
         UiUtils.requestFullscreen(document.documentElement);
     }
     
@@ -433,9 +441,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
       
-        // Connect to Remote Desktop
-        RemoteDesktopService.connectToRemoteDesktop(vncFrame, showVncConnectionStatus);
-
+        RemoteDesktopService.connectToRemoteDesktop(vncFrame, showVncConnectionStatus, sessionId);
         // Calculate remaining time
         const remainingTime = TimerService.calculateRemainingTime(examInfo);
         
@@ -609,9 +615,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 delay: 8000
             });
             
-            // Initialize terminal if not already done
             if (!TerminalService.isInitialized()) {
-                TerminalService.initTerminal(sshTerminalContainer, true);
+                TerminalService.initTerminal(sshTerminalContainer, true, sessionId);
             } else {
                 // Resize terminal to fit container
                 TerminalService.resizeTerminal(sshTerminalContainer);
@@ -705,10 +710,9 @@ document.addEventListener('DOMContentLoaded', function() {
             reconnectVncBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 showVncConnectionStatus('Reconnecting to Remote Desktop...', 'info');
-                RemoteDesktopService.connectToRemoteDesktop(vncFrame, showVncConnectionStatus);
+                RemoteDesktopService.connectToRemoteDesktop(vncFrame, showVncConnectionStatus, sessionId);
             });
         }
-        
         // Setup fullscreen toggle button for Terminal
         const fullscreenTerminalBtn = document.getElementById('fullscreenTerminalBtn');
         if (fullscreenTerminalBtn) {

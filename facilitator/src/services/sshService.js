@@ -69,13 +69,13 @@ async function executeCommand(command) {
         logger.error('Failed to read private key', { error: err.message });
         return reject(new Error(`Failed to read private key: ${err.message}`));
       }
-    } else if (config.ssh.password) {
+    } else if (config.ssh.password !== undefined) {
       logger.info('Using password authentication');
       connectionConfig.password = config.ssh.password;
     } else {
-      logger.info('Using passwordless authentication');
-      // In production environment, this typically uses SSH agent forwarding
-      // or hostbased authentication which is configured in SSH config
+      // Jumphost allows empty password authentication
+      logger.info('Using empty password authentication');
+      connectionConfig.password = '';
     }
     
     conn.connect(connectionConfig);

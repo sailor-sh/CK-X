@@ -451,16 +451,27 @@ document.addEventListener('DOMContentLoaded', function() {
     async function pollExamStatus(examId) {
         const startTime = Date.now();
         const pollInterval = 1000; // Poll every 1 second
+        const maxWaitTime = 180000; // Maximum 3 minutes to wait
+        let errorCount = 0;
+        const maxErrors = 5;
         
         return new Promise((resolve, reject) => {
             const poll = async () => {
                 try {
+                    // Check for timeout
+                    if (Date.now() - startTime > maxWaitTime) {
+                        hideLoadingOverlay();
+                        reject(new Error('Lab preparation timed out. Please try again.'));
+                        return;
+                    }
+                    
                     const response = await fetch(`/facilitator/api/v1/exams/${examId}/status`);
                     const data = await response.json();
                     
                     // set warmup time in seconds
                     const warmUpTimeInSeconds = data.warmUpTimeInSeconds || 30;
 
+                    // Handle READY status - success!
                     if (data.status === 'READY') {
                         // Set progress to 100% when ready
                         updateProgressBar(100);
@@ -469,6 +480,27 @@ document.addEventListener('DOMContentLoaded', function() {
                         setTimeout(() => resolve(data), 1000);
                         return;
                     }
+                    
+                    // Handle failure states - fail fast instead of looping
+                    if (data.status === 'PREPARATION_FAILED' || data.status === 'FAILED') {
+                        console.error('Lab preparation failed:', data);
+                        hideLoadingOverlay();
+                        alert('Lab preparation failed. The environment could not be set up. Please try again or contact support.');
+                        reject(new Error('Lab preparation failed'));
+                        return;
+                    }
+                    
+                    // Handle unexpected terminal states
+                    if (data.status === 'COMPLETED' || data.status === 'CLEANUP_FAILED' || data.status === 'EVALUATED') {
+                        console.error('Unexpected exam state:', data.status);
+                        hideLoadingOverlay();
+                        alert(`Unexpected exam state: ${data.status}. Please refresh and try again.`);
+                        reject(new Error(`Unexpected state: ${data.status}`));
+                        return;
+                    }
+                    
+                    // Reset error count on successful poll
+                    errorCount = 0;
                     
                     // Calculate progress based on warm-up time
                     const elapsedTime = (Date.now() - startTime) / 1000;
@@ -480,8 +512,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     setTimeout(poll, pollInterval);
                 } catch (error) {
                     console.error('Error polling exam status:', error);
+                    errorCount++;
+                    
+                    if (errorCount >= maxErrors) {
+                        hideLoadingOverlay();
+                        alert('Failed to check lab status after multiple attempts. Please refresh and try again.');
+                        reject(new Error('Too many polling errors'));
+                        return;
+                    }
+                    
                     // Show error in the loading overlay
-                    updateLoadingMessage(`Error: ${error.message}. Retrying...`);
+                    updateLoadingMessage(`Error: ${error.message}. Retrying... (${errorCount}/${maxErrors})`);
                     // Continue polling despite errors
                     setTimeout(poll, pollInterval);
                 }

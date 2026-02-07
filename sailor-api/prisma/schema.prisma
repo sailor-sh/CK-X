@@ -1,0 +1,171 @@
+// Sailor API — Prisma schema
+// Responsibilities: User auth, payments, exam definitions, ExamSession lifecycle, CKX orchestration
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ——— Auth & identity ———
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  name         String?
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  entitlements Entitlement[]
+  examSessions ExamSession[]
+  payments      Payment[]
+}
+
+// ——— Products & payments ———
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  type        ProductType
+  priceCents  Int      @map("price_cents")
+  currency    String   @default("USD")
+  examId      String?  @unique @map("exam_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  exam         Exam?         @relation("ExamProduct", fields: [examId], references: [id], onDelete: SetNull)
+  entitlements Entitlement[]
+  payments     Payment[]
+}
+
+enum ProductType {
+  subscription
+  one_time
+}
+
+model Entitlement {
+  id        String           @id @default(uuid())
+  userId    String           @map("user_id")
+  productId String           @map("product_id")
+  status    EntitlementStatus @default(ACTIVE)
+  validFrom DateTime         @map("valid_from")
+  validUntil DateTime        @map("valid_until")
+  createdAt DateTime         @default(now()) @map("created_at")
+  updatedAt DateTime         @updatedAt @map("updated_at")
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+  @@index([userId, productId, status])
+}
+
+enum EntitlementStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+}
+
+model Payment {
+  id         String        @id @default(uuid())
+  userId     String        @map("user_id")
+  productId  String        @map("product_id")
+  amountCents Int          @map("amount_cents")
+  currency   String        @default("USD")
+  status     PaymentStatus @default(PENDING)
+  externalId String?       @map("external_id") // stripe/payment provider id
+  createdAt  DateTime       @default(now()) @map("created_at")
+  updatedAt  DateTime       @updatedAt @map("updated_at")
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([externalId])
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+// ——— Exam definitions ———
+model Exam {
+  id              String   @id @default(uuid())
+  slug            String   @unique
+  name            String
+  description     String?
+  // Full exam duration (paid, strict timer)
+  durationMinutes Int      @map("duration_minutes")
+  // Mock exam duration (free, limited time). Defaults to a shorter duration.
+  mockDurationMinutes Int  @default(30) @map("mock_duration_minutes")
+  maxAttempts     Int?     @map("max_attempts") // null = unlimited
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  product   Product?      @relation("ExamProduct")
+  questions ExamQuestion[]
+  sessions  ExamSession[]
+}
+
+model ExamQuestion {
+  id       String   @id @default(uuid())
+  examId   String   @map("exam_id")
+  order    Int
+  body     String
+  type     String   // single_choice, multiple_choice, free_text, etc.
+  options  Json?    // [{ "id": "a", "text": "..." }]
+  answer   Json?    // scoring key (not exposed to client before submit)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  exam Exam @relation(fields: [examId], references: [id], onDelete: Cascade)
+
+  @@unique([examId, order])
+  @@index([examId])
+}
+
+// ——— Exam session lifecycle (Sailor owns; binds to CKX session) ———
+model ExamSession {
+  id           String           @id @default(uuid())
+  userId       String           @map("user_id")
+  examId       String           @map("exam_id")
+  ckxSessionId String?          @unique @map("ckx_session_id") // CKX sessionId we created
+  mode         ExamMode         @default(FULL)
+  // Mock exam sessions are disposable: minimal retention and optional deletion after completion.
+  disposable   Boolean          @default(false)
+  status       ExamSessionStatus @default(CREATED)
+  startedAt   DateTime?        @map("started_at")
+  endsAt      DateTime?        @map("ends_at")
+  submittedAt  DateTime?        @map("submitted_at")
+  // Persistent results (FULL exam). For MOCK, these are typically null / not retained.
+  result       Json?            @map("result_json")
+  createdAt    DateTime         @default(now()) @map("created_at")
+  updatedAt    DateTime         @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exam Exam @relation(fields: [examId], references: [id], onDelete: Cascade)
+
+  @@index([userId, examId])
+  @@index([ckxSessionId])
+  @@index([status, endsAt])
+  @@index([mode, status])
+}
+
+enum ExamSessionStatus {
+  CREATED
+  PROVISIONING
+  ACTIVE
+  ENDED
+  EXPIRED
+  REVOKED
+}
+
+enum ExamMode {
+  MOCK
+  FULL
+}
