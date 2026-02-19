@@ -20,6 +20,16 @@
         "difficulty": "Hard",
         "examDurationInMinutes": 120
       },
+  {
+        "id": "ckad-003",
+        "assetPath": "assets/exams/ckad/003",
+        "name": "CKAD Comprehensive Lab - 3",
+        "category": "CKAD",
+        "description": "Third CKAD practice exam with 22 tasks, using single-cluster namespace isolation and partial-credit validation.",
+        "warmUpTimeInSeconds": 260,
+        "difficulty": "Hard",
+        "examDurationInMinutes": 120
+      },
       {
         "id": "cks-001",
         "assetPath": "assets/exams/cks/001",
