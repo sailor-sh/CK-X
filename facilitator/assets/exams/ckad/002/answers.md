@@ -62,6 +62,9 @@ spec:
     volumeMounts:
     - name: log-volume
       mountPath: /var/log
+    - name: log-volume
+      mountPath: /var/log/nginx
+      subPath: nginx
   - name: sidecar-container
     image: busybox
     command: ['sh', '-c', 'while true; do echo $(date) >> /var/log/app.log; sleep 5; done']
