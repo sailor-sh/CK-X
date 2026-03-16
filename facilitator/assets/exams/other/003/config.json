@@ -1,0 +1,10 @@
+{
+  "lab": "microservices-001",
+  "workerNodes": 2,
+  "answers": "assets/exams/other/003/answers.md",
+  "questions": "assessment.json",
+  "totalMarks": 100,
+  "lowScore": 45,
+  "mediumScore": 65,
+  "highScore": 85
+}
