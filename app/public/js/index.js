@@ -290,6 +290,30 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
+    // Premium exam configuration
+    const premiumExams = {
+        'CKA': {
+            url: 'https://sailor.sh/certified-kubernetes-administrator-cka-certification-ready-mock-exam-bundle/',
+            name: 'CKA Premium Mock Exam Bundle'
+        },
+        'CKAD': {
+            url: 'https://sailor.sh/certified-kubernetes-application-developer-ckad-certification-ready-mock-exam-bundle/',
+            name: 'CKAD Premium Mock Exam Bundle'
+        },
+        'CKS': {
+            url: 'https://sailor.sh/certified-kubernetes-security-specialist-cks-certification-ready-mock-exam-bundle/',
+            name: 'CKS Premium Mock Exam Bundle'
+        },
+        'KCNA': {
+            url: 'https://sailor.sh/kubernetes-and-cloud-native-associate-kcna-certification-ready-mock-exam-bundle/',
+            name: 'KCNA Premium Mock Exam Bundle'
+        },
+        'KCSA': {
+            url: 'https://sailor.sh/kubernetes-and-cloud-native-security-associate-kcsa-certification-ready-mock-exam-bundle/',
+            name: 'KCSA Premium Mock Exam Bundle'
+        }
+    };
+    
     // Filter labs by category and populate the labs dropdown
     function filterLabsByCategory(category) {
         const filteredLabs = labs.filter(lab => lab.category === category);
@@ -297,19 +321,39 @@ document.addEventListener('DOMContentLoaded', function() {
         // Clear existing options
         examNameSelect.innerHTML = '<option value="">Select a lab</option>';
         
-        // Add filtered labs to the dropdown
+        let hasPremium = false;
+        
+        // Add premium exam option if available for this category
+        if (premiumExams[category]) {
+            const premiumOption = document.createElement('option');
+            premiumOption.value = `premium_${category}`;
+            premiumOption.textContent = `🏆 ${premiumExams[category].name}`;
+            premiumOption.setAttribute('data-premium', 'true');
+            premiumOption.setAttribute('data-url', premiumExams[category].url);
+            examNameSelect.appendChild(premiumOption);
+            hasPremium = true;
+        }
+        
+        // Add filtered labs to the dropdown with FREE badge
         filteredLabs.forEach(lab => {
             const option = document.createElement('option');
             option.value = lab.id;
-            option.textContent = lab.name;
+            option.textContent = `🆓 ${lab.name}`;
+            option.setAttribute('data-premium', 'false');
             examNameSelect.appendChild(option);
         });
         
         // Enable the lab name select
         examNameSelect.disabled = false;
         
-        // If there are labs in this category, select the first one
-        if (filteredLabs.length > 0) {
+        // Select premium exam by default if available, otherwise select first free lab
+        if (hasPremium) {
+            examNameSelect.value = `premium_${category}`;
+            // Trigger the change event to show premium description
+            const selectedOption = examNameSelect.options[examNameSelect.selectedIndex];
+            const premiumUrl = selectedOption.getAttribute('data-url');
+            showPremiumDescription(category, premiumUrl);
+        } else if (filteredLabs.length > 0) {
             examNameSelect.value = filteredLabs[0].id;
             updateLabDescription(filteredLabs[0]);
         } else {
@@ -320,6 +364,19 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Update the lab description when a lab is selected
     function updateLabDescription(lab) {
+        // Hide premium info for free labs
+        const premiumInfo = document.getElementById('premiumInfo');
+        const examDescription = document.getElementById('examDescription');
+        
+        if (premiumInfo) {
+            premiumInfo.style.display = 'none';
+        }
+        
+        // Show the exam description box for free labs
+        if (examDescription) {
+            examDescription.style.display = 'block';
+        }
+        
         // Create a nicely formatted description
         const difficultyText = lab.difficulty || 'Medium';
         const examTimeText = lab.examDurationInMinutes || lab.estimatedTime || '30';
@@ -360,23 +417,66 @@ document.addEventListener('DOMContentLoaded', function() {
         filterLabsByCategory(this.value);
     });
     
+    // Helper function to show premium description
+    function showPremiumDescription(category, premiumUrl) {
+        const premiumInfo = document.getElementById('premiumInfo');
+        const examDescription = document.getElementById('examDescription');
+        
+        // Hide the blue description box for premium exams
+        examDescription.style.display = 'none';
+        
+        premiumInfo.style.display = 'block';
+        selectedLab = { isPremium: true, url: premiumUrl, category: category };
+        startSelectedExamBtn.disabled = false;
+        startSelectedExamBtn.textContent = 'GET INSTANT ACCESS →';
+    }
+    
     // Event listener for the exam name select
     examNameSelect.addEventListener('change', function() {
+        const premiumInfo = document.getElementById('premiumInfo');
+        const examDescription = document.getElementById('examDescription');
+        
         if (this.value) {
-            const lab = labs.find(lab => lab.id === this.value);
-            if (lab) {
-                updateLabDescription(lab);
+            const selectedOption = this.options[this.selectedIndex];
+            const isPremium = selectedOption.getAttribute('data-premium') === 'true';
+            
+            if (isPremium) {
+                // Premium exam selected
+                const premiumUrl = selectedOption.getAttribute('data-url');
+                const category = examCategorySelect.value;
+                showPremiumDescription(category, premiumUrl);
+            } else {
+                // Free exam selected
+                const lab = labs.find(lab => lab.id === this.value);
+                if (lab) {
+                    updateLabDescription(lab);
+                    premiumInfo.style.display = 'none';
+                    examDescription.style.display = 'block';
+                    startSelectedExamBtn.textContent = 'START EXAM';
+                }
             }
         } else {
             examDescription.textContent = 'No lab selected.';
+            examDescription.style.display = 'block';
+            premiumInfo.style.display = 'none';
             selectedLab = null;
             startSelectedExamBtn.disabled = true;
+            startSelectedExamBtn.textContent = 'START EXAM';
         }
     });
     
     // Event listener for the start selected exam button
     startSelectedExamBtn.addEventListener('click', function() {
         if (selectedLab) {
+            // Check if it's a premium exam
+            if (selectedLab.isPremium) {
+                // Open premium exam URL in new tab
+                window.open(selectedLab.url, '_blank');
+                examSelectionModal.hide();
+                return;
+            }
+            
+            // Regular free exam flow
             examSelectionModal.hide();
             showLoadingOverlay(); // Show the loading overlay instead of pageLoader
             updateLoadingMessage('Starting lab environment...');

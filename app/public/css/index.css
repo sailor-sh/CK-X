@@ -579,4 +579,82 @@ body {
     background: white;
     padding-top: 6rem;
     padding-bottom: 6rem;
+}
+
+/* Premium exam styles */
+.premium-info {
+    background-color: #e8f4fd;
+    border: 1px solid #b8dff5;
+    color: #1a5490;
+    box-shadow: 0 2px 8px rgba(26, 84, 144, 0.08);
+}
+
+.premium-content-wrapper {
+    color: #1a5490;
+}
+
+.premium-intro {
+    color: #1a5490;
+    font-size: 1rem;
+    line-height: 1.5;
+    font-weight: 600;
+}
+
+.premium-meta-container {
+    border-top-color: rgba(26, 84, 144, 0.15) !important;
+}
+
+.premium-meta-container .exam-meta {
+    color: #0f3d6b;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+}
+
+.premium-meta-container .exam-meta svg {
+    fill: #0f3d6b;
+    flex-shrink: 0;
+}
+
+.premium-info .premium-features h6 {
+    color: #1a5490;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+}
+
+.premium-info .premium-features h6 i {
+    color: #3b82f6;
+}
+
+.premium-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+.premium-list li {
+    padding: 0.4rem 0;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    color: #1a5490;
+    font-weight: 500;
+}
+
+.premium-list li i {
+    color: #3b82f6;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+/* Premium badge in dropdown */
+select option[data-premium="true"] {
+    font-weight: 600;
+    color: #3b82f6;
+}
+
+/* Free badge in dropdown */
+select option[data-premium="false"] {
+    color: #28a745;
 } 

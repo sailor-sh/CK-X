@@ -176,7 +176,7 @@
 
     <!-- Exam Selection Modal -->
     <div class="modal fade" id="examSelectionModal" tabindex="-1" aria-labelledby="examSelectionModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 650px;">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="examSelectionModalLabel">Select Your Exam</h5>
@@ -191,6 +191,8 @@
                                 <option value="CKAD" selected>CKAD - Certified Kubernetes Application Developer</option>
                                 <option value="CKA">CKA - Certified Kubernetes Administrator</option>
                                 <option value="CKS">CKS - Certified Kubernetes Security Specialist</option>
+                                <option value="KCNA">KCNA - Kubernetes and Cloud Native Associate</option>
+                                <option value="KCSA">KCSA - Kubernetes and Cloud Native Security Associate</option>
                                 <option value="Other">Other</option>
                             </select>
                         </div>
@@ -199,6 +201,38 @@
                             <select class="form-select" id="examName" required disabled>
                                 <option value="">Select an exam</option>
                             </select>
+                        </div>
+                        <div class="alert alert-warning premium-info" id="premiumInfo" style="display: none;">
+                            <div class="premium-content-wrapper">
+                                <p class="premium-intro mb-3"><strong>Pass your certification on the first attempt with our proven exam preparation platform.</strong></p>
+                                
+                                <div class="premium-features mb-3">
+                                    <ul class="premium-list mb-0">
+                                        <li><i class="fas fa-check-circle me-2"></i>100+ Real Exam Scenarios - Practice What You'll Actually Face</li>
+                                        <li><i class="fas fa-check-circle me-2"></i>Instant AI Feedback - Learn From Every Mistake</li>
+                                        <li><i class="fas fa-check-circle me-2"></i>Expert Solutions - Master Best Practices</li>
+                                        <li><i class="fas fa-check-circle me-2"></i>Authentic Exam Experience - Timer & Scoring Included</li>
+                                        <li><i class="fas fa-check-circle me-2"></i>Start Immediately - Zero Setup or Installation</li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="premium-meta-container pt-3 border-top">
+                                    <div class="d-flex justify-content-start align-items-center flex-wrap gap-3">
+                                        <div class="exam-meta">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-collection me-1" viewBox="0 0 16 16">
+                                                <path d="M2.5 3.5a.5.5 0 0 1 0-1h11a.5.5 0 0 1 0 1h-11zm2-2a.5.5 0 0 1 0-1h7a.5.5 0 0 1 0 1h-7zM0 13a1.5 1.5 0 0 0 1.5 1.5h13A1.5 1.5 0 0 0 16 13V6a1.5 1.5 0 0 0-1.5-1.5h-13A1.5 1.5 0 0 0 0 6v7zm1.5.5A.5.5 0 0 1 1 13V6a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-13z"/>
+                                            </svg>
+                                            5 Complete Mock Exams
+                                        </div>
+                                        <div class="exam-meta">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-display me-1" viewBox="0 0 16 16">
+                                                <path d="M0 4s0-2 2-2h12s2 0 2 2v6s0 2-2 2h-4c0 .667.083 1.167.25 1.5H11a.5.5 0 0 1 0 1H5a.5.5 0 0 1 0-1h.75c.167-.333.25-.833.25-1.5H2s-2 0-2-2V4zm1.398-.855a.758.758 0 0 0-.254.302A1.46 1.46 0 0 0 1 4.01V10c0 .325.078.502.145.602.07.105.17.188.302.254a1.464 1.464 0 0 0 .538.143L2.01 11H14c.325 0 .502-.078.602-.145a.758.758 0 0 0 .254-.302 1.464 1.464 0 0 0 .143-.538L15 9.99V4c0-.325-.078-.502-.145-.602a.757.757 0 0 0-.302-.254A1.46 1.46 0 0 0 13.99 3H2c-.325 0-.502.078-.602.145z"/>
+                                            </svg>
+                                            Real K8s Cluster Environment
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="mb-2">
                             <div class="alert alert-info" id="examDescription">
