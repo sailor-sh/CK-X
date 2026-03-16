@@ -53,9 +53,6 @@ We welcome contributions! Whether you want to:
 - Fix bugs
 - Enhance documentation
 
-## Buy Me a Coffee ☕
-
-If you find CK-X Simulator helpful, consider [buying me a coffee](https://buymeacoffee.com/nishan.b) to support the project.
 
 ## Disclaimer
 
