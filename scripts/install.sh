@@ -14,7 +14,7 @@ print_header() {
     echo -e "${BLUE}"
     echo "░█████╗░██╗░░██╗░░░░░░██╗░░██╗  ░██████╗██╗███╗░░░███╗██╗░░░██╗██╗░░░░░░█████╗░████████╗░█████╗░██████╗░"
     echo "██╔══██╗██║░██╔╝░░░░░░╚██╗██╔╝  ██╔════╝██║████╗░████║██║░░░██║██║░░░░░██╔══██╗╚══██╔══╝██╔══██╗██╔══██╗"
-    echo "██║░░╚═╝█████═╝░█████╗░╚███╔╝░  ╚█████╗░██║██╔████╔██║██║░░░██║██║░░░░░███████║░░░██║░░░██║░░██║██████╔╝" 
+    echo "██║░░╚═╝█████═╝░█████╗░╚███╔╝░  ╚█████╗░██║██╔████╔██║██║░░░██║██║░░░░░███████║░░░██║░░░██║░░██║██████╔╝"
     echo "██║░░██╗██╔═██╗░╚════╝░██╔██╗░  ░╚═══██╗██║██║╚██╔╝██║██║░░░██║██║░░░░░██╔══██║░░░██║░░░██║░░██║██╔══██╗"
     echo "╚█████╔╝██║░╚██╗░░░░░░██╔╝╚██╗  ██████╔╝██║██║░╚═╝░██║╚██████╔╝███████╗██║░░██║░░░██║░░░╚█████╔╝██║░░██║"
     echo "░╚════╝░╚═╝░░╚═╝░░░░░░╚═╝░░╚═╝  ╚═════╝░╚═╝╚═╝░░░░░╚═╝░╚═════╝░╚══════╝╚═╝░░╚═╝░░░╚═╝░░░░╚════╝░╚═╝░░╚═╝"
@@ -32,14 +32,14 @@ command_exists() {
     command -v "$1" >/dev/null 2>&1
 }
 
-# Function to check if Docker is running
-check_docker_running() {
-    
-    if ! docker info >/dev/null 2>&1; then
-        echo -e "${RED}✗ Docker is not running${NC}"
-        echo -e "${YELLOW}Please start Docker and try again:${NC}"
-        echo -e "${CYAN}1. Open Docker Desktop${NC}"
-        echo -e "${CYAN}2. Wait for Docker to start${NC}"
+# Function to check if Docker or Podman is running
+check_container_runtime_running() {
+
+    if ! (docker info >/dev/null 2>&1 || podman info >/dev/null 2>&1); then
+        echo -e "${RED}✗ Docker or Podman is not running${NC}"
+        echo -e "${YELLOW}Please start Docker or Podman and try again:${NC}"
+        echo -e "${CYAN}1. Open Docker Desktop or Podman Desktop${NC}"
+        echo -e "${CYAN}2. Wait for Docker or Podman to start${NC}"
         echo -e "${CYAN}3. Run this script again${NC}"
         exit 1
     fi
@@ -50,28 +50,28 @@ check_docker_running() {
 check_requirements() {
     echo -e "${BLUE}Checking System Requirements${NC}"
     echo -e "${CYAN}==============================================================${NC}"
-    
-    # Check Docker
-    if ! command_exists docker; then
-        echo -e "${RED}✗ Docker is not installed${NC}"
-        echo -e "${YELLOW}Please install Docker first:${NC}"
-        echo -e "${CYAN}Visit https://docs.docker.com/get-docker/ for installation instructions${NC}"
+
+    # Check Docker or Podman
+    if ! (command_exists docker || command_exists podman); then
+        echo -e "${RED}✗ Neither Docker nor Podman is installed${NC}"
+        echo -e "${YELLOW}Please install Docker or Podman first:${NC}"
+        echo -e "${CYAN}Visit https://docs.docker.com/get-docker/ or https://podman-desktop.io/docs/installation/ for installation instructions${NC}"
         exit 1
     fi
-    echo -e "${GREEN}✓ Docker is installed${NC}"
-    
-    # Check if Docker is running
-    check_docker_running
-    
-    # Check Docker Compose
-    if ! command_exists docker compose; then
-        echo -e "${RED}✗ Docker Compose is not installed${NC}"
-        echo -e "${YELLOW}Please install Docker Compose:${NC}"
-        echo -e "${CYAN}Visit https://docs.docker.com/compose/install/ for installation instructions${NC}"
+    echo -e "${GREEN}✓ Docker or Podman is installed${NC}"
+
+    # Check if Docker or Podman is running
+    check_container_runtime_running
+
+    # Check Docker or Podman Compose
+    if ! (command_exists docker compose || command_exists podman compose); then
+        echo -e "${RED}✗ Neither Docker Compose nor Podman Compose is installed${NC}"
+        echo -e "${YELLOW}Please install Docker Compose or Podman Compose:${NC}"
+        echo -e "${CYAN}Visit https://docs.docker.com/compose/install/ or https://podman-desktop.io/docs/compose/setting-up-compose/ for installation instructions${NC}"
         exit 1
     fi
-    echo -e "${GREEN}✓ Docker Compose is installed${NC}"
-    
+    echo -e "${GREEN}✓ Docker Compose or Podman Compose is installed${NC}"
+
     # Check curl
     if ! command_exists curl; then
         echo -e "${RED}✗ curl is not installed${NC}"
@@ -79,7 +79,7 @@ check_requirements() {
         exit 1
     fi
     echo -e "${GREEN}✓ curl is installed${NC}"
-    
+
     echo -e "${GREEN}✓ All system requirements satisfied${NC}"
     echo
 }
@@ -87,10 +87,10 @@ check_requirements() {
 # Function to check if ports are available
 check_ports() {
     local port=30080
-    
+
     echo -e "${BLUE}Checking Port Availability${NC}"
     echo -e "${CYAN}==============================================================${NC}"
-    
+
     # Try different methods to check port availability
     if command_exists ss; then
         # Using ss (modern alternative to netstat)
@@ -114,7 +114,7 @@ check_ports() {
             exit 1
         fi
     fi
-    
+
     echo -e "${GREEN}✓ Port ${port} is available${NC}"
     echo
 }
@@ -124,18 +124,18 @@ wait_for_service() {
     local service=$1
     local max_attempts=30
     local attempt=1
-    
+
     # No output headers here anymore
-    
+
     while [ $attempt -le $max_attempts ]; do
-        if docker compose ps $service | grep -q "healthy"; then
+        if (docker compose ps "$service" 2>/dev/null || podman compose ps "$service" 2>/dev/null) | grep -q "healthy"; then
             return 0
         fi
         # No progress dots
         sleep 2
         attempt=$((attempt + 1))
     done
-    
+
     echo -e "${RED}✗ Timeout waiting for $service to be ready${NC}"
     return 1
 }
@@ -145,7 +145,7 @@ open_browser() {
     local url="http://localhost:30080/"
     echo -e "${BLUE}Opening Browser${NC}"
     echo -e "${CYAN}==============================================================${NC}"
-    
+
     # Try different methods to open browser
     if command_exists xdg-open; then
         # Linux with desktop environment
@@ -160,7 +160,7 @@ open_browser() {
         # Try Python 2 as last resort
         python -m webbrowser $url 2>/dev/null && echo -e "${GREEN}✓ Browser opened successfully${NC}" && return 0
     fi
-    
+
     echo -e "${YELLOW}Could not automatically open browser. Please visit:${NC}"
     echo -e "${GREEN}https://play.sailor.sh/${NC}"
     return 1
@@ -169,62 +169,62 @@ open_browser() {
 # Main installation process
 main() {
     print_header
-    
+
     # Check requirements
     check_requirements
-    
+
     # Check port
     check_ports
-    
+
     # Create project directory
     echo -e "${BLUE}Setting Up Installation${NC}"
     echo -e "${CYAN}==============================================================${NC}"
     echo -e "${YELLOW}Creating project directory...${NC}"
     mkdir -p ck-x-simulator && cd ck-x-simulator
-    
+
     # Download docker-compose.yml
     echo -e "${YELLOW}Downloading Docker Compose file...${NC}"
     curl -fsSL https://raw.githubusercontent.com/nishanb/ck-x/master/docker-compose.yaml -o docker-compose.yml
-    
+
     if [ ! -f docker-compose.yml ]; then
         echo -e "${RED}✗ Failed to download docker-compose.yml${NC}"
         exit 1
     fi
     echo -e "${GREEN}✓ Docker Compose file downloaded${NC}"
-    
+
     # Pull images
-    echo -e "${YELLOW}Pulling Docker images...${NC}"
-    docker compose pull
-    echo -e "${GREEN}✓ Docker images pulled successfully${NC}"
-    
+    echo -e "${YELLOW}Pulling container images...${NC}"
+    docker compose pull || podman compose pull
+    echo -e "${GREEN}✓ Container images pulled successfully${NC}"
+
     # Start services
     echo -e "${YELLOW}Starting CK-X services...${NC}"
-    docker compose up -d
+    docker compose up -d || podman compose up -d
     echo -e "${GREEN}✓ Services started${NC}"
-    
+
     # Combined waiting message instead of individual service wait messages
     echo -e "${YELLOW}Waiting for services to initialize...${NC}"
     wait_for_service "webapp" || exit 1
     wait_for_service "facilitator" || exit 1
     echo -e "${GREEN}✓ All services initialized successfully${NC}"
-    
+
     echo -e "\n${BLUE}Installation Complete!${NC}"
     echo -e "${CYAN}==============================================================${NC}"
     echo -e "${GREEN}✓ CK-X Simulator has been installed successfully${NC}"
-    
+
     # Wait a bit for the service to be fully ready
     sleep 5
-    
+
     # Try to open browser
     open_browser
-    
+
     echo -e "\n${BLUE}Useful Commands${NC}"
     echo -e "${CYAN}==============================================================${NC}"
     echo -e "${YELLOW}CK-X Simulator has been installed in:${NC} ${GREEN}$(pwd)${NC}, run all below commands from this directory"
-    echo -e "${YELLOW}To stop CK-X  ${GREEN}docker compose down --volumes --remove-orphans --rmi all${NC}"
-    echo -e "${YELLOW}To Restart CK-X:${NC} ${GREEN}docker compose restart${NC}"
-    echo -e "${YELLOW}To clean up all containers and images:${NC} ${GREEN}docker system prune -a${NC}"
-    echo -e "${YELLOW}To remove only CK-X images:${NC} ${GREEN}docker compose down --rmi all${NC}"
+    echo -e "${YELLOW}To stop CK-X  ${GREEN}docker compose down --volumes --remove-orphans --rmi all${NC} ${YELLOW}or${NC} ${GREEN}podman compose down --volumes --remove-orphans --rmi all${NC}"
+    echo -e "${YELLOW}To Restart CK-X:${NC} ${GREEN}docker compose restart${NC} ${YELLOW}or${NC} ${GREEN}podman compose restart${NC}"
+    echo -e "${YELLOW}To clean up all containers and images:${NC} ${GREEN}docker system prune -a${NC} ${YELLOW}or${NC} ${GREEN}podman system prune -a${NC}"
+    echo -e "${YELLOW}To remove only CK-X images:${NC} ${GREEN}docker compose down --rmi all${NC} ${YELLOW}or${NC} ${GREEN}podman compose down --rmi all${NC}"
     echo -e "${YELLOW}To access CK-X Simulator:${NC} ${GREEN}https://play.sailor.sh/${NC}"
     echo -e "${YELLOW}To access CK-X Simulator locally use:${NC} ${GREEN}http://localhost:30080/${NC}"
     echo
@@ -232,4 +232,4 @@ main() {
 }
 
 # Run main function
-main 
+main
