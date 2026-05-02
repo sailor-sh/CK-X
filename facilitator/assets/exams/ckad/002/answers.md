@@ -663,7 +663,7 @@ spec:
 EOF
 ```
 
-## Question 15 - Helm Basics
+## Question 15: Helm Basics
 
 The task is to perform basic Helm operations including creating a namespace, adding a repository, installing a chart, and saving release notes.
 
@@ -965,4 +965,4 @@ This solution demonstrates:
    - Environment variables from ConfigMap (DB_HOST, DB_PORT)
    - Environment variables from Secret (API_KEY, API_SECRET)
    - Mounting the ConfigMap as a volume at /etc/app-config
-4. Verification commands to ensure everything is working correctly 
+4. Verification commands to ensure everything is working correctly
