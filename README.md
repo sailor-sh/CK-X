@@ -68,4 +68,4 @@ CK-X is an independent tool, not affiliated with CNCF, Linux Foundation, or PSI.
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details. 
+This project is licensed under the Business Source License 1.1 (BSL 1.1). Personal, educational, research, and non-production use is allowed, but commercial/production usage and SaaS monetization require a separate commercial license from Sailor.sh. See the `LICENSE` file for full terms.

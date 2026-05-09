@@ -39,4 +39,4 @@ Check our [FAQ](docs/FAQ.md) or join our [Discord Community](https://discord.gg/
 
 ## License
 
-By contributing, you agree that your contributions will be licensed under the project's MIT License. 
+By contributing, you agree that your contributions will be licensed under the project's Business Source License 1.1 (BSL 1.1).
