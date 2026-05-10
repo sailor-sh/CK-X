@@ -20,7 +20,7 @@ if [[ "$POD" == "app-with-init" ]]; then
     
     if [[ "$MAIN_CONTAINER_IMAGE" == "nginx" && 
           "$INIT_CONTAINER_IMAGE" == "busybox" && 
-          "$INIT_CONTAINER_COMMAND" == *"nslookup myservice"* ]]; then
+          "$INIT_CONTAINER_COMMAND" == *"nslookup myservice.init-containers.svc.cluster.local"* ]]; then
         # Pod and init container are configured correctly
         exit 0
     else
@@ -28,7 +28,7 @@ if [[ "$POD" == "app-with-init" ]]; then
         echo "Found main container image: $MAIN_CONTAINER_IMAGE (expected: nginx)"
         echo "Found init container: $INIT_CONTAINER"
         echo "Found init container image: $INIT_CONTAINER_IMAGE (expected: busybox)"
-        echo "Found init container command: $INIT_CONTAINER_COMMAND (should include 'nslookup myservice')"
+        echo "Found init container command: $INIT_CONTAINER_COMMAND (should include 'nslookup myservice.init-containers.svc.cluster.local')"
         exit 1
     fi
 else
