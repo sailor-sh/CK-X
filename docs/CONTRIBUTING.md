@@ -4,7 +4,7 @@ Thank you for your interest in contributing! Here's how you can help:
 
 ## Quick Start
 
-1. Fork and clone the [repository](https://github.com/@nishanb/CK-X)
+1. Fork and clone the [repository](https://github.com/@sailor-sh/CK-X)
 2. Follow our [Development Setup Guide](development-setup.md)
 3. Create a new branch for your changes
 4. Submit a Pull Request

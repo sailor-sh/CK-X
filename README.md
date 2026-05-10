@@ -19,7 +19,7 @@ A powerful Kubernetes certification practice environment that provides a realist
 
 Watch live demo video showcasing the CK-X Simulator in action:
 
-[![CK-X Simulator Demo](https://img.youtube.com/vi/EQVGhF8x7R4/0.jpg)](https://www.youtube.com/watch?v=EQVGhF8x7R4&ab_channel=NishanB)
+[![CK-X Simulator Demo](https://img.youtube.com/vi/EQVGhF8x7R4/0.jpg)](https://www.youtube.com/watch?v=EQVGhF8x7R4)
 
 ## Installation
 

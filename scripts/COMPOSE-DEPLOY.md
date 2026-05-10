@@ -17,13 +17,13 @@ This guide provides instructions for deploying the CK-X Simulator on different o
 Open Terminal and run:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/nishanb/CK-X/master/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/sailor-sh/CK-X/master/scripts/install.sh | bash   
 ```
 
 or, if the current user does not have the permission to run docker commands:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/nishanb/CK-X/master/scripts/install.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/sailor-sh/CK-X/master/scripts/install.sh | sudo bash
 ```
 
 ### Windows
@@ -31,7 +31,7 @@ curl -fsSL https://raw.githubusercontent.com/nishanb/CK-X/master/scripts/install
 Open PowerShell as Administrator and run:
 
 ```powershell
-irm https://raw.githubusercontent.com/nishanb/CK-X/master/scripts/install.ps1 | iex
+irm https://raw.githubusercontent.com/sailor-sh/CK-X/master/scripts/install.ps1 | iex
 ```
 
 ## Manual Installation
@@ -40,7 +40,7 @@ irm https://raw.githubusercontent.com/nishanb/CK-X/master/scripts/install.ps1 | 
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/nishanb/CK-X.git
+   git clone https://github.com/sailor-sh/CK-X.git
    cd CK-X
    ```
 
@@ -54,8 +54,8 @@ irm https://raw.githubusercontent.com/nishanb/CK-X/master/scripts/install.ps1 | 
 If you prefer to install manually or the quick install doesn't work:
 
 1. Download the installation script:
-   - Linux/macOS: [install.sh](https://raw.githubusercontent.com/nishanb/CK-X/master/scripts/install.sh)
-   - Windows: [install.ps1](https://raw.githubusercontent.com/nishanb/CK-X/master/scripts/install.ps1)
+   - Linux/macOS: [install.sh](https://raw.githubusercontent.com/sailor-sh/CK-X/master/scripts/install.sh)
+   - Windows: [install.ps1](https://raw.githubusercontent.com/sailor-sh/CK-X/master/scripts/install.ps1)
 
 2. Run the script:
    - Linux/macOS:
@@ -124,7 +124,7 @@ docker compose up -d
 
 If you encounter issues:
 1. Check the logs: `docker compose logs -f`
-2. Visit our [GitHub Issues](https://github.com/nishanb/CK-X/issues)
+2. Visit our [GitHub Issues](https://github.com/sailor-sh/CK-X/issues)
 3. Contact support with logs and system information
 
 ## Uninstallation

@@ -46,7 +46,7 @@ try {
         Write-ColorOutput "CK-X Simulator: Kubernetes Certification Exam Simulator" "Cyan"
         Write-ColorOutput "Practice in a realistic environment for CKA, CKAD, and more" "Cyan"
         Write-ColorOutput "==============================================================" "Cyan"
-        Write-ColorOutput " Facing any issues? Please report at: https://github.com/nishanb/CK-X/issues" "Cyan"
+        Write-ColorOutput " Facing any issues? Please report at: https://github.com/sailor-sh/CK-X/issues" "Cyan"
         Write-Host ""
     }
 
@@ -258,7 +258,7 @@ try {
         
         # Download docker-compose.yml
         Write-ColorOutput "Downloading Docker Compose file..." "Yellow"
-        $composeUrl = "https://raw.githubusercontent.com/nishanb/ck-x/master/docker-compose.yaml"
+        $composeUrl = "https://raw.githubusercontent.com/sailor-sh/CK-X/master/docker-compose.yaml"
         
         if (Test-Command curl) {
             curl.exe -fsSL $composeUrl -o docker-compose.yml

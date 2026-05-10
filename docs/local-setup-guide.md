@@ -4,7 +4,7 @@
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/@nishanb/CK-X.git
+git clone https://github.com/@sailor-sh/CK-X.git
 cd ck-x
 ```
 

@@ -5,7 +5,7 @@
 # Supports multi-architecture builds (linux/amd64 and linux/arm64)
 
 # Set variables
-DOCKER_HUB_USERNAME=${DOCKER_HUB_USERNAME:-nishanb}
+DOCKER_HUB_USERNAME=${DOCKER_HUB_USERNAME:}
 REGISTRY="${DOCKER_HUB_USERNAME}"
 SKIP_LOGIN_CHECK=${SKIP_LOGIN_CHECK:-false}
 PLATFORMS="linux/amd64,linux/arm64"
