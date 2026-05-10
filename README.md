@@ -25,12 +25,12 @@ Watch live demo video showcasing the CK-X Simulator in action:
 
 #### Linux & macOS
 ```bash
-curl -fsSL https://raw.githubusercontent.com/nishanb/sailor-sh/master/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/sailor-sh/CK-X/master/scripts/install.sh | bash
 ```
 
 #### Windows ( make sure WSL2 is enabled in the docker desktop )
 ```powershell
-irm https://raw.githubusercontent.com/nishanb/sailor-sh/master/scripts/install.ps1 | iex
+irm  https://raw.githubusercontent.com/sailor-sh/CK-X/master/scripts/install.ps1 | iex
 ```
 
 ### Manual Installation
