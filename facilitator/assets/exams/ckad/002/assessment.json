@@ -520,7 +520,7 @@
             "id": "14",
             "namespace": "init-containers",
             "machineHostname": "ckad9999",
-            "question": "Create a Pod named `app-with-init` in the `init-containers` namespace with the following specifications:\n\n1. Main container using image `nginx`\n2. Init container using image `busybox` with command: `['sh', '-c', 'until nslookup myservice; do echo waiting for myservice; sleep 2; done']`\n3. Create a service named `myservice` using image `nginx`\n4. Share a volume between init container and main container at `/shared`\n\nEnsure the namespace exists before creating the resources.",
+            "question": "Create a Pod named `app-with-init` in the `init-containers` namespace with the following specifications:\n\n1. Main container using image `nginx`\n2. Init container using image `busybox` with command: `['sh', '-c', 'until nslookup myservice.init-containers.svc.cluster.local; do echo waiting for myservice; sleep 2; done']`\n3. Create a service named `myservice` using image `nginx`\n4. Share a volume between init container and main container at `/shared`\n\nEnsure the namespace exists before creating the resources.",
             "concepts": ["init-containers", "services", "shared-volumes"],
             "verification": [
                 {
