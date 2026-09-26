@@ -1,0 +1,6 @@
+#!/bin/bash
+# TigerVNC session entry point.
+unset SESSION_MANAGER
+unset DBUS_SESSION_BUS_ADDRESS
+[ -r "$HOME/.Xresources" ] && xrdb "$HOME/.Xresources"
+exec dbus-launch --exit-with-session startxfce4

@@ -27,7 +27,7 @@ cd ck-x-simulator
 
 Review the `compose.yaml` file to understand the service configuration. Key services include:
 
-- **remote-desktop**: VNC server (Ubuntu)
+- **remote-desktop**: VNC server (Ubuntu 24.04 + XFCE, served over noVNC)
 - **webapp**: Web Application frontend
 - **nginx**: Reverse proxy (only service exposed to users)
 - **jumphost**: SSH access host
