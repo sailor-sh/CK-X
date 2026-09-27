@@ -3,4 +3,11 @@
 unset SESSION_MANAGER
 unset DBUS_SESSION_BUS_ADDRESS
 [ -r "$HOME/.Xresources" ] && xrdb "$HOME/.Xresources"
+
+# The session runs as root, but VSCodium and anything else the candidate starts
+# from their shell run as candidate. Grant them this server's access here rather
+# than once at container boot, so the grant comes back with the session when the
+# facilitator restarts it.
+xhost +SI:localuser:candidate >/dev/null 2>&1 || true
+
 exec dbus-launch --exit-with-session startxfce4
