@@ -123,16 +123,16 @@ RUN mkdir -p /home/candidate/.ssh \
  && echo "UserKnownHostsFile /dev/null" >> /home/candidate/.ssh/config
 
 # launcher wrapper, application entry and desktop shortcut. The packaged
-# codium.desktop is replaced because it starts Electron without --no-sandbox,
-# which a root session cannot do.
+# codium.desktop is replaced because it starts Electron directly as root; the
+# wrapper drops to the candidate user first.
 COPY config/codium-wrapper.sh /usr/local/bin/codium
 COPY config/vscodium.desktop /usr/share/applications/codium.desktop
 COPY config/vscodium.desktop /headless/Desktop/VSCodium.desktop
 RUN chmod +x /usr/local/bin/codium /headless/Desktop/VSCodium.desktop \
  && ln -sf /usr/local/bin/codium /usr/local/bin/code
 
-# default VSCodium settings for the desktop session user and for candidate
-COPY config/vscodium-settings.json /headless/.vscodium-data/User/settings.json
+# default VSCodium settings. The editor always runs as candidate, so this is
+# the only profile that gets used.
 COPY config/vscodium-settings.json /home/candidate/.vscodium-data/User/settings.json
 RUN chown -R candidate:candidate /home/candidate/.vscodium-data
 
