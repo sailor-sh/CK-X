@@ -1,0 +1,149 @@
+{
+  "questions": [
+    {
+      "id": "1",
+      "namespace": "microservices",
+      "machineHostname": "ckad9999",
+      "question": "Create a multi-container pod named `webapp` in the `microservices` namespace with:\n\n1. **Main container** named `frontend`:\n   - Image: `nginx:1.21`\n   - Port: 80\n   - Volume mount: `/usr/share/nginx/html` from shared volume\n\n2. **Sidecar container** named `content-updater`:\n   - Image: `busybox:1.35`\n   - Command: `['sh', '-c', 'while true; do echo \"Updated at $(date)\" > /shared/index.html; sleep 30; done']`\n   - Volume mount: `/shared` from shared volume\n\n3. **Shared volume** named `content-volume` using `emptyDir`\n\nBoth containers should be running and the nginx should serve the content updated by the sidecar.",
+      "concepts": ["multi-container-pods", "sidecar-pattern", "volumes", "emptyDir"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "Pod exists with correct containers",
+          "verificationScriptFile": "q1_s1_validate_pod_containers.sh",
+          "expectedOutput": "0",
+          "weightage": 3
+        },
+        {
+          "id": "2",
+          "description": "Shared volume is correctly configured",
+          "verificationScriptFile": "q1_s2_validate_volume_sharing.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "namespace": "config-management",
+      "machineHostname": "ckad9999",
+      "question": "Create the following configuration resources in the `config-management` namespace:\n\n1. **ConfigMap** named `app-config` with data:\n   - `database.host=mysql.example.com`\n   - `database.port=3306`\n   - `log.level=info`\n\n2. **Secret** named `app-secrets` with data:\n   - `username=dbuser` (base64 encoded)\n   - `password=secretpass123` (base64 encoded)\n\n3. **Pod** named `config-consumer` using image `busybox:1.35`:\n   - Environment variables from ConfigMap: `DB_HOST`, `DB_PORT`, `LOG_LEVEL`\n   - Environment variables from Secret: `DB_USER`, `DB_PASS`\n   - Command: `['sh', '-c', 'env | grep -E \"(DB_|LOG_)\" && sleep 3600']`",
+      "concepts": ["configmaps", "secrets", "environment-variables"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "ConfigMap and Secret exist with correct data",
+          "verificationScriptFile": "q2_s1_validate_config_resources.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "2",
+          "description": "Pod uses configuration correctly",
+          "verificationScriptFile": "q2_s2_validate_pod_config.sh",
+          "expectedOutput": "0",
+          "weightage": 3
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "namespace": "job-processing",
+      "machineHostname": "ckad9999",
+      "question": "Create job resources in the `job-processing` namespace:\n\n1. **Job** named `data-processor` with:\n   - Image: `python:3.9-slim`\n   - Command: `['python', '-c', 'import time; import random; print(\"Processing data...\"); time.sleep(random.randint(10,30)); print(\"Processing complete!\")']`\n   - Completion count: 3\n   - Parallelism: 2\n   - Restart policy: Never\n\n2. **CronJob** named `daily-cleanup` with:\n   - Schedule: `\"0 2 * * *\"` (daily at 2 AM)\n   - Image: `alpine:3.16`\n   - Command: `['sh', '-c', 'echo \"Cleanup started at $(date)\"; sleep 10; echo \"Cleanup completed\"']`\n   - Successful jobs history limit: 3\n   - Failed jobs history limit: 1",
+      "concepts": ["jobs", "cronjobs", "parallelism", "scheduling"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "Job exists and completes successfully",
+          "verificationScriptFile": "q3_s1_validate_job.sh",
+          "expectedOutput": "0",
+          "weightage": 3
+        },
+        {
+          "id": "2",
+          "description": "CronJob exists with correct schedule",
+          "verificationScriptFile": "q3_s2_validate_cronjob.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        }
+      ]
+    },
+    {
+      "id": "4",
+      "namespace": "webapp-deploy",
+      "machineHostname": "ckad9999",
+      "question": "Create a comprehensive web application deployment in the `webapp-deploy` namespace:\n\n1. **Deployment** named `web-app` with:\n   - Image: `nginx:1.21`\n   - 3 replicas\n   - Labels: `app=web-app`, `version=v1`\n   - Resource requests: CPU 50m, Memory 64Mi\n   - Resource limits: CPU 100m, Memory 128Mi\n   - Readiness probe: HTTP GET on port 80, path `/`\n   - Liveness probe: HTTP GET on port 80, path `/`, initial delay 10s\n   - Rolling update strategy: maxSurge=1, maxUnavailable=1\n\n2. **Service** named `web-service` with:\n   - Type: NodePort\n   - Port: 80\n   - NodePort: 30080\n   - Selector: `app=web-app`\n\n3. **HorizontalPodAutoscaler** named `web-hpa` with:\n   - Target deployment: `web-app`\n   - Min replicas: 2\n   - Max replicas: 10\n   - Target CPU utilization: 70%",
+      "concepts": ["deployments", "services", "hpa", "resources", "probes", "rolling-updates"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "Deployment exists with correct configuration",
+          "verificationScriptFile": "q4_s1_validate_deployment.sh",
+          "expectedOutput": "0",
+          "weightage": 3
+        },
+        {
+          "id": "2",
+          "description": "Service exposes deployment correctly",
+          "verificationScriptFile": "q4_s2_validate_service.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "3",
+          "description": "HPA is configured correctly",
+          "verificationScriptFile": "q4_s3_validate_hpa.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        }
+      ]
+    },
+    {
+      "id": "5",
+      "namespace": "security-context",
+      "machineHostname": "ckad9999",
+      "question": "Create security-aware pods in the `security-context` namespace:\n\n1. **Pod** named `secure-pod` with:\n   - Image: `alpine:3.16`\n   - Security context:\n     - Run as user ID: 1000\n     - Run as group ID: 3000\n     - Non-root user: true\n     - Read-only root filesystem: true\n   - Volume mounts:\n     - Temporary storage at `/tmp` using emptyDir\n     - Writable storage at `/data` using emptyDir\n   - Command: `['sh', '-c', 'id && ls -la / && touch /tmp/test && echo \"Security test passed\" && sleep 3600']`\n\n2. **NetworkPolicy** named `secure-network` that:\n   - Applies to pods with label `security=strict`\n   - Denies all ingress traffic\n   - Allows egress only to pods with label `database=allowed` on port 3306\n\nAdd label `security=strict` to the secure-pod.",
+      "concepts": ["security-context", "network-policies", "user-permissions", "filesystem-security"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "Pod runs with correct security context",
+          "verificationScriptFile": "q5_s1_validate_security_context.sh",
+          "expectedOutput": "0",
+          "weightage": 3
+        },
+        {
+          "id": "2",
+          "description": "NetworkPolicy is configured correctly",
+          "verificationScriptFile": "q5_s2_validate_network_policy.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        }
+      ]
+    },
+    {
+      "id": "6",
+      "namespace": "persistent-storage",
+      "machineHostname": "ckad9999",
+      "question": "Set up persistent storage resources in the `persistent-storage` namespace:\n\n1. **PersistentVolume** named `app-pv` with:\n   - Capacity: 2Gi\n   - Access mode: ReadWriteOnce\n   - Storage class: manual\n   - Host path: `/mnt/app-data`\n   - Reclaim policy: Retain\n\n2. **PersistentVolumeClaim** named `app-pvc` with:\n   - Request: 1Gi\n   - Access mode: ReadWriteOnce\n   - Storage class: manual\n\n3. **Pod** named `storage-consumer` with:\n   - Image: `busybox:1.35`\n   - Mount PVC at `/data`\n   - Command: `['sh', '-c', 'echo \"Data written at $(date)\" > /data/app.log && tail -f /data/app.log']`\n\nEnsure the PVC is bound to the PV and the pod can write to the mounted volume.",
+      "concepts": ["persistent-volumes", "persistent-volume-claims", "storage-classes", "volume-mounting"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "PV and PVC are created and bound",
+          "verificationScriptFile": "q6_s1_validate_pv_pvc.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "2",
+          "description": "Pod uses persistent storage correctly",
+          "verificationScriptFile": "q6_s2_validate_storage_usage.sh",
+          "expectedOutput": "0",
+          "weightage": 3
+        }
+      ]
+    }
+  ]
+}

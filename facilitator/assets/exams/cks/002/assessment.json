@@ -1,0 +1,142 @@
+{
+  "questions": [
+    {
+      "id": "1",
+      "namespace": "secure-web",
+      "machineHostname": "ckad9999",
+      "question": "Implement comprehensive RBAC in the `secure-web` namespace:\n\n1. **ServiceAccount** named `web-service-account`\n\n2. **Role** named `web-role` with permissions to:\n   - GET, LIST pods\n   - GET, LIST, CREATE, UPDATE services\n   - GET configmaps\n\n3. **RoleBinding** named `web-rolebinding` that binds the role to the service account\n\n4. **Pod** named `web-pod` that:\n   - Uses the service account\n   - Image: `nginx:1.21`\n   - Security context: runAsNonRoot=true, runAsUser=1000\n   - Resource limits: CPU 100m, Memory 128Mi\n\nVerify that the pod can only perform allowed operations.",
+      "concepts": ["rbac", "service-accounts", "roles", "role-bindings", "security-context"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "RBAC resources are created correctly",
+          "verificationScriptFile": "q1_s1_validate_rbac.sh",
+          "expectedOutput": "0",
+          "weightage": 3
+        },
+        {
+          "id": "2",
+          "description": "Pod uses service account with correct permissions",
+          "verificationScriptFile": "q1_s2_validate_pod_permissions.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "namespace": "policy-enforcement",
+      "machineHostname": "ckad9999",
+      "question": "Create and configure Pod Security Standards in the `policy-enforcement` namespace:\n\n1. **Namespace** `policy-enforcement` with labels:\n   - `pod-security.kubernetes.io/enforce=restricted`\n   - `pod-security.kubernetes.io/audit=restricted`\n   - `pod-security.kubernetes.io/warn=restricted`\n\n2. **Pod** named `compliant-pod` that meets restricted policy:\n   - Image: `nginx:1.21`\n   - Security context:\n     - runAsNonRoot: true\n     - runAsUser: 1000\n     - runAsGroup: 3000\n     - fsGroup: 2000\n     - seccompProfile.type: RuntimeDefault\n     - capabilities: drop ALL\n   - Resources: requests and limits for CPU and memory\n\n3. Attempt to create a **non-compliant pod** named `violator-pod` with privileged: true and verify it's rejected.",
+      "concepts": ["pod-security-standards", "security-policies", "seccomp", "capabilities"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "Namespace has correct Pod Security labels",
+          "verificationScriptFile": "q2_s1_validate_namespace_policy.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "2",
+          "description": "Compliant pod is running",
+          "verificationScriptFile": "q2_s2_validate_compliant_pod.sh",
+          "expectedOutput": "0",
+          "weightage": 3
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "namespace": "network-security",
+      "machineHostname": "ckad9999",
+      "question": "Implement network security policies in the `network-security` namespace:\n\n1. **Default deny NetworkPolicy** named `default-deny` that:\n   - Denies all ingress traffic to all pods\n   - Denies all egress traffic from all pods\n\n2. **Web tier policy** named `web-policy` for pods with label `tier=web`:\n   - Allow ingress from pods with label `tier=frontend` on port 80\n   - Allow egress to pods with label `tier=backend` on port 8080\n   - Allow egress to DNS (port 53)\n\n3. **Database policy** named `db-policy` for pods with label `tier=database`:\n   - Allow ingress only from pods with label `tier=backend` on port 3306\n   - Deny all egress except DNS\n\n4. Create test pods with appropriate labels to verify the policies work.",
+      "concepts": ["network-policies", "traffic-control", "micro-segmentation"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "NetworkPolicies are created correctly",
+          "verificationScriptFile": "q3_s1_validate_network_policies.sh",
+          "expectedOutput": "0",
+          "weightage": 4
+        },
+        {
+          "id": "2",
+          "description": "Test pods demonstrate policy enforcement",
+          "verificationScriptFile": "q3_s2_validate_traffic_isolation.sh",
+          "expectedOutput": "0",
+          "weightage": 1
+        }
+      ]
+    },
+    {
+      "id": "4",
+      "namespace": "image-security",
+      "machineHostname": "ckad9999",
+      "question": "Implement image security controls in the `image-security` namespace:\n\n1. **ImagePolicy** webhook configuration (simulate by checking image policies)\n\n2. **Secret** named `registry-secret` for private registry:\n   - Type: kubernetes.io/dockerconfigjson\n   - Registry: private-registry.example.com\n   - Username: secure-user\n   - Password: secure-pass123\n\n3. **Pod** named `secure-image-pod` that:\n   - Uses image from private registry: `private-registry.example.com/secure/nginx:1.21`\n   - Uses the registry secret\n   - Security context with readOnlyRootFilesystem: true\n   - Runs as non-root user\n   - Drops all capabilities\n\n4. **PodSecurityPolicy** (or equivalent admission controller rules) that:\n   - Requires images from trusted registries only\n   - Blocks privileged containers\n   - Enforces read-only root filesystem",
+      "concepts": ["image-security", "private-registries", "admission-controllers", "container-security"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "Registry secret is created correctly",
+          "verificationScriptFile": "q4_s1_validate_registry_secret.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        },
+        {
+          "id": "2",
+          "description": "Pod uses secure image configuration",
+          "verificationScriptFile": "q4_s2_validate_secure_pod.sh",
+          "expectedOutput": "0",
+          "weightage": 3
+        }
+      ]
+    },
+    {
+      "id": "5",
+      "namespace": "runtime-security",
+      "machineHostname": "ckad9999",
+      "question": "Configure runtime security monitoring in the `runtime-security` namespace:\n\n1. **AppArmor profile** for container security:\n   - Create or configure AppArmor profile that restricts file system access\n   - Apply to a pod using annotation: `container.apparmor.security.beta.kubernetes.io/nginx=runtime/default`\n\n2. **Seccomp profile** configuration:\n   - Create custom seccomp profile that blocks dangerous syscalls\n   - Apply to pod using securityContext.seccompProfile\n\n3. **Pod** named `monitored-pod` with:\n   - Image: `nginx:1.21`\n   - AppArmor and Seccomp profiles applied\n   - Resource limits enforced\n   - Non-root execution\n\n4. **Security monitoring** setup:\n   - Demonstrate audit logging for security events\n   - Show how to detect privilege escalation attempts",
+      "concepts": ["apparmor", "seccomp", "runtime-security", "audit-logging"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "Security profiles are applied correctly",
+          "verificationScriptFile": "q5_s1_validate_security_profiles.sh",
+          "expectedOutput": "0",
+          "weightage": 3
+        },
+        {
+          "id": "2",
+          "description": "Runtime security monitoring is active",
+          "verificationScriptFile": "q5_s2_validate_monitoring.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        }
+      ]
+    },
+    {
+      "id": "6",
+      "namespace": "supply-chain",
+      "machineHostname": "ckad9999",
+      "question": "Implement supply chain security in the `supply-chain` namespace:\n\n1. **Image vulnerability scanning**:\n   - Scan the image `nginx:1.20` for vulnerabilities\n   - Document findings and show how to remediate\n\n2. **Image signing and verification**:\n   - Set up admission controller to verify signed images\n   - Create policy that only allows images signed by trusted keys\n\n3. **Binary authorization**:\n   - Configure binary authorization policy\n   - Require attestations for production deployments\n\n4. **Secure build pipeline**:\n   - Create deployment that uses images from secure pipeline\n   - Implement image provenance tracking\n   - Set up automated security scanning\n\n5. **Pod** named `verified-app` that:\n   - Uses only verified and signed images\n   - Has complete supply chain attestation\n   - Meets all security policy requirements",
+      "concepts": ["supply-chain-security", "image-signing", "binary-authorization", "vulnerability-scanning"],
+      "verification": [
+        {
+          "id": "1",
+          "description": "Image security policies are enforced",
+          "verificationScriptFile": "q6_s1_validate_image_policies.sh",
+          "expectedOutput": "0",
+          "weightage": 3
+        },
+        {
+          "id": "2",
+          "description": "Supply chain verification is working",
+          "verificationScriptFile": "q6_s2_validate_supply_chain.sh",
+          "expectedOutput": "0",
+          "weightage": 2
+        }
+      ]
+    }
+  ]
+}
