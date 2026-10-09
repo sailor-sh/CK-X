@@ -2,10 +2,10 @@ services:
   # VNC Server (Ubuntu)
   remote-desktop:
     image: nishanb/ck-x-simulator-remote-desktop:latest
-    platform: linux/amd64
     build:
       context: ./remote-desktop
     hostname: terminal
+    shm_size: 512m # Electron and Firefox share memory through /dev/shm
     expose:
       - "5901" # VNC port (internal only)
       - "6901" # Web VNC port (internal only)

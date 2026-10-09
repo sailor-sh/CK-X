@@ -4,6 +4,6 @@ Type=Application
 Name=Web Browser
 Comment=Browse the World Wide Web
 Exec=firefox %u
-Icon=/usr/lib/firefox/browser/icons/mozicon128.png
+Icon=firefox
 Terminal=false
 StartupNotify=true

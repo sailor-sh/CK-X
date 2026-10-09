@@ -1,0 +1,43 @@
+{
+  "policies": {
+    "OverrideFirstRunPage": "",
+    "OverridePostUpdatePage": "",
+    "DontCheckDefaultBrowser": true,
+    "DisableProfileImport": true,
+    "DisableTelemetry": true,
+    "DisableFirefoxAccounts": true,
+    "DisableFirefoxStudies": true,
+    "DisableFeedbackCommands": true,
+    "NoDefaultBookmarks": true,
+    "Homepage": {
+      "URL": "https://docs.linuxfoundation.org/tc-docs/certification/certification-resources-allowed",
+      "StartPage": "homepage",
+      "Locked": false
+    },
+    "FirefoxHome": {
+      "Search": true,
+      "TopSites": false,
+      "SponsoredTopSites": false,
+      "Stories": false,
+      "SponsoredStories": false,
+      "Highlights": false,
+      "Snippets": false,
+      "Weather": false,
+      "Widgets": {
+        "Enabled": false
+      }
+    },
+    "UserMessaging": {
+      "WhatsNew": false,
+      "ExtensionRecommendations": false,
+      "FeatureRecommendations": false,
+      "UrlbarInterventions": false,
+      "MoreFromMozilla": false,
+      "SkipOnboarding": true
+    },
+    "Preferences": {
+      "browser.aboutwelcome.enabled": false,
+      "datareporting.policy.dataSubmissionPolicyBypassNotification": true
+    }
+  }
+}

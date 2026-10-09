@@ -46,7 +46,10 @@
     </property>
     <!-- Window buttons (task switcher) -->
     <property name="plugin-3" type="string" value="tasklist">
-      <property name="grouping" type="uint" value="0"/>
+      <!-- Group each application's windows behind one button. In xfce4-panel
+           4.18 this is a bool; the uint form is the pre-4.14 spelling and is
+           read as "never group". -->
+      <property name="grouping" type="bool" value="true"/>
       <property name="show-labels" type="bool" value="true"/>
       <property name="flat-buttons" type="bool" value="false"/>
       <property name="show-handle" type="bool" value="false"/>
