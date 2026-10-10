@@ -520,7 +520,7 @@
             "id": "14",
             "namespace": "init-containers",
             "machineHostname": "ckad9999",
-            "question": "Create a Pod named `app-with-init` in the `init-containers` namespace with the following specifications:\n\n1. Main container using image `nginx`\n2. Init container using image `busybox` with command: `['sh', '-c', 'until nslookup myservice; do echo waiting for myservice; sleep 2; done']`\n3. Create a service named `myservice` using image `nginx`\n4. Share a volume between init container and main container at `/shared`\n\nEnsure the namespace exists before creating the resources.",
+            "question": "Create a Pod named `app-with-init` in the `init-containers` namespace with the following specifications:\n\n1. Main container using image `nginx`\n2. Init container using image `busybox` with command: `['sh', '-c', 'until nslookup myservice; do echo waiting for myservice; sleep 2; done']`\n3. Create a service named `myservice` that exposes port 80 of the pod `app-with-init`\n4. Share a volume between init container and main container at `/shared`\n\nEnsure the namespace exists before creating the resources.",
             "concepts": ["init-containers", "services", "shared-volumes"],
             "verification": [
                 {
@@ -557,7 +557,7 @@
             "id": "15",
             "namespace": "helm-basics",
             "machineHostname": "ckad9999",
-            "question": "Perform basic Helm operations:\n\n1. Create a namespace named `helm-basics`\n2. Add the Bitnami repository to Helm with the name `bitnami`\n3. Install the `nginx` chart from the Bitnami repository in the `helm-basics` namespace with the release name `nginx-release`\n4. Save the release notes of the installation to a file at `/tmp/release-notes.txt`",
+            "question": "Perform basic Helm operations:\n\n1. Create a namespace named `helm-basics`\n2. Add the Bitnami repository `https://charts.bitnami.com/bitnami` to Helm with the name `bitnami`\n3. Install the `nginx` chart from the Bitnami repository in the `helm-basics` namespace with the release name `nginx-release`\n4. Save the release notes of the installation to a file at `/tmp/release-notes.txt`",
             "concepts": ["helm", "package-management", "kubernetes-applications"],
             "verification": [
                 {
@@ -783,4 +783,4 @@
             ]
         }
     ]
-} 
+}
