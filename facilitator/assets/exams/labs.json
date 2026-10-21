@@ -69,6 +69,46 @@
         "warmUpTimeInSeconds": 260,
         "difficulty": "Medium",
         "examDurationInMinutes": 90
+      },
+      {
+        "id": "cka-003",
+        "assetPath": "assets/exams/cka/003",
+        "name": "CKA Practice Lab - Network Security & Troubleshooting",
+        "category": "CKA",
+        "description": "Advanced CKA lab focusing on network policies, etcd backup, StatefulSets, DaemonSets, node troubleshooting, and cluster administration tasks with real-world scenarios.",
+        "warmUpTimeInSeconds": 360,
+        "difficulty": "Hard",
+        "examDurationInMinutes": 120
+      },
+      {
+        "id": "ckad-003",
+        "assetPath": "assets/exams/ckad/003",
+        "name": "CKAD Advanced Application Patterns",
+        "category": "CKAD",
+        "description": "Advanced CKAD scenarios covering multi-container patterns, configuration management, jobs, security contexts, persistent storage, and comprehensive application deployment strategies.",
+        "warmUpTimeInSeconds": 300,
+        "difficulty": "Hard",
+        "examDurationInMinutes": 120
+      },
+      {
+        "id": "cks-002",
+        "assetPath": "assets/exams/cks/002",
+        "name": "CKS Advanced Security Implementation",
+        "category": "CKS",
+        "description": "Comprehensive security lab covering RBAC, Pod Security Standards, network policies, image security, runtime security monitoring, and supply chain security with hands-on scenarios.",
+        "warmUpTimeInSeconds": 400,
+        "difficulty": "Expert",
+        "examDurationInMinutes": 150
+      },
+      {
+        "id": "microservices-001",
+        "assetPath": "assets/exams/other/003",
+        "name": "Microservices & DevOps Patterns",
+        "category": "Other",
+        "description": "Advanced lab covering microservices architecture, ingress routing, monitoring stack with Prometheus/Grafana, CI/CD pipelines, and data processing patterns in Kubernetes environments.",
+        "warmUpTimeInSeconds": 400,
+        "difficulty": "Expert",
+        "examDurationInMinutes": 180
       }
     ]
-  } 
+  }

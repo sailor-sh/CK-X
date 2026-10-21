@@ -1,0 +1,10 @@
+{
+  "lab": "cks-002",
+  "workerNodes": 2,
+  "answers": "assets/exams/cks/002/answers.md",
+  "questions": "assessment.json",
+  "totalMarks": 100,
+  "lowScore": 35,
+  "mediumScore": 55,
+  "highScore": 80
+}
