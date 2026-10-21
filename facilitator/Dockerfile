@@ -41,7 +41,7 @@ EXPOSE 3000
 COPY entrypoint.sh /home/nodeuser/entrypoint.sh
 
 # Make entrypoint.sh executable
-RUN chmod +x /home/nodeuser/entrypoint.sh
+RUN chmod a+rx /home/nodeuser/entrypoint.sh
 
 # Switch to non-root user
 USER nodeuser
