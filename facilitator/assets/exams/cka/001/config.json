@@ -1,5 +1,10 @@
 {
   "lab": "cka-001",
+  "name": "CKA Practice Lab - Core Concepts",
+  "description": "Practice essential Kubernetes administrator tasks covering cluster management, networking, storage, and security",
+  "difficulty": "Easy",
+  "warmUpTimeInSeconds": 260,
+  "examDurationInMinutes": 60,
   "workerNodes": 1,
   "answers": "assets/exams/cka/001/answers.md",
   "questions": "assessment.json",
@@ -7,4 +12,4 @@
   "lowScore": 40,
   "mediumScore": 60,
   "highScore": 90
-} 
+}

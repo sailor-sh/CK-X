@@ -1,10 +1,15 @@
 {
-    "lab": "ckad-002",
-    "workerNodes": 1,
-    "answers": "assets/exams/ckad/002/answers.md",
-    "questions": "assessment.json",
-    "totalMarks": 100,
-    "lowScore": 50,
-    "mediumScore": 70,
-    "highScore": 90
-} 
+  "lab": "ckad-002",
+  "name": "CKAD Comprehensive Lab - 2",
+  "description": "Series of practical tasks on multi-container pods, pod design patterns, configuration, services, and networking in Kubernetes environments.",
+  "difficulty": "Hard",
+  "warmUpTimeInSeconds": 260,
+  "examDurationInMinutes": 120,
+  "workerNodes": 1,
+  "answers": "assets/exams/ckad/002/answers.md",
+  "questions": "assessment.json",
+  "totalMarks": 100,
+  "lowScore": 50,
+  "mediumScore": 70,
+  "highScore": 90
+}

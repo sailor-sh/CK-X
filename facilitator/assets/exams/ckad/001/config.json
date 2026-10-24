@@ -1,10 +1,15 @@
 {
-    "lab": "ckad-001",
-    "workerNodes":1 ,
-    "answers": "assets/exams/ckad/001/answers.md",
-    "questions": "assessment.json",
-    "totalMarks": 100,
-    "lowScore": 40,
-    "mediumScore": 60,
-    "highScore": 90
+  "lab": "ckad-001",
+  "name": "CKAD Comprehensive Lab - 1",
+  "description": "Hands-on exercises covering core Kubernetes concepts, pod configuration, deployments, and services with practical tasks for application deployment in a cluster.",
+  "difficulty": "Medium",
+  "warmUpTimeInSeconds": 260,
+  "examDurationInMinutes": 120,
+  "workerNodes": 1,
+  "answers": "assets/exams/ckad/001/answers.md",
+  "questions": "assessment.json",
+  "totalMarks": 100,
+  "lowScore": 40,
+  "mediumScore": 60,
+  "highScore": 90
 }

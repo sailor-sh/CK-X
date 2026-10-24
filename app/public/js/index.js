@@ -279,7 +279,20 @@ document.addEventListener('DOMContentLoaded', function() {
     function populateLabCategories() {
         // Get unique categories
         const categories = [...new Set(labs.map(lab => lab.category))];
-        
+
+        // Add the categories that the page does not list yet (the exams define their own category),
+        // before the "Other" entry
+        categories.forEach(category => {
+            const known = [...examCategorySelect.options].some(option => option.value === category);
+            if (category && !known) {
+                const option = document.createElement('option');
+                option.value = category;
+                option.textContent = category;
+                const other = [...examCategorySelect.options].find(option => option.value === 'Other');
+                examCategorySelect.insertBefore(option, other || null);
+            }
+        });
+
         // If CKAD is available, select it by default
         if (categories.includes('CKAD')) {
             examCategorySelect.value = 'CKAD';

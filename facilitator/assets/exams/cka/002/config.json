@@ -1,5 +1,10 @@
 {
   "lab": "cka-002",
+  "name": "CKA Practice Lab - Advanced Administration",
+  "description": "Comprehensive lab covering advanced Kubernetes administration topics including storage, networking, security, and troubleshooting with focus on real-world scenarios, updated with the latest CKA exam curriculum changes.",
+  "difficulty": "Hard",
+  "warmUpTimeInSeconds": 360,
+  "examDurationInMinutes": 120,
   "workerNodes": 2,
   "answers": "assets/exams/cka/002/answers.md",
   "questions": "assessment.json",
@@ -7,4 +12,4 @@
   "lowScore": 60,
   "mediumScore": 75,
   "highScore": 85
-} 
+}

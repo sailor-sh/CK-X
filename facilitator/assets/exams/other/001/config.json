@@ -1,5 +1,10 @@
 {
   "lab": "docker-001",
+  "name": "Docker Speed Run - Core Concepts",
+  "description": "Fast-paced practice lab covering Docker fundamentals including images, containers, volumes, networking, OCI, logging, and security best practices.",
+  "difficulty": "Medium",
+  "warmUpTimeInSeconds": 120,
+  "examDurationInMinutes": 90,
   "workerNodes": 1,
   "answers": "assets/exams/other/001/answers.md",
   "questions": "assessment.json",
@@ -7,4 +12,4 @@
   "lowScore": 40,
   "mediumScore": 60,
   "highScore": 90
-} 
+}

@@ -1,5 +1,10 @@
 {
   "lab": "helm-001",
+  "name": "Helm Fundamentals Lab",
+  "description": "Comprehensive lab covering Helm basics including chart installation, repositories, customization, packaging, debugging, and advanced Helm operations for Kubernetes applications.",
+  "difficulty": "Medium",
+  "warmUpTimeInSeconds": 260,
+  "examDurationInMinutes": 90,
   "workerNodes": 1,
   "answers": "assets/exams/other/002/answers.md",
   "questions": "assessment.json",
@@ -7,4 +12,4 @@
   "lowScore": 40,
   "mediumScore": 60,
   "highScore": 90
-} 
+}

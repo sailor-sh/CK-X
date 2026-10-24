@@ -6,8 +6,8 @@ This guide explains how to create and contribute your own practice labs for the 
 
 Each lab in CK-X Simulator consists of:
 
-1. **Lab Entry** in the main labs registry
-2. **Configuration File** for lab settings
+1. **Category directory** (`category.json`) that groups the labs
+2. **Configuration File** for lab settings and the lab's catalog entry (name, description, difficulty)
 3. **Assessment File** containing questions and verification steps
 4. **Setup and Verification Scripts** to prepare environments and validate student solutions
 5. **Answers File** with solution documentation
@@ -29,6 +29,7 @@ facilitator/
 └── assets/
     └── exams/
         └── [category]/
+            ├── category.json
             └── [id]/
                 ├── config.json
                 ├── assessment.json
@@ -41,7 +42,7 @@ facilitator/
 ```
 
 Where:
-- `[category]` is the certification type (e.g., `ckad`, `cka`, `cks`, `other`)
+- `[category]` is a directory with a `category.json` (see Step 6); the existing ones are `ckad`, `cka`, `cks`, `cks-reddit`, `cks-mhagou`, `other`
 - `[id]` is a numeric identifier (e.g., `001`, `002`)
 
 For example, to create a new CKAD lab with ID 003:
@@ -56,6 +57,11 @@ Create a `config.json` file in your lab directory with the following structure:
 ```json
 {
   "lab": "ckad-003",
+  "name": "CKAD Practice Lab - Advanced Deployments",
+  "description": "Practice advanced deployment patterns and strategies",
+  "difficulty": "Medium",
+  "warmUpTimeInSeconds": 260,
+  "examDurationInMinutes": 120,
   "workerNodes": 1,
   "answers": "assets/exams/ckad/003/answers.md",
   "questions": "assessment.json",
@@ -68,6 +74,8 @@ Create a `config.json` file in your lab directory with the following structure:
 
 Parameters:
 - `lab`: Unique identifier for the lab (should match directory structure)
+- `name`, `description`, `difficulty`: how the lab is listed in the webapp
+- `warmUpTimeInSeconds`, `examDurationInMinutes`: preparation time and exam length (defaults: 260 and 120)
 - `workerNodes`: Number of worker nodes required for this lab
 - `answers`: Path to answers markdown file
 - `questions`: sessment JSON filename
@@ -209,35 +217,21 @@ Focus on providing clear, educational solutions with detailed explanations. The 
 
 For each question, provide the question text as a heading followed by a comprehensive solution that would help someone understand not just what to do but why that approach is correct.
 
-## Step 6: Register Your Lab
+## Step 6: Category
 
-Finally, add your lab to the main `labs.json` file:
+There is no registry to edit: the facilitator discovers the labs when the webapp asks for them. Every directory under `assets/exams/` that has a `category.json` is a category, and every subdirectory of it with a `config.json` is a lab (a lab without a `lab` id is skipped with a warning in the facilitator log).
 
 ```json
 {
-  "labs": [
-    // ... existing labs ...
-    {
-      "id": "ckad-003",
-      "assetPath": "assets/exams/ckad/003",
-      "name": "CKAD Practice Lab - Advanced Deployments",
-      "category": "CKAD",
-      "description": "Practice advanced deployment patterns and strategies",
-      "warmUpTimeInSeconds": 60,
-      "difficulty": "medium"
-    }
-  ]
+  "name": "CKS - Reddit",
+  "order": 30
 }
 ```
 
-Parameters:
-- `id`: Unique identifier (should match directory structure)
-- `assetPath`: Path to lab resources
-- `name`: Display name for the lab
-- `category`: Lab category (CKAD, CKA, CKS, etc.)
-- `description`: Brief description of the lab content
-- `warmUpTimeInSeconds`: Preparation time before exam starts
-- `difficulty`: Difficulty level (easy, medium, hard)
+- `name`: category shown in the webapp (defaults to the directory name)
+- `order`: position of the category and of its labs in the lists (lower first)
+
+To add a new category, create its directory with a `category.json`; to add a lab to an existing category, add its directory. Nothing else needs to change (rebuild the facilitator image, since the assets are baked into it).
 
 ## Best Practices
 

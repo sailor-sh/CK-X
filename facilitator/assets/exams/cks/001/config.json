@@ -1,5 +1,10 @@
 {
   "lab": "cks-001",
+  "name": "CKS Practice Lab - Kubernetes Security Essentials",
+  "description": "Practice essential Kubernetes security concepts including network policies, RBAC, supply chain security, and runtime protection",
+  "difficulty": "Hard",
+  "warmUpTimeInSeconds": 260,
+  "examDurationInMinutes": 120,
   "workerNodes": 1,
   "answers": "assets/exams/cks/001/answers.md",
   "questions": "assessment.json",
@@ -7,4 +12,4 @@
   "lowScore": 40,
   "mediumScore": 60,
   "highScore": 90
-} 
+}
