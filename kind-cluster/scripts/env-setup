@@ -8,6 +8,9 @@ exec >> /proc/1/fd/1 2>&1
 
 NUM_WORKERS=${1:-0}  # Default to 1 worker if not provided
 CLUSTER_NAME=${2:-cluster}
+# Pinned k3s image (exam version). Set here, not in the Dockerfile: this script runs over SSH,
+# which does not inherit the container environment.
+K3S_IMAGE=${K3S_IMAGE:-rancher/k3s:v1.35.10-k3s1}
 
 # Check if k3d is installed, if not install it
 if ! command -v k3d &> /dev/null; then
@@ -52,6 +55,7 @@ apiVersion: k3d.io/v1alpha5
 kind: Simple
 metadata:
   name: $CLUSTER_NAME
+image: $K3S_IMAGE
 servers: 1
 agents: $NUM_WORKERS
 kubeAPI:
@@ -75,6 +79,7 @@ echo "Cluster config with $NUM_WORKERS worker nodes generated: /tmp/k3d-config.y
 
 echo "$(date '+%Y-%m-%d %H:%M:%S') | Creating K3d cluster with configuration..."
 echo "$(date '+%Y-%m-%d %H:%M:%S') | ├── Name:  $CLUSTER_NAME"
+echo "$(date '+%Y-%m-%d %H:%M:%S') | ├── Image: $K3S_IMAGE"
 echo "$(date '+%Y-%m-%d %H:%M:%S') | ├── Config: /tmp/k3d-config.yaml"
 echo "$(date '+%Y-%m-%d %H:%M:%S') | └── Number of nodes: $((NUM_WORKERS + 1)) (1 server + $NUM_WORKERS agents)"
 
