@@ -33,10 +33,12 @@ POD_RUNS_SLEEP=$(kubectl get pod $POD_NAME -n $NAMESPACE -o json | jq -r '
   | ((.command // []) + (.args // [])) as $argv
   | if (["sleep", "/bin/sleep", "/usr/bin/sleep"] | index($argv[0])) != null then
       true
+    elif (["busybox", "/bin/busybox"] | index($argv[0])) != null then
+      $argv[1] == "sleep"
     elif (["sh", "/bin/sh", "ash", "/bin/ash"] | index($argv[0])) != null
       and (["-c", "-ec", "-ce"] | index($argv[1])) != null then
       ($argv[2] // "" | test(
-        "\\A[ \\t\\r\\n]*(exec[ \\t]+)?(/(usr/)?bin/)?sleep([ \\t]+[-[:alnum:]_.+]+)+[ \\t]*;?[ \\t\\r\\n]*\\z"
+        "\\A[ \\t\\r\\n]*(exec[ \\t]+)?((/(usr/)?bin/)?sleep|(/bin/)?busybox[ \\t]+sleep)([ \\t]+[-[:alnum:]_.+]+)+[ \\t]*;?[ \\t\\r\\n]*\\z"
       ))
     else
       false

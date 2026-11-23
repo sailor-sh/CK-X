@@ -182,6 +182,8 @@ kubectl run test-pod -n metadata-protect --image=busybox -- sleep 3600
 
 Shell forms such as `sh -c 'sleep 3600'` and `sh -c 'exec sleep 3600'` are also
 accepted. Shell validation is limited to a single literal sleep command.
+BusyBox applet forms such as `busybox sleep 3600` and `/bin/busybox sleep 3600`
+are accepted too, including within these single-command shell forms.
 
 ## Question 5: Binary Verification
 
