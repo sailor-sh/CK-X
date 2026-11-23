@@ -16,6 +16,10 @@ kubectl() {
   [ "$TEST_EXISTS" = "true" ] || return 1
   [ "$#" -gt 5 ] || return 0
   case "$7" in
+    json)
+      jq -cn --argjson command "${TEST_COMMAND:-[]}" --argjson args "${TEST_ARGS:-[]}" \
+        '{spec: {containers: [{command: $command, args: $args}]}}'
+      ;;
     'jsonpath={.status.phase}') printf '%s' "$TEST_PHASE" ;;
     'jsonpath={.spec.containers[0].image}') printf '%s' "$TEST_IMAGE" ;;
     'jsonpath={.spec.containers[0].command}') printf '%s' "$TEST_COMMAND" ;;
@@ -45,7 +49,22 @@ check "sleep in command" 0 "correctly configured" '["sleep","3600"]' ''
 check "sleep in args, as created by kubectl run" 0 "correctly configured" '' '["sleep","3600"]'
 check "shell command with sleep in args" 0 "correctly configured" '["/bin/sh","-c"]' '["sleep 3600"]'
 check "sleep command with separate duration" 0 "correctly configured" '["sleep"]' '["3600"]'
+check "absolute sleep executable" 0 "correctly configured" '["/bin/sleep"]' '["3600"]'
+check "shell script in command" 0 "correctly configured" '["sh","-c","sleep 3600"]' ''
+check "shell invocation entirely in args" 0 "correctly configured" '' '["sh","-c","sleep 3600"]'
+check "shell exec sleep" 0 "correctly configured" '["/bin/sh","-ec"]' '["exec sleep 3600"]'
+check "shell sleep with trailing semicolon" 0 "correctly configured" '["sh","-c"]' '["sleep 3600;\n"]'
 check "unrelated command and args" 1 "not running sleep command" '["echo"]' '["ready"]'
+check "echo argument mentioning sleep" 1 "not running sleep command" '["echo"]' '["sleep","3600"]'
+check "shell prints sleep but runs tail" 1 "not running sleep command" '["sh","-c"]' '["echo sleep; exec tail -f /dev/null"]'
+check "shell runs tail after sleep" 1 "not running sleep command" '["sh","-c"]' '["sleep 0; exec tail -f /dev/null"]'
+check "shell runs tail on a following line" 1 "not running sleep command" '["sh","-c"]' '["sleep 0\nexec tail -f /dev/null"]'
+check "sleep only in shell positional argument" 1 "not running sleep command" '["sh","-c"]' '["exec tail -f /dev/null","sleep"]'
+check "sleep-like executable name" 1 "not running sleep command" '["sleepy"]' '["3600"]'
+check "shell requires the command flag" 1 "not running sleep command" '["sh"]' '["sleep 3600"]'
+# Keep the substitution literal; it must only be inspected as pod data.
+# shellcheck disable=SC2016
+check "shell substitution is not evaluated" 1 "not running sleep command" '["sh","-c"]' '["sleep $(echo 3600)"]'
 check "no command or args" 1 "not running sleep command" '' ''
 check "pending pod" 1 "not in Running state" '' '["sleep","3600"]' Pending
 check "wrong image" 1 "not using the busybox image" '' '["sleep","3600"]' Running nginx
