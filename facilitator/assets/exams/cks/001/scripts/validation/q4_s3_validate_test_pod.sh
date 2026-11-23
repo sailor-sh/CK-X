@@ -25,8 +25,8 @@ if [[ "$POD_IMAGE" != *"busybox"* ]]; then
   exit 1
 fi
 
-# Check if pod has sleep command
-POD_COMMAND=$(kubectl get pod $POD_NAME -n $NAMESPACE -o jsonpath='{.spec.containers[0].command}')
+# kubectl run puts the command in args unless --command is supplied.
+POD_COMMAND=$(kubectl get pod $POD_NAME -n $NAMESPACE -o jsonpath='{.spec.containers[0].command} {.spec.containers[0].args}')
 if [[ "$POD_COMMAND" != *"sleep"* ]]; then
   echo "❌ Pod '$POD_NAME' is not running sleep command"
   exit 1

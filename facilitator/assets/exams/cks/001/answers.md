@@ -174,6 +174,12 @@ spec:
     command: ["sleep", "3600"]
 ```
 
+The same test pod can also be created with:
+
+```bash
+kubectl run test-pod -n metadata-protect --image=busybox -- sleep 3600
+```
+
 ## Question 5: Binary Verification
 
 Create a pod to verify Kubernetes binaries:
