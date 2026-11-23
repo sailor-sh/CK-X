@@ -25,9 +25,26 @@ if [[ "$POD_IMAGE" != *"busybox"* ]]; then
   exit 1
 fi
 
-# Check if pod has sleep command
-POD_COMMAND=$(kubectl get pod $POD_NAME -n $NAMESPACE -o jsonpath='{.spec.containers[0].command}')
-if [[ "$POD_COMMAND" != *"sleep"* ]]; then
+# kubectl run puts the command in args unless --command is supplied.
+# Keep argument boundaries and inspect the executable, not arbitrary text.
+# Shell support is limited to one literal sleep invocation; never evaluate it.
+POD_RUNS_SLEEP=$(kubectl get pod $POD_NAME -n $NAMESPACE -o json | jq -r '
+  .spec.containers[0]
+  | ((.command // []) + (.args // [])) as $argv
+  | if (["sleep", "/bin/sleep", "/usr/bin/sleep"] | index($argv[0])) != null then
+      true
+    elif (["busybox", "/bin/busybox"] | index($argv[0])) != null then
+      $argv[1] == "sleep"
+    elif (["sh", "/bin/sh", "ash", "/bin/ash"] | index($argv[0])) != null
+      and (["-c", "-ec", "-ce"] | index($argv[1])) != null then
+      ($argv[2] // "" | test(
+        "\\A[ \\t\\r\\n]*(exec[ \\t]+)?((/(usr/)?bin/)?sleep|(/bin/)?busybox[ \\t]+sleep)([ \\t]+[-[:alnum:]_.+]+)+[ \\t]*;?[ \\t\\r\\n]*\\z"
+      ))
+    else
+      false
+    end
+')
+if [ "$POD_RUNS_SLEEP" != "true" ]; then
   echo "❌ Pod '$POD_NAME' is not running sleep command"
   exit 1
 fi
